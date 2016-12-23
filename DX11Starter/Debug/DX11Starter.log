@@ -1,0 +1,77 @@
+﻿  compilation object save succeeded; see C:\Users\kyunghwan chang\Documents\GitHub\DIrectXEngine\DX11Starter\Debug\PixelShader.cso
+  compilation object save succeeded; see C:\Users\kyunghwan chang\Documents\GitHub\DIrectXEngine\DX11Starter\Debug\default_frag.cso
+  compilation object save succeeded; see C:\Users\kyunghwan chang\Documents\GitHub\DIrectXEngine\DX11Starter\Debug\VertexShader.cso
+  Main.cpp
+  WorldMain.cpp
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\worldmain.cpp(15): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\worldmain.cpp(16): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  WorldCamera.cpp
+  Vertex.cpp
+  SimpleShader.cpp
+  Object.cpp
+  Object Graphic.cpp
+  GraphicMain.cpp
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\graphicmain.cpp(170): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\graphicmain.cpp(170): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\graphicmain.cpp(214): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\graphicmain.cpp(214): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\graphicmain.cpp(251): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\graphicmain.cpp(251): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\graphicmain.cpp(339): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\graphicmain.cpp(339): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\graphicmain.cpp(435): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\graphicmain.cpp(548): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\graphicmain.cpp(669): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  Camera Graphic.cpp
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\camera graphic.cpp(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+  imgui_draw.cpp
+  imgui_demo.cpp
+  imgui.cpp
+  KContext_imgui.cpp
+  dx11_imgui.cpp
+  UIMain_imgui.cpp
+  Context_imgui.cpp
+  Light.cpp
+  Scene Graphic.cpp
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\scene graphic.cpp(40): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\scene graphic.cpp(59): warning C4305: 'argument': truncation from 'double' to 'float'
+  RenderTexture.cpp
+  Mesh.cpp
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\mesh.cpp(14): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\mesh.cpp(16): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\mesh.cpp(17): warning C4305: 'argument': truncation from 'double' to 'float'
+  Generating Code...
+  Compiling...
+  DepthTexture.cpp
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\depthtexture.cpp(19): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\depthtexture.cpp(20): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  Asset.cpp
+  Y_Axis_Rotate.cpp
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\game\script\y_axis_rotate.cpp(13): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\game\script\y_axis_rotate.cpp(18): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\game\script\y_axis_rotate.cpp(22): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  X_Axis_Rotate.cpp
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\game\script\x_axis_rotate.cpp(13): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\game\script\x_axis_rotate.cpp(18): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\game\script\x_axis_rotate.cpp(20): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  Script Game.cpp
+  Entity Game.cpp
+  Context Game.cpp
+  ContextExamples Game.cpp
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\game\cpp\contextexamples game.cpp(50): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\game\cpp\contextexamples game.cpp(59): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\game\cpp\contextexamples game.cpp(63): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\game\cpp\contextexamples game.cpp(70): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\game\cpp\contextexamples game.cpp(84): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\game\cpp\contextexamples game.cpp(89): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\game\cpp\contextexamples game.cpp(107): warning C4305: 'argument': truncation from 'double' to 'float'
+  KContext.cpp
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\directx\kcontext.cpp(136): warning C4101: 'dir': unreferenced local variable
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\directx\kcontext.cpp(133): warning C4101: 'y': unreferenced local variable
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\directx\kcontext.cpp(133): warning C4101: 'x': unreferenced local variable
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\directx\kcontext.cpp(227): warning C4305: 'initializing': truncation from 'double' to 'float'
+  DXCore.cpp
+  Generating Code...
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\asset.cpp(201): warning C4715: 'NGraphic::Asset::init': not all control paths return a value
+  DX11Starter.vcxproj -> C:\Users\kyunghwan chang\Documents\GitHub\DIrectXEngine\DX11Starter\Debug\DX11Starter.exe
+  DX11Starter.vcxproj -> C:\Users\kyunghwan chang\Documents\GitHub\DIrectXEngine\DX11Starter\Debug\DX11Starter.pdb (Full PDB)
