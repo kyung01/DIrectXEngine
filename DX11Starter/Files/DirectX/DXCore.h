@@ -66,6 +66,7 @@ public:
 	ID3D11Device*			device;
 	ID3D11DeviceContext*	context;
 
+	D3D11_VIEWPORT viewport;
 	ID3D11RenderTargetView* backBufferRTV;
 	ID3D11DepthStencilView* depthStencilView;
 

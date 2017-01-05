@@ -20,19 +20,20 @@ namespace NGraphic {
 	{
 	private:
 		int m_width, m_height;
-		ID3D11Texture2D* m_renderTargetTexture;
 		ID3D11RenderTargetView* m_renderTargetView;
 		ID3D11ShaderResourceView* m_shaderResourceView;
+		void setViewport(int, int);
 	public:
 		RenderTexture();
 		RenderTexture(const RenderTexture&);
 		~RenderTexture();
 
-		bool Initialize(ID3D11Device*, int, int);
-		void Shutdown();
+		bool init(ID3D11Device*, IDXGISwapChain* chain, int, int);
+		bool init(ID3D11Device*, int, int);
+		void release();
 
-		void SetRenderTarget(ID3D11DeviceContext*, ID3D11DepthStencilView*);
-		void ClearRenderTarget(ID3D11DeviceContext*, float, float, float, float);
+		void setRenderTarget(ID3D11DeviceContext*, ID3D11DepthStencilView*);
+		void clear(ID3D11DeviceContext*, float, float, float, float);
 		ID3D11ShaderResourceView* getShaderResourceView();
 		ID3D11RenderTargetView * getRenderTargetView();
 

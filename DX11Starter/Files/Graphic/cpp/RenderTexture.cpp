@@ -4,9 +4,18 @@
 
 using namespace NGraphic;
 
+void NGraphic::RenderTexture::setViewport(int textureWidth, int textureHeight)
+{
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = (float)textureWidth;
+	viewport.Height = (float)textureHeight;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+}
+
 RenderTexture::RenderTexture()
 {
-	m_renderTargetTexture = 0;
 	m_renderTargetView = 0;
 	m_shaderResourceView = 0;
 }
@@ -19,17 +28,63 @@ RenderTexture::RenderTexture(const RenderTexture& other)
 
 RenderTexture::~RenderTexture()
 {
+	release();
 }
 
 
-bool RenderTexture::Initialize(ID3D11Device* device, int textureWidth, int textureHeight)
+bool NGraphic::RenderTexture::init(ID3D11Device *device, IDXGISwapChain * swapChain, int textureWidth, int textureHeight)
 {
+	release();
+	HRESULT result;
+	ID3D11Texture2D* m_renderTargetTexture;
+	setViewport(textureWidth, textureHeight);
+
+	result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&m_renderTargetTexture));
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	renderTargetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetViewDesc.Texture2D.MipSlice = 0;
+	result = device->CreateRenderTargetView(m_renderTargetTexture, &renderTargetViewDesc, &m_renderTargetView);
+	if (FAILED(result))
+	{
+		m_renderTargetTexture->Release();
+		return false;
+	}
+	//D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	//// Setup the description of the shader resource view.
+	//shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	//shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	//shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	// Create the shader resource view.
+	//result = device->CreateShaderResourceView(m_renderTargetTexture, &shaderResourceViewDesc, &m_shaderResourceView);
+	//
+	//if (FAILED(result))
+	//{
+	//	m_renderTargetTexture->Release();
+	//	return false;
+	//}
+	m_renderTargetTexture->Release();
+	return true;
+}
+
+bool RenderTexture::init(ID3D11Device* device, int textureWidth, int textureHeight)
+{
+	release();
 	m_width = textureWidth;
 	m_height = textureHeight;
 	D3D11_TEXTURE2D_DESC textureDesc;
 	HRESULT result;
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	ID3D11Texture2D* m_renderTargetTexture;
+	setViewport(textureWidth, textureHeight);
 
 
 	// Initialize the render target texture description.
@@ -47,18 +102,12 @@ bool RenderTexture::Initialize(ID3D11Device* device, int textureWidth, int textu
 	textureDesc.CPUAccessFlags			= 0;
 	textureDesc.MiscFlags				= 0;
 
-	
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.Width = (float)textureWidth;
-	viewport.Height = (float)textureHeight;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
 
 	// Create the render target texture.
 	result = device->CreateTexture2D(&textureDesc, NULL, &m_renderTargetTexture);
 	if (FAILED(result))
 	{
+		m_renderTargetTexture->Release();
 		return false;
 	}
 
@@ -71,9 +120,11 @@ bool RenderTexture::Initialize(ID3D11Device* device, int textureWidth, int textu
 	result = device->CreateRenderTargetView(m_renderTargetTexture, &renderTargetViewDesc, &m_renderTargetView);
 	if (FAILED(result))
 	{
+		m_renderTargetTexture->Release();
 		return false;
 	}
 
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 	// Setup the description of the shader resource view.
 	shaderResourceViewDesc.Format = textureDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
@@ -84,14 +135,16 @@ bool RenderTexture::Initialize(ID3D11Device* device, int textureWidth, int textu
 	result = device->CreateShaderResourceView(m_renderTargetTexture, &shaderResourceViewDesc, &m_shaderResourceView);
 	if (FAILED(result))
 	{
+		m_renderTargetTexture->Release();
 		return false;
 	}
+	m_renderTargetTexture->Release();
 
 	return true;
 }
 
 
-void RenderTexture::Shutdown()
+void RenderTexture::release()
 {
 	if (m_shaderResourceView)
 	{
@@ -105,17 +158,10 @@ void RenderTexture::Shutdown()
 		m_renderTargetView = 0;
 	}
 
-	if (m_renderTargetTexture)
-	{
-		m_renderTargetTexture->Release();
-		m_renderTargetTexture = 0;
-	}
-
-	return;
 }
 
 
-void RenderTexture::SetRenderTarget(ID3D11DeviceContext* deviceContext, ID3D11DepthStencilView* depthStencilView)
+void RenderTexture::setRenderTarget(ID3D11DeviceContext* deviceContext, ID3D11DepthStencilView* depthStencilView)
 {
 	// Bind the render target view and depth stencil buffer to the output render pipeline.
 	deviceContext->OMSetRenderTargets(1, &m_renderTargetView, depthStencilView);
@@ -125,7 +171,7 @@ void RenderTexture::SetRenderTarget(ID3D11DeviceContext* deviceContext, ID3D11De
 }
 
 
-void RenderTexture::ClearRenderTarget(ID3D11DeviceContext* deviceContext,
+void RenderTexture::clear(ID3D11DeviceContext* deviceContext,
 	float red, float green, float blue, float alpha)
 {
 	float color[4];

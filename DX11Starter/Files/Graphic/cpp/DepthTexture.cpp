@@ -10,12 +10,28 @@ float DepthTexture::getHeight()
 {
 	return m_height;
 }
+NGraphic::DepthTexture::~DepthTexture()
+{
+	release();
+}
 void DepthTexture::clear(ID3D11DeviceContext* deviceContext )  {
 
 	deviceContext->ClearDepthStencilView(m_depthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
+void NGraphic::DepthTexture::release()
+{
+	if (m_depthView) {
+		m_depthView->Release();
+		m_depthView = 0;
+	}
+	if (m_shaderResourceView) {
+		m_shaderResourceView->Release();
+		m_shaderResourceView = 0;
+	}
+}
 bool DepthTexture::init(ID3D11Device * device, int width, int height)
 {
+	release();
 	m_width = width;
 	m_height = height;
 
@@ -74,14 +90,16 @@ bool DepthTexture::init(ID3D11Device * device, int width, int height)
 	result = device->CreateDepthStencilView(depthBufferTexture, &descDSV, &m_depthView);
 	if (FAILED(result))
 	{
+		depthBufferTexture->Release();
 		return false;
 	}
-	depthBufferTexture->Release();
 	result = device->CreateShaderResourceView(depthBufferTexture, &shaderResourceViewDesc, &m_shaderResourceView);
 	if (FAILED(result))
 	{
+		depthBufferTexture->Release();
 		return false;
 	}
+	depthBufferTexture->Release();
 
 
 

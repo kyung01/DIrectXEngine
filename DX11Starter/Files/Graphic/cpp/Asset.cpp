@@ -1,4 +1,5 @@
 #include <Graphic\Asset\Asset.h>
+#include <DDSTextureLoader.h>
 using namespace NGraphic;
 
 std::list<LoadInfoMesh> Asset::getLoadListMesh()
@@ -10,15 +11,7 @@ std::list<LoadInfoMesh> Asset::getLoadListMesh()
 		{ KEnum::MESH_ID_HELIX, "Resource/Mesh/helix.obj" },
 		{ KEnum::MESH_ID_SPHERE, "Resource/Mesh/sphere.obj" },
 		{ KEnum::MESH_ID_TORUS, "Resource/Mesh/torus.obj" },
-		{ KEnum::MESH_ID_PLANE, "Resource/Mesh/plane.obj" },
-		{ KEnum::MESH_ID_TERRAIN_00, "Resource/Mesh/Grounds/Ground_s_01.obj" },
-		{ KEnum::MESH_ID_STONEHENGE_00, "Resource/Mesh/Stonehenge_Rocks/Stonehenge_01.obj" },
-		{ KEnum::MESH_ID_STONEHENGE_01, "Resource/Mesh/Stonehenge_Rocks/Stonehenge_02.obj" },
-		{ KEnum::MESH_ID_STONEHENGE_02, "Resource/Mesh/Stonehenge_Rocks/Stonehenge_03.obj" },
-		{ KEnum::MESH_ID_STONEHENGE_03, "Resource/Mesh/Stonehenge_Rocks/Stonehenge_04.obj" },
-		{ KEnum::MESH_ID_STONEHENGE_04, "Resource/Mesh/Stonehenge_Rocks/Stonehenge_05.obj" },
-		{ KEnum::MESH_ID_STONEHENGE_05, "Resource/Mesh/Stonehenge_Rocks/Stonehenge_06.obj" },
-		{ KEnum::MESH_ID_STONEHENGE_06, "Resource/Mesh/Stonehenge_Rocks/Stonehenge_07.obj" }
+		{ KEnum::MESH_ID_PLANE, "Resource/Mesh/plane.obj" }
 	});
 	return lst;
 }
@@ -26,19 +19,7 @@ std::list<LoadInfoMesh> Asset::getLoadListMesh()
 std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 {
 	std::list<LoadInfoShader> lst({
-		{ RENDER_TYPE_DEFAULT,			L"Resource/Shader/default_vert.hlsl" },
-		{ RENDER_TYPE_DEFFERED,			L"Resource/Shader/deffered_vert.hlsl" },
-		{ RENDER_TYPE_DEPTH,			L"Resource/Shader/depth_vert.hlsl" },
-		{ RENDER_TYPE_DEFFERED_LIGHT_SPOTLIGHT,		L"Resource/Shader/deffered_light_spot_vert.hlsl" },
-		{ RENDER_TYPE_DEFFERED_FINAL,		L"Resource/Shader/deffered_final_vert.hlsl" },
-		{ RENDER_TYPE_DEFFERED_LIGHT_INDIRECT,		L"Resource/Shader/deffered_indirect_vert.hlsl" },
-		{ RENDER_TYPE_DEFFERED_LIGHT_INDIRECT_ERROR,		L"Resource/Shader/deffered_indirect_error_vert.hlsl" },
-		{ RENDER_TYPE_DEFFERED_LIGHT_INDIRECT_APPLY,		L"Resource/Shader/deffered_indirect_apply_vert.hlsl" },
-		{ RENDER_TYPE_DEFFERED_LIGHT_INDIRECT_BLUR,		L"Resource/Shader/deffered_indirect_blur_vert.hlsl" },
-		{ RENDER_TYPE_DEFFERED_LIGHT_INDIRECT_BLUR_VERTICALLY,		L"Resource/Shader/deffered_indirect_blur_vertically_vert.hlsl" },
-		{ RENDER_TYPE_UI,		L"Resource/Shader/simple_texture_vert.hlsl" },
-		{ RENDER_TYPE_DEFFERED_FINAL ,		L"Resource/Shader/finalScene_vert.hlsl" },
-		{ RENDER_TYPE_LIGHT_RSM,		L"Resource/Shader/light_rsm_vert.hlsl" }
+		{ RENDER_SKYBOX,			L"Resource/Shader/SkyVS.hlsl" }
 	});
 	return lst;
 }
@@ -46,19 +27,7 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 {
 	std::list<LoadInfoShader> lst({
-		{ RENDER_TYPE_DEFAULT,			L"Resource/Shader/default_frag.hlsl" },
-		{ RENDER_TYPE_DEFFERED,		L"Resource/Shader/deffered_frag.hlsl" },
-		{ RENDER_TYPE_DEPTH,			L"Resource/Shader/depth_frag.hlsl" },
-		{ RENDER_TYPE_DEFFERED_LIGHT_SPOTLIGHT,		L"Resource/Shader/deffered_light_spot_frag.hlsl" },
-		{ RENDER_TYPE_DEFFERED_FINAL,		L"Resource/Shader/deffered_final_frag.hlsl" },
-		{ RENDER_TYPE_DEFFERED_LIGHT_INDIRECT,		L"Resource/Shader/deffered_indirect_frag.hlsl" },
-		{ RENDER_TYPE_DEFFERED_LIGHT_INDIRECT_ERROR,		L"Resource/Shader/deffered_indirect_error_frag.hlsl" },
-		{ RENDER_TYPE_DEFFERED_LIGHT_INDIRECT_APPLY,		L"Resource/Shader/deffered_indirect_apply_frag.hlsl" },
-		{ RENDER_TYPE_DEFFERED_LIGHT_INDIRECT_BLUR,		L"Resource/Shader/deffered_indirect_blur_frag.hlsl" },
-		{ RENDER_TYPE_DEFFERED_LIGHT_INDIRECT_BLUR_VERTICALLY,		L"Resource/Shader/deffered_indirect_blur_vertically_frag.hlsl" },
-		{ RENDER_TYPE_DEFFERED_FINAL ,		L"Resource/Shader/finalScene_frag.hlsl" },
-		{ RENDER_TYPE_UI,		L"Resource/Shader/simple_texture_frag.hlsl" },
-		{ RENDER_TYPE_LIGHT_RSM,		L"Resource/Shader/light_rsm_frag.hlsl" }
+		{ RENDER_SKYBOX,			L"Resource/Shader/SkyPS.hlsl" }
 	});
 	return lst;
 }
@@ -66,26 +35,15 @@ std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 std::list<LoadInfoTexture> Asset::getLoadListTexture()
 {
 	std::list<LoadInfoTexture> lst({
-		{ TEXTURE_ID_DEFAULT,		L"Resource/Texture/textureTest00.jpg" },
-		{ TEXTURE_ID_NORMAL_DEFAULT,	L"Resource/Texture/normal_default.jpg" },
-		{ TEXTURE_ID_NORMAL_DIRT,		L"Resource/Texture/normal_dirt.jpg" },
-		{ TEXTURE_ID_NORMAL_WOOD,		L"Resource/Texture/normal_wood.jpg" },
-		{ TEXTURE_ID_NORMAL_BRICK,		L"Resource/Texture/normal_brick.jpg" },
-		{ TEXTURE_ID_NORMAL_ROCK,		L"Resource/Texture/normal_rock.jpg" },//normal_couch.bmp
-		{ TEXTURE_ID_NORMAL_COUCH,		L"Resource/Texture/normal_couch.bmp" },//normal_couch.bmp
-		{ TEXTURE_ID_TEST_00,			L"Resource/Texture/texture_test_00.jpg" } ,
-		{ TEXTURE_ID_TEST_01,			L"Resource/Texture/texture_test_01.jpg" } ,
-		{ TEXTURE_ID_TEST_02,			L"Resource/Texture/texture_test_02.jpg" },
-		{ TEXTURE_ID_TEST_03,			L"Resource/Texture/texture_test_03.jpg" },
-		{ TEXTURE_ID_TEST_04,			L"Resource/Texture/texture_test_04.jpg" },
-		{ TEXTURE_ID_TEST_05,			L"Resource/Texture/texture_test_05.jpg" },
-		{ TEXTURE_ID_TEST_06,			L"Resource/Texture/texture_test_06.jpg" },
-		{ TEXTURE_ID_ICN_LIGHT,		L"Resource/Texture/icn_light.png" },
-		{ TEXTURE_ID_WHITE,			L"Resource/Texture/texture_white.png" },
-		{ TEXTURE_ID_HEIGHT_DEFAULT,		L"Resource/Texture/heightMap00.png" },
-		{ TEXTURE_ID_HEIGHT_BUMP,			L"Resource/Texture/heightMap01.png" },
-		{ TEXTURE_ID_HEIGHT_CIRCLES,		L"Resource/Texture/heightMap02.png" },
-		{ TEXTURE_ID_HEIGHT_CLOUD,			L"Resource/Texture/heightMap03.png" }
+		{ TEXTURE_ID_DEFAULT,		L"Resource/Texture/textureTest00.jpg" }
+	});
+	return lst;
+}
+
+std::list<LoadInfoTexture> NGraphic::Asset::getLoadListTextureCubeMap()
+{
+	std::list<LoadInfoTexture> lst({
+		{ TEXTURE_ID_SKYBOX_SUNNY,		L"Resource/Texture/CubeMap/Sunny.dds" }
 	});
 	return lst;
 }
@@ -96,6 +54,7 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	auto dataFrag = getLoadListShaderFrag();
 	auto dataMesh = getLoadListMesh();
 	auto dataTexture = getLoadListTexture();
+	auto dataTextureCubeMap = getLoadListTextureCubeMap();
 
 	for (auto it = dataFrag.begin(); it != dataFrag.end(); it++) {
 		m_shadersFrag[it->type] = std::shared_ptr<SimpleFragmentShader>(new SimpleFragmentShader(device, context));
@@ -115,6 +74,11 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 
 		DirectX::CreateWICTextureFromFile(device, context, it->path, 0, &texture);
 		m_textures[it->id] = texture;
+	}
+	for (auto it = dataTextureCubeMap.begin(); it != dataTextureCubeMap.end(); it++) {
+		ID3D11ShaderResourceView *texture;
+		DirectX::CreateDDSTextureFromFile(device, context, it->path, 0, &texture);
+		m_texturesCubeMap[it->id] = texture;
 	}
 
 	D3D11_SAMPLER_DESC samplerDescPOINT = {};

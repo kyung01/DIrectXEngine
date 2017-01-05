@@ -7,7 +7,7 @@ Object::Object() :
 	m_id(OBJECT_UNIQUE_ID++),
 	m_ObjectType(KEnum::OBJ_TYPE_SOLID),
 	m_meshId	(KEnum::MESH_ID_CUBE),
-	m_renderType(KEnum::RENDER_TYPE_DEFAULT),
+	m_renderType(KEnum::RENDER_DEFAULT),
 	m_isDirty(true),
 	m_scale(1,1,1),
 	m_dirLook(0,0,1)

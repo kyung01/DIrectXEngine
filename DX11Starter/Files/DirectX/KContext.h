@@ -36,7 +36,8 @@ namespace NDirectX {
 		NImGui::KContext m_ui;
 		World::WorldMain world;
 		NGraphic::Asset m_asset;
-
+		NGraphic::RenderTexture m_texture;
+		NGraphic::DepthTexture	m_depth;
 	public:
 		std::list<RenderContext> m_renderContexts;
 		NGraphic::NScene::Camera testingCamera; //TODO delete this?

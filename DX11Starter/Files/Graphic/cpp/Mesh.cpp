@@ -141,9 +141,9 @@ Mesh::Mesh(ID3D11Device * device, char* objFile) {
 			v3.Normal = normals[i[8] - 1];
 
 			// Flip the UV's since they're probably "upside down"
-			v1.UV.y = 1.0f - v1.UV.y;
-			v2.UV.y = 1.0f - v2.UV.y;
-			v3.UV.y = 1.0f - v3.UV.y;
+			v1.UV.y =  v1.UV.y;
+			v2.UV.y =  v2.UV.y;
+			v3.UV.y =  v3.UV.y;
 
 			getTangent(v1, v1.Position, v1.UV, v2.Position, v2.UV, v3.Position, v3.UV);
 			getTangent(v2, v2.Position, v2.UV, v1.Position, v1.UV, v3.Position, v3.UV);

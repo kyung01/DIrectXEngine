@@ -108,15 +108,9 @@
     <ClCompile Include="Files\Game\Script\X_Axis_Rotate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VertexShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Resource\New folder\default_frag.hlsl" />
+    <ClCompile Include="Files\Graphic\cpp\RenderStateStack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\imgui\imconfig.h">
@@ -228,6 +222,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Game\Script\X_Axis_Rotate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\RenderStateStack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

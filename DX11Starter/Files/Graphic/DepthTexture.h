@@ -10,8 +10,10 @@ namespace NGraphic {
 	public:
 		float getWidth();
 		float getHeight();
+		~DepthTexture();
 		bool init(ID3D11Device* device, int textureWidth, int textureHeight);
 		void clear(ID3D11DeviceContext *context);
+		void release();
 		ID3D11DepthStencilView * getDepthStencilView();
 		ID3D11ShaderResourceView* getShaderResourceView();
 

@@ -1,0 +1,7 @@
+﻿  GraphicMain.cpp
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\simpleshader.h(105): warning C4267: 'return': conversion from 'size_t' to 'unsigned int', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\simpleshader.h(109): warning C4267: 'return': conversion from 'size_t' to 'unsigned int', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\graphicmain.cpp(114): warning C4244: 'argument': conversion from 'float' to 'UINT8', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\graphicmain.cpp(122): warning C4305: 'argument': truncation from 'double' to 'float'
+  DX11Starter.vcxproj -> C:\Users\kyunghwan chang\Documents\GitHub\DirectXEngine\DX11Starter\x64\Debug\DX11Starter.exe
+  DX11Starter.vcxproj -> C:\Users\kyunghwan chang\Documents\GitHub\DirectXEngine\DX11Starter\x64\Debug\DX11Starter.pdb (Full PDB)

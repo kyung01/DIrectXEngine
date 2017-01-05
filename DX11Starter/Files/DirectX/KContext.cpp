@@ -58,7 +58,9 @@ KContext::~KContext()
 // --------------------------------------------------------
 void KContext::Init()
 {
-	
+	//m_texture.init(device,swapChain, this->width, this->height);
+	//m_depth.init(device, this->width, this->height);
+
 	m_renderContexts.push_back({ "example00","Created for demo purpose.", NGame::Context(),GraphicMain(), Scene() });
 	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
 		it->gameContext.init(& it->scene);
@@ -98,22 +100,10 @@ void KContext::Init()
 // --------------------------------------------------------
 void KContext::OnResize()
 {
-	// Handle base-level DX resize stuff
 	DXCore::OnResize();
-	//for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
-	//	it->main.m_width = width;
-	//	it->main.m_height = height;
-	//}
-	//m_ui.init(hInstance, hWnd, device, context, swapChain, backBufferRTV);
-	//m_ui.init(hInstance, hWnd, device, context, swapChain, backBufferRTV);
-	
-	// Update our projection matrix since the window size changed
-	//XMMATRIX P = XMMatrixPerspectiveFovLH(
-	//	0.25f * 3.1415926535f,	// Field of View Angle
-	//	(float)width / height,	// Aspect ratio
-	//	0.1f,				  	// Near clip plane distance
-	//	100.0f);			  	// Far clip plane distance
-	//XMStoreFloat4x4(&projectionMatrix, XMMatrixTranspose(P)); // Transpose for HLSL!
+	//m_texture.init(device, swapChain, this->width, this->height);
+	//m_depth.init(device, this->width, this->height);
+
 }
 
 // --------------------------------------------------------
@@ -161,8 +151,6 @@ void KContext::Update(float deltaTime, float totalTime)
 // --------------------------------------------------------
 void KContext::Draw(float deltaTime, float totalTime)
 {
-	
-	// Background color (Cornflower Blue in this case) for clearing
 	const float color[4] = {0.4f, 0.6f, 0.75f, 0.0f};
 
 	context->OMSetRenderTargets(1, &this->backBufferRTV, depthStencilView);
@@ -176,15 +164,12 @@ void KContext::Draw(float deltaTime, float totalTime)
 		1.0f,
 		0);
 
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
 
-
-	DirectX::XMFLOAT4X4 worldMatrix_temp;
-	int count = 0;
 	
 	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
-		it->main.render(this->device, this->context,&m_asset, it->scene);
+		it->main.render(this->device, this->context, 
+			backBufferRTV,depthStencilView,viewport,
+			m_asset, it->scene);
 	}
 	context->OMSetRenderTargets(1,&this-> backBufferRTV, depthStencilView);
 	m_ui.render();

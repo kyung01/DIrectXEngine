@@ -49,7 +49,8 @@ void NGame::LoadExample00(Context &context)
 	for (int i = 0; i < 6; i++) {
 		angle = 3.14 / 6 * i;
 		auto obj = context.m_scene->getObjSolid();
-		obj.get()->m_meshId = NGraphic::MESH_ID_SPHERE;
+		obj.get()->m_meshId = NGraphic::MESH_ID_PLANE;
+		obj.get()->m_textures[NGraphic::TEXTURE_TYPE_DIFFUSE] = NGraphic::KEnum::TEXTURE_ID_TEST_01;
 		obj.get()->m_textures[NGraphic::TEXTURE_TYPE_NORMAL] = NGraphic::KEnum::TEXTURE_ID_NORMAL_DEFAULT;// normalIds[i % 6];
 		obj.get()->m_textures[NGraphic::TEXTURE_TYPE_SPECULAR] = reflectiveIds[i % 4];
 		obj.get()->setScale(Vector3(0.5, 0.5, 0.5));
