@@ -134,6 +134,10 @@ void NGraphic::GraphicMain::render(
 
 	// Set the proper render states
 
+	// Set the proper render states
+	context->RSSetState(asset.RASTR_STATE_SKYBOX);
+	context->OMSetDepthStencilState(asset.DEPTH_STATE_SKYBOX, 0);
+
 	// Actually draw
 	auto mesh = *asset.m_meshes[MESH_ID_SPHERE];
 

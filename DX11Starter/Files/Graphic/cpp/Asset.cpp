@@ -162,4 +162,21 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	m_samplers[SAMPLER_ID_LINEAR] = samplerLinear;
 	m_samplers[SAMPLER_ID_POINT] = samplerPoint;
 
+
+
+
+	// Create a rasterizer state so we can render backfaces
+	D3D11_RASTERIZER_DESC rsDesc = {};
+	rsDesc.FillMode = D3D11_FILL_SOLID;
+	rsDesc.CullMode = D3D11_CULL_FRONT;
+	rsDesc.DepthClipEnable = true;
+	device->CreateRasterizerState(&rsDesc, &RASTR_STATE_SKYBOX);
+
+	// Create a depth state so that we can accept pixels
+	// at a depth less than or EQUAL TO an existing depth
+	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL; // Make sure we can see the sky (at max depth)
+	device->CreateDepthStencilState(&dsDesc, &DEPTH_STATE_SKYBOX);
 }

@@ -39,6 +39,9 @@ namespace NGraphic {
 		std::map<KEnum, ID3D11ShaderResourceView*> m_texturesCubeMap;
 		std::map<KEnum, ID3D11SamplerState*> m_samplers; //sampler ID
 		bool init(ID3D11Device* device, ID3D11DeviceContext *context);
+		
 
+		ID3D11RasterizerState *		RASTR_STATE_SKYBOX;
+		ID3D11DepthStencilState *	DEPTH_STATE_SKYBOX;
 	};
  }
