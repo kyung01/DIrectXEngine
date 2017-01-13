@@ -63,6 +63,11 @@ namespace NGraphic {
 		void beginRendering(ID3D11DeviceContext *context);// = 0;
 		void endRendering(ID3D11DeviceContext *context);// = 0;
 		void getScreenWidth(int &w, int &h);// = 0;
+
+		void drawLine(
+			ID3D11Device *device, ID3D11DeviceContext *context, Matrix worldMatrix, Mesh model,
+			Vector3 from, Vector3 end);
+		
 	public:
 		int m_width, m_height;
 		Mesh * mesh00;
@@ -75,10 +80,11 @@ namespace NGraphic {
 		// Width and hieght is for the resolution in wihich this graphic main will adjust to render things onto
 		GraphicMain();
 		bool init(ID3D11Device *device, ID3D11DeviceContext *context, int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight);
-		
+		void renderWorldNormalDiffuse(ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset, NScene::Scene& scene, DirectX::SimpleMath::Matrix worldMatrix);//rendering the normal scene
+		void renderUI(ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset, NScene::Scene& scene, DirectX::SimpleMath::Matrix worldMatrix);//rendering the normal scene
 		void render(
 			ID3D11Device * device, ID3D11DeviceContext *context, 
 			ID3D11RenderTargetView* target, ID3D11DepthStencilView* targetDepth, D3D11_VIEWPORT& viewport,
-			Asset& asset, NScene::Scene& scene);
+			Asset& asset, NScene::Scene& scene); 
 	};
 }

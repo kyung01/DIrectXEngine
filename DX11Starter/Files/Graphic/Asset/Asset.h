@@ -34,7 +34,7 @@ namespace NGraphic {
 	public:
 		std::map<KEnum, std::shared_ptr<SimpleFragmentShader>> m_shadersFrag;
 		std::map<KEnum, std::shared_ptr<SimpleVertexShader>> m_shadersVert;
-		std::map<KEnum, std::unique_ptr<Mesh*>> m_meshes;
+		std::map<KEnum, std::shared_ptr<Mesh>> m_meshes;
 		std::map<KEnum, ID3D11ShaderResourceView*> m_textures;
 		std::map<KEnum, ID3D11ShaderResourceView*> m_texturesCubeMap;
 		std::map<KEnum, ID3D11SamplerState*> m_samplers; //sampler ID

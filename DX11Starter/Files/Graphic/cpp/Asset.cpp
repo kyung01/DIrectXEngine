@@ -19,7 +19,8 @@ std::list<LoadInfoMesh> Asset::getLoadListMesh()
 std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 {
 	std::list<LoadInfoShader> lst({
-		{ RENDER_SKYBOX,			L"Resource/Shader/SkyVS.hlsl" }
+		{ RENDER_SKYBOX,						L"Resource/Shader/SkyVS.hlsl" },
+		{ RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY,			L"Resource/Shader/defferedVS.hlsl" }
 	});
 	return lst;
 }
@@ -27,7 +28,8 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 {
 	std::list<LoadInfoShader> lst({
-		{ RENDER_SKYBOX,			L"Resource/Shader/SkyPS.hlsl" }
+		{ RENDER_SKYBOX,						L"Resource/Shader/SkyPS.hlsl" },
+		{ RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY,			L"Resource/Shader/defferedFS.hlsl" }
 	});
 	return lst;
 }
@@ -35,7 +37,10 @@ std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 std::list<LoadInfoTexture> Asset::getLoadListTexture()
 {
 	std::list<LoadInfoTexture> lst({
-		{ TEXTURE_ID_DEFAULT,		L"Resource/Texture/textureTest00.jpg" }
+		{ TEXTURE_ID_DEFAULT,		L"Resource/Texture/textureTest00.jpg" },
+		{ TEXTURE_ID_WHITE,		L"Resource/Texture/white.png" },
+		{ TEXTURE_ID_RED,		L"Resource/Texture/red.png" },
+		{ TEXTURE_ID_NORMAL_DEFAULT,		L"Resource/Texture/normal_default.jpg" }
 	});
 	return lst;
 }
@@ -66,7 +71,7 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	}
 	for (auto it = dataMesh.begin(); it != dataMesh.end(); it++) {
 		auto mesh = new Mesh(device, it->path);
-		m_meshes[it->id] = std::make_unique<Mesh*>(mesh);
+		m_meshes[it->id] = std::shared_ptr<Mesh>(mesh);
 	}
 	for (auto it = dataTexture.begin(); it != dataTexture.end(); it++) {
 		ID3D11ShaderResourceView *texture;
