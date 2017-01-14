@@ -19,4 +19,11 @@ void NGame::LoadExample00(Context &context)
 		e->setPos(i,0,0);
 	}
 
+	auto lightObj = context.m_scene->getObjLight();
+	auto lightEntity = new Entity();
+	lightEntity->m_graphicObjects.push_back(lightObj);
+	lightEntity->setPos(0, 0, -1);
+	context.addEntity(std::shared_ptr<Entity>(lightEntity));
+
+
 }

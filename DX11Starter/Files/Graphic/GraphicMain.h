@@ -25,12 +25,9 @@
 namespace NGraphic {
 	
 	//TODO hlsl files are stroed in debug folder once they are built with extention .cso You need grasp them
-	struct ReflectiveShadowMap{
-		std::shared_ptr<RenderTexture>	flux;
-		std::shared_ptr<RenderTexture>	fluxEye;
-		std::shared_ptr<RenderTexture>	normal;
+	struct LightInfo{
+		std::shared_ptr<RenderTexture>	position;
 		std::shared_ptr<DepthTexture>	depth;
-
 	};
 	struct MeshLoadInformation {
 		KEnum id;
@@ -50,7 +47,7 @@ namespace NGraphic {
 		void rendering(NScene::Scene scene);
 		void processObject(NScene::Object obj);
 
-
+		LightInfo getLightInfo(ID3D11Device *device);
 		bool initTextures		(ID3D11Device* device, ID3D11DeviceContext *context, int width, int height, int textureIndirectLightWidth, int textureIndirectLightHeight);
 		
 		
@@ -72,7 +69,7 @@ namespace NGraphic {
 		int m_width, m_height;
 		Mesh * mesh00;
 
-
+		std::map<int, LightInfo> m_lightInfos;
 		std::map<KEnum, std::shared_ptr<RenderTexture>>	m_renderTextures;
 		std::map<KEnum, std::shared_ptr<DepthTexture>>	m_depthTextures;
 
@@ -82,6 +79,18 @@ namespace NGraphic {
 		bool init(ID3D11Device *device, ID3D11DeviceContext *context, int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight);
 		void renderWorldNormalDiffuse(ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset, NScene::Scene& scene, DirectX::SimpleMath::Matrix worldMatrix);//rendering the normal scene
 		void renderUI(ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset, NScene::Scene& scene, DirectX::SimpleMath::Matrix worldMatrix);//rendering the normal scene
+
+		void renderWorld(ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
+			NScene::Scene& scene, int renderMode,
+			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
+			std::shared_ptr<RenderTexture> renderTexture, std::shared_ptr<DepthTexture> depthTexture,
+			std::shared_ptr<RenderTexture> renderTexture2 = 0, std::shared_ptr<DepthTexture> depthTexture2 = 0);//rendering the normal scene
+		void renderFrustum(
+			ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
+			DirectX::XMMATRIX& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
+			std::shared_ptr<RenderTexture> renderTexture, std::shared_ptr<DepthTexture> depthTexture,
+			std::shared_ptr<RenderTexture> renderTexture2 , std::shared_ptr<DepthTexture> depthTexture2 );//rendering the normal scene
+
 		void render(
 			ID3D11Device * device, ID3D11DeviceContext *context, 
 			ID3D11RenderTargetView* target, ID3D11DepthStencilView* targetDepth, D3D11_VIEWPORT& viewport,

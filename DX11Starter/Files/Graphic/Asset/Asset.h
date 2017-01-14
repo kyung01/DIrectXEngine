@@ -41,7 +41,7 @@ namespace NGraphic {
 		bool init(ID3D11Device* device, ID3D11DeviceContext *context);
 		
 
-		ID3D11RasterizerState *		RASTR_STATE_SKYBOX;
+		ID3D11RasterizerState *		RASTR_STATE_CULL_FRONT;
 		ID3D11DepthStencilState *	DEPTH_STATE_SKYBOX;
 	};
  }

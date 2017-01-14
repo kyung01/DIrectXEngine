@@ -8,7 +8,7 @@ namespace NImGui {
 		void render(std::map<NGraphic::KEnum,std::shared_ptr<NGraphic::RenderTexture>> renderTexutres);
 		void render(std::map<NGraphic::KEnum, std::shared_ptr<NGraphic::DepthTexture>> depthTextures);
 		void render(std::map<int, NGraphic::DepthTexture*> textures);
-		void render(std::map<int, NGraphic::ReflectiveShadowMap> textures);
+		void render(std::map<int, NGraphic::LightInfo> lightInfos);
 	protected:
 	public:
 		void init(NGraphic::GraphicMain * graphicMain);

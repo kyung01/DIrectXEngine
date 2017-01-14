@@ -8,7 +8,7 @@ namespace NGraphic {
 
 	namespace NScene {
 		class Camera : public Object {
-		private:
+		protected:
 			float
 				m_fov,
 				m_screenWidth, m_screenHeight,

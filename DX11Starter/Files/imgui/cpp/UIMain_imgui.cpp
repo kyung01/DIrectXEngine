@@ -50,21 +50,18 @@ void NImGui::UIMain::render(std::map<KEnum, std::shared_ptr<DepthTexture>> textu
 	}
 	ImGui::End();
 }
-void NImGui::UIMain::render(std::map<int, ReflectiveShadowMap> textures)
-{
-	ImGui::Begin("ReflectiveShadowMaps", 0, ImGuiWindowFlags_ShowBorders);
-	for (auto it = textures.begin(); it != textures.end(); it++) {
-		ImGui::Text("REFLECTIVE SHADOW MAP", 500, 500);
-		ImTextureID normal = it->second.normal->getShaderResourceView();
-		ImTextureID flux = it->second.flux->getShaderResourceView();
-		ImTextureID depth = it->second.depth->getShaderResourceView();
-		ImGui::Image(normal, ImVec2(500, 500), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
-		ImGui::Image(flux, ImVec2(500, 500), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
-		ImGui::Image(it->second.fluxEye->getShaderResourceView(), ImVec2(500, 500), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
-		ImGui::Image(depth, ImVec2(500, 500), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+void NImGui::UIMain::render(std::map<int, NGraphic::LightInfo> lightInfos) {
+	ImGui::Begin("LightInfo", 0, ImGuiWindowFlags_ShowBorders);
+
+	for (auto it = lightInfos.begin(); it != lightInfos.end(); it++) {
+		ImGui::Text("World", 500, 500);
+		ImTextureID tex_id = it->second.position->getShaderResourceView();
+		ImGui::Image(tex_id, ImVec2(500, 500), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+
 	}
 	ImGui::End();
 }
+
 void NImGui::UIMain::render()
 {
 	if (!graphicMain) return; // I don't have a pointer to the instance needed to initate drawing cycle
@@ -89,6 +86,7 @@ void NImGui::UIMain::render()
 
 	render(graphicMain->m_renderTextures);
 	render(graphicMain->m_depthTextures);
+	render(graphicMain->m_lightInfos);
 	//render(graphicMain->m_lightDepthTextures);
 	//render(graphicMain->m_RSM);
 	/*
