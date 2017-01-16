@@ -67,7 +67,7 @@ void KContext::Init()
 		NGame::LoadExample00(it->gameContext);
 
 
-		if (!it->main.init(this->device, this->context, this->width,this->height, 256,256)) {
+		if (!it->main.init(this->device, this->context,1024,1024, 256,256)) {
 			std::cout << "GraphicMain failed to init" << std::endl;
 		}
 		it->scene.loadExample00();
@@ -120,7 +120,7 @@ void KContext::Update(float deltaTime, float totalTime)
 		Quit();
 
 
-	float x, y, speed(.5f* deltaTime), dis_camerMove(10.3f*deltaTime);
+	float x, y, dis_camerMove(2.9*deltaTime);
 	int count = 0;
 	
 	XMVECTOR dir;

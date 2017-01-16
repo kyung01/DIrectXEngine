@@ -27,6 +27,7 @@ namespace NGraphic {
 			float zNear, zFar;
 
 			Camera();
+			float getFOV();
 			Matrix getProjectionMatrix();
 			Matrix getProjectionMatrix(float width, float height);
 			Matrix getProjectionMatrix(float fov,float screen_width, float screen_height, float cam_near, float cam_far);

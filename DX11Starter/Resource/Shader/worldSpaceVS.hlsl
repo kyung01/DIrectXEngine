@@ -38,7 +38,7 @@ VertexToPixel main(VertexShaderInput input)
 	float4 worldPos = mul(float4(input.position, 1.0f), world);
 														// Get world position of vertex
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);
-	output.worldPos = float4(worldPos.xyz, ( output.position.z / output.position.w));
+	output.worldPos = float4(worldPos.xyz,  output.position.z / output.position.w);
 	//output.worldPos = float4(worldPos.xyz, output.position.w);
 
 	//output.depth =( 1-output.position.z / output.position.w);

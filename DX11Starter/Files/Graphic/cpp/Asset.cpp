@@ -22,7 +22,10 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 	std::list<LoadInfoShader> lst({
 		{ RENDER_SKYBOX,							L"Resource/Shader/SkyVS.hlsl" },
 		{ RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY,			L"Resource/Shader/defferedVS.hlsl" },
-		{ RENDER_WORLD,			L"Resource/Shader/worldSpaceVS.hlsl" }
+		{ RENDER_WORLD,			L"Resource/Shader/worldSpaceVS.hlsl" },
+		{ RENDER_DIRECT_LIGHT,			L"Resource/Shader/directLightVS.hlsl" },
+		{ RENDER_LIGHT_SHAFT,			L"Resource/Shader/lightShaftVS.hlsl" },
+		{ RENDER_SIMPLE_COLOR,			L"Resource/Shader/simpleColorVS.hlsl" }
 	});
 	return lst;
 }
@@ -32,7 +35,10 @@ std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 	std::list<LoadInfoShader> lst({
 		{ RENDER_SKYBOX,						L"Resource/Shader/SkyPS.hlsl" },
 		{ RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY,			L"Resource/Shader/defferedFS.hlsl" },
-		{ RENDER_WORLD,			L"Resource/Shader/worldSpaceFS.hlsl" }
+		{ RENDER_WORLD,			L"Resource/Shader/worldSpaceFS.hlsl" },
+		{ RENDER_DIRECT_LIGHT,			L"Resource/Shader/directLightFS.hlsl" },
+		{ RENDER_LIGHT_SHAFT,			L"Resource/Shader/lightShaftFS.hlsl" },
+		{ RENDER_SIMPLE_COLOR,			L"Resource/Shader/simpleColorFS.hlsl" }
 	});
 	return lst;
 }
@@ -43,7 +49,7 @@ std::list<LoadInfoTexture> Asset::getLoadListTexture()
 		{ TEXTURE_ID_DEFAULT,		L"Resource/Texture/textureTest00.jpg" },
 		{ TEXTURE_ID_WHITE,		L"Resource/Texture/white.png" },
 		{ TEXTURE_ID_RED,		L"Resource/Texture/red.png" },
-		{ TEXTURE_ID_NORMAL_DEFAULT,		L"Resource/Texture/normal_default.jpg" }
+		{ TEXTURE_ID_NORMAL_DEFAULT,		L"Resource/Texture/normal_default.jpg" },
 	});
 	return lst;
 }
@@ -187,4 +193,27 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL; // Make sure we can see the sky (at max depth)
 	device->CreateDepthStencilState(&dsDesc, &DEPTH_STATE_SKYBOX);
+
+
+	D3D11_BLEND_DESC noBlack = {};
+	noBlack.RenderTarget[0].BlendEnable = true;
+	noBlack.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	noBlack.RenderTarget[0].DestBlend = D3D11_BLEND_DEST_ALPHA;
+	noBlack.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	noBlack.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;//D3D11_BLEND_ZERO
+	noBlack.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;//D3D11_BLEND_ZERO
+	noBlack.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	noBlack.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	device->CreateBlendState(&noBlack, &BLEND_STATE_ADDITIVE);
+
+	D3D11_BLEND_DESC transparent = {};
+	transparent.RenderTarget[0].BlendEnable = true;
+	transparent.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	transparent.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	transparent.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	transparent.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;//D3D11_BLEND_ZERO
+	transparent.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;//D3D11_BLEND_ZERO
+	transparent.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	transparent.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	device->CreateBlendState(&transparent, &BLEND_STATE_TRANSPARENT);
 }
