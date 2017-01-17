@@ -36,5 +36,6 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float3 normal = textureNormal.Sample(samplerDefault, input.uv).xyz;//
 	float4 diffuse = textureDiffuse.Sample(samplerDefault, input.uv);//
 	float l = pointLight(lightPos, lightPower, textureShadow, matLightMVP, samplerBoarderZero, eyePos, position, normal);
+	l = saturate(l);
 	return float4(l,l, l, 1);
 }

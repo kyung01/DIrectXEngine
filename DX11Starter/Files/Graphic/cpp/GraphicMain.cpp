@@ -222,7 +222,7 @@ void NGraphic::GraphicMain::renderWorld(
 	DirectX::XMFLOAT4X4 matrixStore;
 	SimpleVertexShader&		shaderVert = *asset.m_shadersVert[RENDER_WORLD];
 	SimpleFragmentShader&	shaderFrag = *asset.m_shadersFrag[RENDER_WORLD];
-	renderTexture->clear(context, 0, 0, 0, 1);
+	renderTexture->clear(context, 0, 0, 0, 99999);
 	depthTexture->clear(context);
 	//render the front face first
 	renderTexture->setRenderTarget(context, depthTexture->getDepthStencilView());

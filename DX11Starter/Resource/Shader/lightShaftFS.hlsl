@@ -72,7 +72,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 		float3 distanceFromLight	= pos- lightPos;
 		float3 distanceFromEye		=  pos- eyePos;
 		float radiance = lightPower / (1 + lengthFast(distanceFromLight));
-		color += (radiance) *isPixelLit(textureShadow, samplerBoarderZero, matLightMVP, pos) * random(float2(pos.x-pos.z,pos.y+pos.z) );
+		color += (radiance)*isPixelLit(textureShadow, samplerBoarderZero, matLightMVP, pos);// *random(float2(pos.x - pos.z, pos.y + pos.z));
 
 	}
 	color *= stepSize;
@@ -82,7 +82,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 	//	float3 distance = lightPos - pos;
 	//	color.x+= lightPower / (1 + lengthFast(distance) ) *  isPixelLit( textureShadow,  samplerBoarderZero, matLightMVP, pos);
 	//}
-	return float4(color, 1);
+	return float4(saturate(color), 1);
 }
 /*
 for (float i = 0; i <= loopMax; i ++ ) {

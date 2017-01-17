@@ -4,11 +4,11 @@ float isPixelLit(
 	float4x4 matLightMVP,
 	float3 position ) {
 	float4 posFromLightPerspective = mul(float4(position, 1), matLightMVP);
+	float lightDepth = posFromLightPerspective.w;
 	posFromLightPerspective /= 0.001 + posFromLightPerspective.w;
 	float2 lightUV = float2(posFromLightPerspective.x*0.5 + 0.5, 1 - (posFromLightPerspective.y*0.5 + 0.5));
-	float lightDepth = posFromLightPerspective.z;
 	float lightDepthClosest = textureShadow.Sample(samplerBoarderZero, lightUV).w;//
-	return (max(0, lightDepth - 0.00001) < lightDepthClosest);
+	return max(0,lightDepth - 0.01) < lightDepthClosest;
 }
 float pointLight(
 	float3 lightPos,float lightPower,
