@@ -66,8 +66,10 @@ void KContext::Init()
 		it->gameContext.init(& it->scene);
 		NGame::LoadExample00(it->gameContext);
 
+		float ratio = 0.5f;
 
-		if (!it->main.init(this->device, this->context,1024,1024, 256,256)) {
+		//if (!it->main.init(this->device, this->context, (int)round( ((float)this->width )*ratio), (int)round( ((float)this->height   )*ratio), 256, 256)) {
+		if (!it->main.init(this->device, this->context, 500,500, 256, 256)) {
 			std::cout << "GraphicMain failed to init" << std::endl;
 		}
 		it->scene.loadExample00();
@@ -120,7 +122,7 @@ void KContext::Update(float deltaTime, float totalTime)
 		Quit();
 
 
-	float x, y, dis_camerMove(2.9*deltaTime);
+	float x, y, dis_camerMove(1.0*deltaTime);
 	int count = 0;
 	
 	XMVECTOR dir;
@@ -209,6 +211,10 @@ void KContext::OnMouseUp(WPARAM buttonState, int x, int y)
 int mouseMoveXY[2] = {-1,-1};
 void KContext::OnMouseMove(WPARAM buttonState, int x, int y)
 {
+	if (!(buttonState & 0x0001))
+	{
+		return;
+	}
 	float power = .010;
 	bool isContinue = true;
 	auto &cam = m_renderContexts.begin()->scene.m_camMain;

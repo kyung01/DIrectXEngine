@@ -10,6 +10,10 @@ float DepthTexture::getHeight()
 {
 	return m_height;
 }
+NGraphic::DepthTexture::DepthTexture()
+{
+	m_isInitialzed = false;
+}
 NGraphic::DepthTexture::~DepthTexture()
 {
 	release();
@@ -20,6 +24,7 @@ void DepthTexture::clear(ID3D11DeviceContext* deviceContext )  {
 }
 void NGraphic::DepthTexture::release()
 {
+	if (!m_isInitialzed) return;
 	if (m_depthView) {
 		m_depthView->Release();
 		m_depthView = 0;
@@ -32,6 +37,7 @@ void NGraphic::DepthTexture::release()
 bool DepthTexture::init(ID3D11Device * device, int width, int height)
 {
 	release();
+	m_isInitialzed = true;
 	m_width = width;
 	m_height = height;
 
@@ -104,6 +110,11 @@ bool DepthTexture::init(ID3D11Device * device, int width, int height)
 
 
 	return true;
+}
+
+void NGraphic::DepthTexture::setDepthStencilView(ID3D11DepthStencilView * depth)
+{
+	m_depthView = depth;
 }
 
 ID3D11DepthStencilView * DepthTexture::getDepthStencilView() {

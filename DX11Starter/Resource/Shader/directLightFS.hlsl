@@ -32,10 +32,11 @@ struct VertexToPixel
 
 float4 main(VertexToPixel input) : SV_TARGET
 {
-	float3 position = textureWorld.Sample(samplerDefault, input.uv).xyz;//
+	float4 position = textureWorld.Sample(samplerDefault, input.uv);//
+	if (position.w != 1.0) return float4(0, 0, 0, 0);
 	float3 normal = textureNormal.Sample(samplerDefault, input.uv).xyz;//
 	float4 diffuse = textureDiffuse.Sample(samplerDefault, input.uv);//
-	float l = pointLight(lightPos, lightPower, textureShadow, matLightMVP, samplerBoarderZero, eyePos, position, normal);
+	float l = pointLight(lightPos, lightPower, textureShadow, matLightMVP, samplerBoarderZero, eyePos, position.xyz, normal);
 	l = saturate(l);
 	return float4(l,l, l, 1);
 }

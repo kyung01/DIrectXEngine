@@ -42,6 +42,8 @@ namespace NGraphic {
 	private:
 		DirectX::XMMATRIX orthoView, orthoMVP;
 		RenderStateStack m_renderStackStack;
+		RenderTexture	m_renderTextureDummy;
+		DepthTexture	m_depthTextureDummy;
 		int m_rsm_flux_eye_perspective_width, m_rsm_flux_eye_perspective_height;
 		DirectX::XMMATRIX getOrthogonalMatrixProj();
 		DirectX::XMMATRIX getOrthogonalMatrixView();
@@ -84,13 +86,13 @@ namespace NGraphic {
 		void renderWorld(ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
 			NScene::Scene& scene,
 			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
-			std::shared_ptr<RenderTexture> renderTexture, std::shared_ptr<DepthTexture> depthTexture);//rendering the normal scene
+			RenderTexture &renderTexture, DepthTexture& depthTexture);//rendering the normal scene
 		void renderFrustum(
 			ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
 			Vector3 eyePosition,
 			DirectX::XMMATRIX& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
-			std::shared_ptr<RenderTexture> renderTexture, std::shared_ptr<DepthTexture> depthTexture,
-			std::shared_ptr<RenderTexture> renderTexture2 , std::shared_ptr<DepthTexture> depthTexture2 );//rendering the normal scene
+			RenderTexture &renderTexture, DepthTexture &depthTexture,
+			RenderTexture &renderTexture2 , DepthTexture &depthTexture2 );//rendering the normal scene
 
 		void render(
 			ID3D11Device * device, ID3D11DeviceContext *context,
@@ -99,14 +101,14 @@ namespace NGraphic {
 
 		void renderDirectLight(
 			ID3D11Device * device, ID3D11DeviceContext *context,
-			std::shared_ptr<RenderTexture> renderTexture, std::shared_ptr<DepthTexture> depthTexture,
+			RenderTexture& renderTexture, DepthTexture& depthTexture,
 			Asset& asset,
 			Vector3 eyePos,
 			Vector3 lightPos, Vector3 lightDir, Vector4 lightColor,
 			std::shared_ptr<RenderTexture> lightShadow, DirectX::XMMATRIX lightMVP, float lightFOV);
 		void renderLightShaft(
 			ID3D11Device * device, ID3D11DeviceContext *context,
-			std::shared_ptr<RenderTexture> renderTexture, std::shared_ptr<DepthTexture> depthTexture,
+			RenderTexture& renderTexture, DepthTexture& depthTexture,
 			Asset& asset,
 			Vector3 eyePos, Vector3 eyeLook,
 			Vector3 lightPos, Vector3 lightDir, Vector4 lightColor,

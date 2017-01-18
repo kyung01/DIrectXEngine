@@ -16,6 +16,7 @@ void NGraphic::RenderTexture::setViewport(int textureWidth, int textureHeight)
 
 RenderTexture::RenderTexture()
 {
+	m_isInitialized = false;
 	m_renderTargetView = 0;
 	m_shaderResourceView = 0;
 }
@@ -23,6 +24,7 @@ RenderTexture::RenderTexture()
 
 RenderTexture::RenderTexture(const RenderTexture& other)
 {
+	m_isInitialized = false;
 }
 
 
@@ -35,6 +37,7 @@ RenderTexture::~RenderTexture()
 bool NGraphic::RenderTexture::init(ID3D11Device *device, IDXGISwapChain * swapChain, int textureWidth, int textureHeight)
 {
 	release();
+	m_isInitialized = true;
 	HRESULT result;
 	ID3D11Texture2D* m_renderTargetTexture;
 	setViewport(textureWidth, textureHeight);
@@ -78,6 +81,7 @@ bool NGraphic::RenderTexture::init(ID3D11Device *device, IDXGISwapChain * swapCh
 bool RenderTexture::init(ID3D11Device* device, int textureWidth, int textureHeight)
 {
 	release();
+	m_isInitialized = true;
 	m_width = textureWidth;
 	m_height = textureHeight;
 	D3D11_TEXTURE2D_DESC textureDesc;
@@ -146,6 +150,8 @@ bool RenderTexture::init(ID3D11Device* device, int textureWidth, int textureHeig
 
 void RenderTexture::release()
 {
+	if (!m_isInitialized)
+		return;
 	if (m_shaderResourceView)
 	{
 		m_shaderResourceView->Release();
@@ -203,6 +209,17 @@ int NGraphic::RenderTexture::getWidth()
 int NGraphic::RenderTexture::getHeight()
 {
 	return m_height;
+}
+
+void NGraphic::RenderTexture::setRenderTargetView(ID3D11RenderTargetView * view, D3D11_VIEWPORT &viewport)
+{
+	m_renderTargetView = view;
+	this->viewport = viewport;
+}
+
+D3D11_VIEWPORT NGraphic::RenderTexture::getViewPort()
+{
+	return viewport;
 }
 
 ID3D11ShaderResourceView* RenderTexture::getShaderResourceView()

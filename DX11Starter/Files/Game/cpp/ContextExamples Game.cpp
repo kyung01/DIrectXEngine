@@ -26,7 +26,7 @@ void NGame::LoadExample00(Context &context)
 	auto lightEntity = new Entity();
 	lightEntity->m_graphicObjects.push_back(lightObj);
 	lightEntity->setPos(0, 0, -1);
-	lightObj->m_lightColor.w = 3;
+	lightObj->m_lightColor.w = 1;
 	context.addEntity(std::shared_ptr<Entity>(lightEntity));
 
 
