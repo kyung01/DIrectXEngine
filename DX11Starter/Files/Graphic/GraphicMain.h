@@ -40,6 +40,7 @@ namespace NGraphic {
 
 	class GraphicMain {
 	private:
+		static float RATIO_LIGHT_INNER;
 		DirectX::XMMATRIX orthoView, orthoMVP;
 		RenderStateStack m_renderStackStack;
 		RenderTexture	m_renderTextureDummy;
@@ -104,14 +105,14 @@ namespace NGraphic {
 			RenderTexture& renderTexture, DepthTexture& depthTexture,
 			Asset& asset,
 			Vector3 eyePos,
-			Vector3 lightPos, Vector3 lightDir, Vector4 lightColor,
+			Vector3 lightPos, Vector3 lightDir, Vector4 lightColor, float lightInner, float lightOutter,
 			std::shared_ptr<RenderTexture> lightShadow, DirectX::XMMATRIX lightMVP, float lightFOV);
 		void renderLightShaft(
 			ID3D11Device * device, ID3D11DeviceContext *context,
 			RenderTexture& renderTexture, DepthTexture& depthTexture,
 			Asset& asset,
 			Vector3 eyePos, Vector3 eyeLook,
-			Vector3 lightPos, Vector3 lightDir, Vector4 lightColor,
+			Vector3 lightPos, Vector3 lightDir, Vector4 lightColor, float lightInner, float lightOutter,
 			std::shared_ptr<RenderTexture> frustumFront,
 			std::shared_ptr<RenderTexture> frustumBack,
 

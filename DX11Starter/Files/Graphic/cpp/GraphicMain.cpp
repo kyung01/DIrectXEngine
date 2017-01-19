@@ -4,6 +4,7 @@
 using namespace NGraphic;
 
 static int SIZE_LIGHT_TEXTURE = 512*2;
+float GraphicMain::RATIO_LIGHT_INNER = 0.7f;
 void GraphicMain::processObject(NScene::Object obj) {
 }
 
@@ -315,7 +316,7 @@ void NGraphic::GraphicMain::renderDirectLight(
 	RenderTexture& renderTexture, DepthTexture& depthTexture,
 	Asset& asset, 
 	Vector3 eyePos,
-	Vector3 lightPos,Vector3 lightDir, Vector4 lightColor,
+	Vector3 lightPos,Vector3 lightDir, Vector4 lightColor,float lightInner, float lightOutter,
 	std::shared_ptr<RenderTexture> lightShadow, DirectX::XMMATRIX lightMVP, float lightFOV)
 {
 	beginRendering(context);
@@ -339,6 +340,9 @@ void NGraphic::GraphicMain::renderDirectLight(
 	shaderFrag.SetShaderResourceView("textureShadow", lightShadow->getShaderResourceView());
 	shaderFrag.SetFloat3("eyePos", eyePos);
 	shaderFrag.SetFloat3("lightPos", lightPos);
+	shaderFrag.SetFloat3("lightDir", lightDir);
+	shaderFrag.SetFloat("lightInner", lightInner);
+	shaderFrag.SetFloat("lightOutter", lightOutter);
 	shaderFrag.SetFloat("lightPower", lightColor.w);
 	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(lightMVP)); // Transpose for HLSL!
 	shaderFrag.SetMatrix4x4("matLightMVP", matrixStore);
@@ -364,14 +368,14 @@ void NGraphic::GraphicMain::renderDirectLight(
 
 	endRendering(context);
 }
-float density = 0.5;
+float density = 0.0;
 
 void NGraphic::GraphicMain::renderLightShaft(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
 	RenderTexture& renderTexture, DepthTexture& depthTexture,
 	Asset & asset, 
 	Vector3 eyePos, Vector3 eyeLook, 
-	Vector3 lightPos, Vector3 lightDir, Vector4 lightColor,
+	Vector3 lightPos, Vector3 lightDir, Vector4 lightColor, float lightInner, float lightOutter,
 	std::shared_ptr<RenderTexture> frustumFront, std::shared_ptr<RenderTexture> frustumBack, std::shared_ptr<RenderTexture> lightShadow, DirectX::XMMATRIX lightMVP, float lightFOV)
 {
 	beginRendering(context);
@@ -397,7 +401,10 @@ void NGraphic::GraphicMain::renderLightShaft(
 	shaderFrag.SetFloat3("eyePos", eyePos);
 	shaderFrag.SetFloat3("eyeLook", eyeLook);
 	shaderFrag.SetFloat3("lightPos", lightPos);
+	shaderFrag.SetFloat3("lightDir", lightDir);
 	shaderFrag.SetFloat("lightPower", lightColor.w);
+	shaderFrag.SetFloat("lightInner",  lightInner);
+	shaderFrag.SetFloat("lightOutter", lightOutter);
 	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(lightMVP)); // Transpose for HLSL!
 	shaderFrag.SetMatrix4x4("matLightMVP", matrixStore);
 	shaderVert.SetShader();
@@ -430,7 +437,7 @@ void NGraphic::GraphicMain::render(
 {
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		NScene::Light& light = **it;
-		light.setRotation(light.m_rotation * Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), 0.000051f));
+		//light.setRotation(light.m_rotation * Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), 0.000051f));
 	}
 
 
@@ -522,6 +529,7 @@ void NGraphic::GraphicMain::render(
 
 
 		m_depthTextureDummy.clear(context);
+		//std::cout << "(light.fov*2.0) * RATIO_LIGHT_INNER" << (light.fov*2.0f) * RATIO_LIGHT_INNER <<  " " << RATIO_LIGHT_INNER<< "\n";
 		renderDirectLight(
 			device, context,
 
@@ -529,7 +537,7 @@ void NGraphic::GraphicMain::render(
 			//m_renderTextureDummy, m_depthTextureDummy, 
 			asset,
 			scene.m_camMain.m_pos,
-			light.m_pos, light.m_dirLook, light.m_lightColor,
+			light.m_pos, light.m_dirLook, light.m_lightColor, light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),
 			m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());
 		//m_depthTextureDummy.clear(context);
 		//continue;
@@ -539,7 +547,7 @@ void NGraphic::GraphicMain::render(
 			m_renderTextureDummy, m_depthTextureDummy,
 			asset,
 			scene.m_camMain.m_pos, scene.m_camMain.m_dirLook,
-			light.m_pos, light.m_dirLook, light.m_lightColor,
+			light.m_pos, light.m_dirLook, light.m_lightColor, light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),
 			m_renderTextures[TARGET_LIGHTSHAFT_FRONT],
 			m_renderTextures[TARGET_LIGHTSHAFT_BACK],
 			m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());

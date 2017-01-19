@@ -1,6 +1,16 @@
 
+static float RATIO_FALLOFF = 1.0f;
 float spotLight(float alpha,float fallOff, float  inner,float outter) {
-	float f = pow((cos(alpha) -cos(outter/2) ) / (cos(inner/2) - cos(outter/2) ), fallOff);
+	return pow((alpha -cos(outter/2) ) / (cos(inner/2) - cos(outter/2) ), fallOff);	
+}
+float spotLight(float3 lightPos, float3 lightDir, float inner, float outter, float3 pos) {
+	float3 lightToPos = pos - lightPos;
+	float lightToPosMag = dot(lightToPos, lightToPos);
+	float3 dirLightToPos = lightToPos / sqrt(lightToPosMag);
+
+	float alpha = dot(dirLightToPos, lightDir);
+	float brightness = 1 / (1 + lightToPosMag);
+	return  saturate(brightness * spotLight(alpha, RATIO_FALLOFF, inner, outter) );
 }
 float isPixelLit(
 	Texture2D textureShadow, SamplerState samplerBoarderZero, 
@@ -14,7 +24,7 @@ float isPixelLit(
 	return max(0,lightDepth - 0.1)< lightDepthClosest ;
 }
 float pointLight(
-	float3 lightPos,float lightPower,
+	float3 lightPos,float3 lightDir, float lightPower, float lightInner,float lightOutter,
 	Texture2D textureShadow, float4x4 matLightMVP,
 	SamplerState samplerBoarderZero,
 	float3 eyePos,
@@ -23,13 +33,15 @@ float pointLight(
 
 	//float4 posFromLightPerspective = mul(float4(position 1.0f), lightMVP);
 	float3 posToLight = lightPos - position;
-	float brightness = lightPower / (1 + pow(length(posToLight),2) );
+	float l_spotlight = spotLight(lightPos, lightDir, lightInner, lightOutter, position); //spotLight(alpha, 1.0f, lightInner, lightOutter);
+	float shadow = isPixelLit(textureShadow, samplerBoarderZero,
+		matLightMVP,
+		position);
+	//return l_spotlight;
 	//return length(posToLight);
 	//return dot(normalize(posToLight), normal) * brightness * (max(0, lightDepth - 0.00001) < lightDepthClosest);
 	//return isPixelLit(textureShadow, samplerBoarderZero,
 	//	matLightMVP,
 	//	position);
-	return dot(normalize(posToLight), normal) * brightness * isPixelLit( textureShadow,  samplerBoarderZero,
-		 matLightMVP,
-		 position);
+	return lightPower* l_spotlight * shadow* dot(normalize(posToLight), normal) ;
 }
