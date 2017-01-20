@@ -69,7 +69,7 @@ void KContext::Init()
 		float ratio = 0.5f;
 
 		//if (!it->main.init(this->device, this->context, (int)round( ((float)this->width )*ratio), (int)round( ((float)this->height   )*ratio), 256, 256)) {
-		if (!it->main.init(this->device, this->context, 500,500, 256, 256)) {
+		if (!it->main.init(this->device, this->context, width,height, 256, 256)) {
 			std::cout << "GraphicMain failed to init" << std::endl;
 		}
 		it->scene.loadExample00();

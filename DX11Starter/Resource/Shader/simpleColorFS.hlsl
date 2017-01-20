@@ -22,7 +22,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float4 v = mul(float4(uv,0,1),matInverse);
 	float w= v.w;
 	v /= v.w;
-	v.w = w;
+	v.w = 0.000001f;
 	return v;
 }
 

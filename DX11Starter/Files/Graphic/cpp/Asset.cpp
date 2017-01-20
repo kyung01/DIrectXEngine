@@ -25,7 +25,8 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 		{ RENDER_WORLD,			L"Resource/Shader/worldSpaceVS.hlsl" },
 		{ RENDER_DIRECT_LIGHT,			L"Resource/Shader/directLightVS.hlsl" },
 		{ RENDER_LIGHT_SHAFT,			L"Resource/Shader/lightShaftVS.hlsl" },
-		{ RENDER_SIMPLE_COLOR,			L"Resource/Shader/simpleColorVS.hlsl" }
+		{ RENDER_SIMPLE_COLOR,			L"Resource/Shader/simpleColorVS.hlsl" },
+		{ RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectVS.hlsl" }
 	});
 	return lst;
 }
@@ -33,12 +34,14 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 {
 	std::list<LoadInfoShader> lst({
-		{ RENDER_SKYBOX,						L"Resource/Shader/SkyPS.hlsl" },
+		{ RENDER_SKYBOX,						L"Resource/Shader/SkyFS.hlsl" },
 		{ RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY,			L"Resource/Shader/defferedFS.hlsl" },
 		{ RENDER_WORLD,			L"Resource/Shader/worldSpaceFS.hlsl" },
 		{ RENDER_DIRECT_LIGHT,			L"Resource/Shader/directLightFS.hlsl" },
 		{ RENDER_LIGHT_SHAFT,			L"Resource/Shader/lightShaftFS.hlsl" },
-		{ RENDER_SIMPLE_COLOR,			L"Resource/Shader/simpleColorFS.hlsl" }
+		{ RENDER_SIMPLE_COLOR,			L"Resource/Shader/simpleColorFS.hlsl" },
+		{ RENDER_SIMPLE_COLOR,			L"Resource/Shader/simpleColorFS.hlsl" },
+		{ RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectFS.hlsl" }
 	});
 	return lst;
 }
@@ -105,7 +108,7 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	samplerDescPOINT.MinLOD = 0;
 	samplerDescPOINT.MaxLOD = D3D11_FLOAT32_MAX;
 	D3D11_SAMPLER_DESC samplerDescWrap = {};
-	samplerDescWrap.Filter = D3D11_FILTER_ANISOTROPIC; // Could be anisotropic
+	samplerDescWrap.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT; // Could be anisotropic
 	samplerDescWrap.ComparisonFunc = D3D11_COMPARISON_LESS;
 	samplerDescWrap.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDescWrap.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;

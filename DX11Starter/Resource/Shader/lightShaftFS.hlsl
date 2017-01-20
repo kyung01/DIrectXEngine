@@ -23,7 +23,7 @@ Texture2D textureWorld :register(t2);
 Texture2D textureShadow : register(t3);
 
 
-SamplerState samplerDefault	: register(s0);
+SamplerState samplerWrap	: register(s0);
 SamplerState samplerBoarderZero : register(s1);
 
 struct VertexToPixel
@@ -34,6 +34,7 @@ struct VertexToPixel
 // Out of the vertex shader (and eventually input to the PS)
 
 static float M_PI = 3.14159265359;
+static float stepSize = 0.05f;
 float henyeyGreenstein(float g, float costh)
 {
 	return (1.0 - g * g) / (0.000001 + 4.0 * M_PI * pow(1.0 + g * g - 2.0 * g * costh, 3.0 / 2.0));
@@ -47,13 +48,13 @@ float3 project(float3 original, float3 unit) {
 }
 float4 main(VertexToPixel input) : SV_TARGET
 {
-	float4 front = textureFrustumFront.Sample(samplerDefault, input.uv);//
-	float4 back = textureFrustumBack.Sample(samplerDefault, input.uv);
-	//if (front.w == 0.0 || back.w ==0.0 ) return float4(0, 0, 0, 0);
-	float4 posWorld = textureWorld.Sample(samplerDefault, input.uv);
+	float4 front = textureFrustumFront.Sample(samplerWrap, input.uv);//
+	float4 back = textureFrustumBack.Sample(samplerWrap, input.uv);
+	if (front.w == 0.0 || back.w ==0.0 ) return float4(0, 0, 0, 0);
+	float4 posWorld = textureWorld.Sample(samplerWrap, input.uv);
 
 
-	float estimatedStart = length (project(front.xyz-eyePos, eyeLook) );
+	float estimatedStart = length (project(front.xyz -eyePos, eyeLook) );
 	float estimatedVolumn = length(project(back.xyz - eyePos, eyeLook));
 	if (posWorld.w == 1.0) {
 		float estimatedEndInWorld = length(project(posWorld.xyz - eyePos, eyeLook));// length(posWorld.xyz - eyePos);
@@ -62,13 +63,12 @@ float4 main(VertexToPixel input) : SV_TARGET
 	}
 
 	float3 color = float3(0, 0, 0);
-	float3 dirEyeToPixelOriginal = normalize(front.xyz - eyePos);
+	float3 dirEyeToPixelOriginal = normalize(back.xyz - eyePos);
 	float3 dirEyeToPixel = project(eyeLook, dirEyeToPixelOriginal);// dirEyeToPixelOriginal * dot(dirEyeToPixelOriginal, eyeLook);
 	//dirEyeToPixel *= 1 / dirEyeToPixel.z;
 	//estimatedStart /= length(dirEyeToPixel);
 	//estimatedVolumn /= length(dirEyeToPixel);
 
-	float stepSize = 0.05f;
 	estimatedStart = floor(estimatedStart / stepSize)*stepSize;
 	//estimatedStart = floor(estimatedStart / stepSize)*stepSize;
 
@@ -76,7 +76,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 	int count = 0;
 	for (float i = estimatedStart; 
 		i <= estimatedVolumn &&
-		 count++ <50; i+= stepSize) {
+		 count++ <200; i+= stepSize) {
 		float3 pos = eyePos + dirEyeToPixel * i ;
 		float3 distanceFromLight	= pos- lightPos;
 		float3 dirLightToPos = normalize(pos - lightPos);
@@ -89,7 +89,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 		float rayAlong = dot(dirLightToPos, -dirEyeToPixelOriginal);
 		float h = henyeyGreenstein(density, rayAlong);
 		//color += h;// rayAlong;
-		color += radiance*h *isPixelLit(textureShadow, samplerBoarderZero, matLightMVP, pos);// *random(float2(pos.x - pos.z, pos.y + pos.z));
+		color += radiance*sqrt(h) *isPixelLit(textureShadow, samplerBoarderZero, matLightMVP, pos);// *random(float2(pos.x - pos.z, pos.y + pos.z));
 
 	}
 	color *= stepSize;

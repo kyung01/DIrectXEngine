@@ -4,7 +4,7 @@
 using namespace NGraphic;
 
 static int SIZE_LIGHT_TEXTURE = 512*2;
-float GraphicMain::RATIO_LIGHT_INNER = 0.7f;
+float GraphicMain::RATIO_LIGHT_INNER = 0.5f;
 void GraphicMain::processObject(NScene::Object obj) {
 }
 
@@ -311,6 +311,55 @@ context->DrawIndexed(\
 	endRendering(context);
 }
 
+void NGraphic::GraphicMain::renderSkyboxReflection(
+	ID3D11Device * device, ID3D11DeviceContext * context, RenderTexture & renderTexture, DepthTexture & depthTexture, 
+	Asset & asset,
+	Vector3 eyePos, 
+	ID3D11ShaderResourceView *skybox, ID3D11ShaderResourceView * worldPos, ID3D11ShaderResourceView * normalTexture)
+{
+	beginRendering(context);
+
+	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
+
+	DirectX::XMFLOAT4X4 matrixStore;
+	NGraphic::Mesh& mesh = *asset.m_meshes[MESH_ID_PLANE];
+	SimpleVertexShader&		shaderVert = *asset.m_shadersVert[RENDER_SKYBOX_REFLECTION];
+	SimpleFragmentShader&	shaderFrag = *asset.m_shadersFrag[RENDER_SKYBOX_REFLECTION];
+
+	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
+
+	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(orthoMVP)); // Transpose for HLSL!
+	shaderVert.SetMatrix4x4("matMVP", matrixStore);
+
+	shaderFrag.SetSamplerState("samplerBoarderZero", asset.m_samplers[SAMPLER_ID_BORDER_ZERO]);
+	shaderFrag.SetShaderResourceView("textureSky", skybox);
+	shaderFrag.SetShaderResourceView("textureWorld", worldPos);
+	shaderFrag.SetShaderResourceView("textureNormal", normalTexture);
+	shaderFrag.SetFloat3("eyePos", eyePos);
+
+	shaderVert.SetShader();
+	shaderFrag.SetShader();
+	shaderVert.CopyAllBufferData();
+	shaderFrag.CopyAllBufferData();
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);
+	context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+	context->DrawIndexed(
+		mesh.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
+		0,     // Offset to the first index we want to use
+		0);    // Offset to add to each index when looking up vertices
+
+			   //clean up bindings
+	shaderFrag.SetShaderResourceView("textureFrustumFront", 0);
+	shaderFrag.SetShaderResourceView("textureFrustumBack", 0);
+	shaderFrag.SetShaderResourceView("textureShadow", 0);
+	shaderFrag.SetShaderResourceView("textureWorld", 0);
+
+	endRendering(context);
+}
+
 void NGraphic::GraphicMain::renderDirectLight(
 	ID3D11Device * device, ID3D11DeviceContext * context,
 	RenderTexture& renderTexture, DepthTexture& depthTexture,
@@ -327,7 +376,7 @@ void NGraphic::GraphicMain::renderDirectLight(
 	//renderTexture.clear(context, 0, 0, 0, 1);
 	//depthTexture.clear(context);
 	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
-	//context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
+	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
 
 
 	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(orthoMVP)); // Transpose for HLSL!
@@ -445,7 +494,10 @@ void NGraphic::GraphicMain::render(
 	m_depthTextureDummy.setDepthStencilView(targetDepth);
 	m_renderTextureDummy.clear(context, 0, 0, 0, 0);
 	m_depthTextureDummy.clear(context);
-
+	DirectX::SimpleMath::Matrix matSceneMvpFirstPerson = 
+		scene.m_camMain.getProjectionMatrix(viewport.Width, viewport.Height) *
+		scene.m_camMain.getViewMatrix() * scene.m_camMain.getModelMatrix();
+	
 	{
 		beginRendering(context);
 		m_renderTextureDummy.clear(context, 0, 0, 0, 0);
@@ -455,15 +507,16 @@ void NGraphic::GraphicMain::render(
 		auto skyVS = asset.m_shadersVert[RENDER_SKYBOX].get();
 		auto skyPS = asset.m_shadersFrag[RENDER_SKYBOX].get();
 
-		DirectX::XMFLOAT4X4 world, view, projection;
+		DirectX::XMFLOAT4X4  view, projection;
 
-		DirectX::XMStoreFloat4x4(&world, XMMatrixTranspose(scene.m_camMain.getModelMatrix())); // Transpose for HLSL!
+		//DirectX::XMStoreFloat4x4(&mvp, XMMatrixTranspose(matSceneMvpFirstPerson)); // Transpose for HLSL!
+		//DirectX::XMStoreFloat4x4(&world, XMMatrixTranspose(scene.m_camMain.getModelMatrix())); // Transpose for HLSL!
 		DirectX::XMStoreFloat4x4(&view, XMMatrixTranspose(scene.m_camMain.getViewMatrix())); // Transpose for HLSL!
 		DirectX::XMStoreFloat4x4(&projection, XMMatrixTranspose(scene.m_camMain.getProjectionMatrix(viewport.Width, viewport.Height))); // Transpose for HLSL!
 
 
 																																		// Set up shaders
-		skyVS->SetMatrix4x4("view", view);
+		skyVS->SetMatrix4x4("view", view);	
 		skyVS->SetMatrix4x4("projection", projection);
 		skyVS->CopyAllBufferData();
 		skyVS->SetShader();
@@ -491,8 +544,6 @@ void NGraphic::GraphicMain::render(
 			mesh.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
 			0,     // Offset to the first index we want to use
 			0);    // Offset to add to each index when looking up vertices
-
-
 		endRendering(context);
 	}
 
@@ -524,23 +575,29 @@ void NGraphic::GraphicMain::render(
 			*m_renderTextures[TARGET_LIGHTSHAFT_BACK], *m_depthTextures[TARGET_LIGHTSHAFT_BACK]);
 
 		DirectX::XMMATRIX lightMVP = DirectX::XMMatrixMultiply(light.getViewMatrix(), light.getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight()));
-		m_depthTextureDummy.clear(context);
+		{
+			m_depthTextureDummy.clear(context);
+			renderSkyboxReflection(device, context, m_renderTextureDummy, m_depthTextureDummy, asset,
+				scene.m_camMain.m_pos,
+				
+				asset.m_texturesCubeMap[TEXTURE_ID_SKYBOX_SUNNY], m_renderTextures[TARGET_WORLD]->getShaderResourceView(), m_renderTextures[TARGET_NORMAL]->getShaderResourceView());
+		
+		}
 
 
+		{
+			//m_depthTextureDummy.clear(context);
+			//renderDirectLight(
+			//	device, context,
+			//
+			//	m_renderTextureDummy, m_depthTextureDummy,
+			//	//m_renderTextureDummy, m_depthTextureDummy, 
+			//	asset,
+			//	scene.m_camMain.m_pos,
+			//	light.m_pos, light.m_dirLook, light.m_lightColor, light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),
+			//	m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());
+		}
 
-		m_depthTextureDummy.clear(context);
-		//std::cout << "(light.fov*2.0) * RATIO_LIGHT_INNER" << (light.fov*2.0f) * RATIO_LIGHT_INNER <<  " " << RATIO_LIGHT_INNER<< "\n";
-		renderDirectLight(
-			device, context,
-
-			m_renderTextureDummy, m_depthTextureDummy,
-			//m_renderTextureDummy, m_depthTextureDummy, 
-			asset,
-			scene.m_camMain.m_pos,
-			light.m_pos, light.m_dirLook, light.m_lightColor, light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),
-			m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());
-		//m_depthTextureDummy.clear(context);
-		//continue;
 		m_depthTextureDummy.clear(context);
 		renderLightShaft(
 			device, context,
