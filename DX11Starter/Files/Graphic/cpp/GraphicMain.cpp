@@ -498,7 +498,7 @@ void NGraphic::GraphicMain::render(
 		scene.m_camMain.getProjectionMatrix(viewport.Width, viewport.Height) *
 		scene.m_camMain.getViewMatrix() * scene.m_camMain.getModelMatrix();
 	
-	{
+	if(false){
 		beginRendering(context);
 		m_renderTextureDummy.clear(context, 0, 0, 0, 0);
 		m_depthTextureDummy.clear(context);
@@ -575,7 +575,8 @@ void NGraphic::GraphicMain::render(
 			*m_renderTextures[TARGET_LIGHTSHAFT_BACK], *m_depthTextures[TARGET_LIGHTSHAFT_BACK]);
 
 		DirectX::XMMATRIX lightMVP = DirectX::XMMatrixMultiply(light.getViewMatrix(), light.getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight()));
-		{
+		
+		if(false){
 			m_depthTextureDummy.clear(context);
 			renderSkyboxReflection(device, context, m_renderTextureDummy, m_depthTextureDummy, asset,
 				scene.m_camMain.m_pos,
@@ -586,16 +587,16 @@ void NGraphic::GraphicMain::render(
 
 
 		{
-			//m_depthTextureDummy.clear(context);
-			//renderDirectLight(
-			//	device, context,
-			//
-			//	m_renderTextureDummy, m_depthTextureDummy,
-			//	//m_renderTextureDummy, m_depthTextureDummy, 
-			//	asset,
-			//	scene.m_camMain.m_pos,
-			//	light.m_pos, light.m_dirLook, light.m_lightColor, light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),
-			//	m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());
+			m_depthTextureDummy.clear(context);
+			renderDirectLight(
+				device, context,
+			
+				m_renderTextureDummy, m_depthTextureDummy,
+				//m_renderTextureDummy, m_depthTextureDummy, 
+				asset,
+				scene.m_camMain.m_pos,
+				light.m_pos, light.m_dirLook, light.m_lightColor, light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),
+				m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());
 		}
 
 		m_depthTextureDummy.clear(context);
