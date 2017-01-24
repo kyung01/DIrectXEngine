@@ -6,6 +6,8 @@ cbuffer global00 :register(b0)
 	float density;
 	float3 lightPos;
 	float3 lightDir;
+	float3 lightColor;
+
 	float lightPower;
 	float lightInner;
 	float lightOutter;
@@ -62,7 +64,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 			estimatedVolumn = estimatedEndInWorld;
 	}
 
-	float3 color = float3(0, 0, 0);
+	float color = 0;
 	float3 dirEyeToPixelOriginal = normalize(back.xyz - eyePos);
 	float3 dirEyeToPixel = project(eyeLook, dirEyeToPixelOriginal);// dirEyeToPixelOriginal * dot(dirEyeToPixelOriginal, eyeLook);
 	//dirEyeToPixel *= 1 / dirEyeToPixel.z;
@@ -100,7 +102,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 	//	float3 distance = lightPos - pos;
 	//	color.x+= lightPower / (1 + lengthFast(distance) ) *  isPixelLit( textureShadow,  samplerBoarderZero, matLightMVP, pos);
 	//}
-	return float4(color, 1);
+	return float4(lightColor*color, 1);
 }
 /*
 for (float i = 0; i <= loopMax; i ++ ) {

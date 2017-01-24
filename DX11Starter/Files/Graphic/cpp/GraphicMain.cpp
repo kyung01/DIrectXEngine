@@ -267,8 +267,8 @@ context->DrawIndexed(\
 	DirectX::XMFLOAT4X4 matWorld,matView,matProj;
 	SimpleVertexShader&		shaderVert = *asset.m_shadersVert[RENDER_WORLD];
 	SimpleFragmentShader&	shaderFrag = *asset.m_shadersFrag[RENDER_WORLD];
-	SimpleVertexShader&		shaderVertSimpleColor = *asset.m_shadersVert[RENDER_SIMPLE_COLOR];
-	SimpleFragmentShader&	shaderFragSimpleColor = *asset.m_shadersFrag[RENDER_SIMPLE_COLOR];
+	SimpleVertexShader&		shaderVertSimpleColor = *asset.m_shadersVert[RENDER_FRUSTUM_INSIDE];
+	SimpleFragmentShader&	shaderFragSimpleColor = *asset.m_shadersFrag[RENDER_FRUSTUM_INSIDE];
 	renderTexture.clear(context, 0, 0, 0, 0);
 	depthTexture.clear(context);
 	//render the front face first
@@ -376,7 +376,7 @@ void NGraphic::GraphicMain::renderDirectLight(
 	//renderTexture.clear(context, 0, 0, 0, 1);
 	//depthTexture.clear(context);
 	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
-	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
+	context->OMSetBlendState(asset.BLEND_STATE_ADDITIVE, 0, 0xffffffff);
 
 
 	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(orthoMVP)); // Transpose for HLSL!
@@ -389,6 +389,7 @@ void NGraphic::GraphicMain::renderDirectLight(
 	shaderFrag.SetShaderResourceView("textureShadow", lightShadow->getShaderResourceView());
 	shaderFrag.SetFloat3("eyePos", eyePos);
 	shaderFrag.SetFloat3("lightPos", lightPos);
+	shaderFrag.SetFloat3("lightColor", Vector3(lightColor));
 	shaderFrag.SetFloat3("lightDir", lightDir);
 	shaderFrag.SetFloat("lightInner", lightInner);
 	shaderFrag.SetFloat("lightOutter", lightOutter);
@@ -451,6 +452,7 @@ void NGraphic::GraphicMain::renderLightShaft(
 	shaderFrag.SetFloat3("eyeLook", eyeLook);
 	shaderFrag.SetFloat3("lightPos", lightPos);
 	shaderFrag.SetFloat3("lightDir", lightDir);
+	shaderFrag.SetFloat3("lightColor", Vector3(lightColor));
 	shaderFrag.SetFloat("lightPower", lightColor.w);
 	shaderFrag.SetFloat("lightInner",  lightInner);
 	shaderFrag.SetFloat("lightOutter", lightOutter);
@@ -478,7 +480,14 @@ void NGraphic::GraphicMain::renderLightShaft(
 
 	endRendering(context);
 }
+void NGraphic::GraphicMain::renderDebug(
+	ID3D11Device * device, ID3D11DeviceContext * context,
+	RenderTexture& renderTexture, DepthTexture& depthTexture, 
+	Asset& asset, NScene::Scene& scene) {
+	beginRendering(context);
+	endRendering(context);
 
+}
 void NGraphic::GraphicMain::render(
 	ID3D11Device * device, ID3D11DeviceContext * context,
 	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
@@ -560,6 +569,14 @@ void NGraphic::GraphicMain::render(
 	
 
 	m_renderTextures[TARGET_FINAL]->clear(context, 0, 0, 0, 0);
+	//let's render debug
+	if (true) {
+		renderDebug(device, context, *m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL], asset, scene);
+
+	}
+
+
+
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		NScene::Light& light = **it;
 		LightInfo& lightInfo = m_lightInfos[it->get()->m_id];

@@ -5,6 +5,7 @@ cbuffer global00 :register(b0)
 {
 	float3 lightPos;
 	float3 lightDir;
+	float3 lightColor;
 	float3 eyePos;
 	float lightPower;
 	float lightInner;
@@ -43,5 +44,5 @@ float4 main(VertexToPixel input) : SV_TARGET
 		lightPos, lightDir,lightPower, lightInner, lightOutter,
 		textureShadow, matLightMVP, samplerBoarderZero, eyePos, position.xyz, normal);
 	l = saturate(l);
-	return float4(l, l , l, 1);
+	return float4(lightColor* diffuse.xyz * l, 1);
 }

@@ -226,7 +226,7 @@ void KContext::OnMouseMove(WPARAM buttonState, int x, int y)
 	mouseMoveXY[0] = x;
 	mouseMoveXY[1] = y;
 	if (!isContinue)return;
-	if (xDis*xDis + yDis*yDis > 100) return;
+	//if (xDis*xDis + yDis*yDis > 100) return; 
 	
 	cam.setRotation(cam.m_rotation * Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), xDis*power));
 	//	+ Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), yDis*power));

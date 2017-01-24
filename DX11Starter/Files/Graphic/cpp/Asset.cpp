@@ -25,8 +25,9 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 		{ RENDER_WORLD,			L"Resource/Shader/worldSpaceVS.hlsl" },
 		{ RENDER_DIRECT_LIGHT,			L"Resource/Shader/directLightVS.hlsl" },
 		{ RENDER_LIGHT_SHAFT,			L"Resource/Shader/lightShaftVS.hlsl" },
-		{ RENDER_SIMPLE_COLOR,			L"Resource/Shader/simpleColorVS.hlsl" },
-		{ RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectVS.hlsl" }
+		{ RENDER_FRUSTUM_INSIDE,			L"Resource/Shader/frustumScreenSpaceVS.hlsl" },
+		{ RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectVS.hlsl" },
+		{ RENDER_ONE_COLOR,			L"Resource/Shader/OneColorVS.hlsl" }
 	});
 	return lst;
 }
@@ -39,9 +40,9 @@ std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 		{ RENDER_WORLD,			L"Resource/Shader/worldSpaceFS.hlsl" },
 		{ RENDER_DIRECT_LIGHT,			L"Resource/Shader/directLightFS.hlsl" },
 		{ RENDER_LIGHT_SHAFT,			L"Resource/Shader/lightShaftFS.hlsl" },
-		{ RENDER_SIMPLE_COLOR,			L"Resource/Shader/simpleColorFS.hlsl" },
-		{ RENDER_SIMPLE_COLOR,			L"Resource/Shader/simpleColorFS.hlsl" },
-		{ RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectFS.hlsl" }
+		{ RENDER_FRUSTUM_INSIDE,			L"Resource/Shader/frustumScreenSpaceFS.hlsl" },
+		{ RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectFS.hlsl" },
+		{ RENDER_ONE_COLOR,			L"Resource/Shader/OneColorFS.hlsl" }
 	});
 	return lst;
 }
