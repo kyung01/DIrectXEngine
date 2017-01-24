@@ -22,6 +22,7 @@
 #include <Graphic\RenderStateStack.h>
 
 
+
 namespace NGraphic {
 	
 	//TODO hlsl files are stroed in debug folder once they are built with extention .cso You need grasp them
@@ -46,6 +47,8 @@ namespace NGraphic {
 		RenderTexture	m_renderTextureDummy;
 		DepthTexture	m_depthTextureDummy;
 		int m_rsm_flux_eye_perspective_width, m_rsm_flux_eye_perspective_height;
+
+
 		DirectX::XMMATRIX getOrthogonalMatrixProj();
 		DirectX::XMMATRIX getOrthogonalMatrixView();
 		void rendering(NScene::Scene scene);

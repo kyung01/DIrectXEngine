@@ -7,6 +7,10 @@
 #include <Graphic\Asset\Mesh.h>
 #include <Graphic\SimpleShader.h>
 #include <Graphic\Enum.h>
+//For debug purpose use buitin tools
+#include <PrimitiveBatch.h>
+#include <VertexTypes.h>
+#include <Effects.h>
 
 
 namespace NGraphic {
@@ -32,6 +36,10 @@ namespace NGraphic {
 		std::list<LoadInfoTexture>	getLoadListTextureCubeMap();
 
 	public:
+		//Debug purpose.
+		std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionColor> > m_primitiveBatch;
+		std::unique_ptr<DirectX::BasicEffect> m_basicEffect;
+
 		std::map<KEnum, std::shared_ptr<SimpleFragmentShader>> m_shadersFrag;
 		std::map<KEnum, std::shared_ptr<SimpleVertexShader>> m_shadersVert;
 		std::map<KEnum, std::shared_ptr<Mesh>> m_meshes;

@@ -485,6 +485,7 @@ void NGraphic::GraphicMain::renderDebug(
 	RenderTexture& renderTexture, DepthTexture& depthTexture, 
 	Asset& asset, NScene::Scene& scene) {
 	beginRendering(context);
+
 	endRendering(context);
 
 }

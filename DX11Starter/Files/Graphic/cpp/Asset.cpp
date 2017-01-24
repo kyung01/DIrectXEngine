@@ -68,6 +68,11 @@ std::list<LoadInfoTexture> NGraphic::Asset::getLoadListTextureCubeMap()
 
 bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 {
+
+	//initialize debugging tools
+	m_basicEffect = std::make_unique<DirectX::BasicEffect>(device);
+	m_primitiveBatch = std::make_unique<DirectX::PrimitiveBatch<DirectX::VertexPositionColor>>(context);
+
 	auto dataVert = getLoadListShaderVert();
 	auto dataFrag = getLoadListShaderFrag();
 	auto dataMesh = getLoadListMesh();
