@@ -196,6 +196,11 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	rsDesc.CullMode = D3D11_CULL_FRONT;
 	rsDesc.DepthClipEnable = true;
 	device->CreateRasterizerState(&rsDesc, &RASTR_STATE_CULL_FRONT);
+	D3D11_RASTERIZER_DESC rsDescBack = {};
+	rsDescBack.FillMode = D3D11_FILL_SOLID;
+	rsDescBack.CullMode = D3D11_CULL_BACK;
+	rsDescBack.DepthClipEnable = true;
+	device->CreateRasterizerState(&rsDescBack, &RASTR_STATE_CULL_BACK);
 
 	D3D11_RASTERIZER_DESC rsCullNoneNoDepth = {};
 	rsCullNoneNoDepth.FillMode = D3D11_FILL_SOLID;
@@ -212,16 +217,16 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	device->CreateDepthStencilState(&dsDesc, &DEPTH_STATE_SKYBOX);
 
 
-	D3D11_BLEND_DESC noBlack = {};
-	noBlack.RenderTarget[0].BlendEnable = true;
-	noBlack.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	noBlack.RenderTarget[0].DestBlend = D3D11_BLEND_DEST_ALPHA;
-	noBlack.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	noBlack.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;//D3D11_BLEND_ZERO
-	noBlack.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;//D3D11_BLEND_ZERO
-	noBlack.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	noBlack.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-	device->CreateBlendState(&noBlack, &BLEND_STATE_ADDITIVE);
+	D3D11_BLEND_DESC additive = {};
+	additive.RenderTarget[0].BlendEnable = true;
+	additive.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	additive.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	additive.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	additive.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;//D3D11_BLEND_ZERO
+	additive.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;//D3D11_BLEND_ZERO
+	additive.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	additive.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	device->CreateBlendState(&additive, &BLEND_STATE_ADDITIVE);
 
 	D3D11_BLEND_DESC transparent = {};
 	transparent.RenderTarget[0].BlendEnable = true;

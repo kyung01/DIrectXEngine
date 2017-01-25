@@ -44,5 +44,5 @@ float4 main(VertexToPixel input) : SV_TARGET
 		lightPos, lightDir,lightPower, lightInner, lightOutter,
 		textureShadow, matLightMVP, samplerBoarderZero, eyePos, position.xyz, normal);
 	l = saturate(l);
-	return float4(lightColor* diffuse.xyz * l, 1);
+	return float4(lightColor* diffuse.xyz * l, 0);
 }

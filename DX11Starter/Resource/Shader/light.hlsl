@@ -10,7 +10,7 @@ float spotLight(float3 lightPos, float3 lightDir, float inner, float outter, flo
 
 	float alpha = dot(dirLightToPos, lightDir);
 	float brightness = 1 / (1 + lightToPosMag);
-	return  max(0, brightness * spotLight(alpha, RATIO_FALLOFF, inner, outter) );
+	return   brightness * saturate( spotLight(alpha, RATIO_FALLOFF, inner, outter) );
 }
 float isPixelLit(
 	Texture2D textureShadow, SamplerState samplerBoarderZero, 
