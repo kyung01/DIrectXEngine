@@ -485,7 +485,56 @@ void NGraphic::GraphicMain::renderDebug(
 	RenderTexture& renderTexture, DepthTexture& depthTexture, 
 	Asset& asset, NScene::Scene& scene) {
 	beginRendering(context);
+	DirectX::XMFLOAT4X4 matStore;
+	auto &shaderVert = *asset.m_shadersVert[RENDER_TRANSPARENT];
+	auto &shaderFrag = *asset.m_shadersFrag[RENDER_TRANSPARENT];
+	NGraphic::Mesh& sphere = *asset.m_meshes[MESH_ID_SPHERE];
+	auto r = renderTexture.getRenderTargetView();
+	auto &view = renderTexture.getViewPort();
+	//atuo d = depthTexture.getDepthStencilView();
+	context->OMSetRenderTargets(1, &r, NULL);
+	context->RSSetViewports(1, &view);
 
+
+	//renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
+	context->RSSetState(asset.RASTR_STATE_CULL_NONE_NO_DEPTH);
+	context->OMSetBlendState(asset.BLEND_STATE_ADDITIVE, 0, 0xffffffff);
+
+	DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(scene.m_camMain.getViewMatrix())); // Transpose for HLSL!
+	shaderVert.SetMatrix4x4("view", matStore);
+	DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(scene.m_camMain.getProjectionMatrix())); // Transpose for HLSL!
+	shaderVert.SetMatrix4x4("proj", matStore);
+	shaderFrag.SetShaderResourceView("textureEyeDepth", m_depthTextures[DEPTH_WORLD]->getShaderResourceView());
+
+	shaderFrag.SetFloat("SCREEN_WIDTH", renderTexture.getWidth());
+	shaderFrag.SetFloat("SCREEN_HEIGHT", renderTexture.getHeight() );
+	shaderVert.SetShader();
+	shaderFrag.SetShader();
+
+
+	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+		
+		std::cout << it->get()->m_pos.x << "\n";
+		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix()) ); // Transpose for HLSL!
+		shaderVert.SetMatrix4x4("world", matStore);
+		shaderFrag.SetFloat3("lightColor",Vector3( (**it).m_lightColor)*0.2f );
+
+
+		shaderVert.CopyAllBufferData();
+		shaderFrag.CopyAllBufferData();
+
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+		context->IASetVertexBuffers(0, 1, &sphere.getBufferVertexRef(), &stride, &offset);
+		context->IASetIndexBuffer(sphere.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(
+			sphere.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
+			0,     // Offset to the first index we want to use
+			0);    // Offset to add to each index when looking up vertices
+	}
+
+	
 	endRendering(context);
 
 }
@@ -569,13 +618,7 @@ void NGraphic::GraphicMain::render(
 	//now start rendering real stuff
 	
 
-	m_renderTextures[TARGET_FINAL]->clear(context, 0, 0, 0, 0);
-	//let's render debug
-	if (true) {
-		renderDebug(device, context, *m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL], asset, scene);
-
-	}
-
+	
 
 
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
@@ -628,7 +671,14 @@ void NGraphic::GraphicMain::render(
 			m_renderTextures[TARGET_LIGHTSHAFT_BACK],
 			m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());
 	}
-	
+	m_renderTextures[TARGET_FINAL]->clear(context, 0, 0, 0, 1);
+	m_depthTextures[DEPTH_FINAL]->clear(context);
+	//let's render debug
+	if (true) {
+		renderDebug(device, context, *m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL], asset, scene);
+
+	}
+
 
 	
 

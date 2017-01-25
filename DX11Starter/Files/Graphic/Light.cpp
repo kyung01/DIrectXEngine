@@ -7,5 +7,5 @@ Light::Light()
 	m_ObjectType = OBJ_TYPE_LIGHT;
 	m_fov = 26.56 /  (360 / 6.28318530718);
 	m_lightColor = Vector4(1,1,1,1);
-	setScale(Vector3(1000, 1000, 1000));
+	setScale(Vector3(.51, .51, .51));
 }

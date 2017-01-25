@@ -27,7 +27,8 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 		{ RENDER_LIGHT_SHAFT,			L"Resource/Shader/lightShaftVS.hlsl" },
 		{ RENDER_FRUSTUM_INSIDE,			L"Resource/Shader/frustumScreenSpaceVS.hlsl" },
 		{ RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectVS.hlsl" },
-		{ RENDER_ONE_COLOR,			L"Resource/Shader/OneColorVS.hlsl" }
+		{ RENDER_ONE_COLOR,			L"Resource/Shader/OneColorVS.hlsl" },
+		{ RENDER_TRANSPARENT,			L"Resource/Shader/TransparentVS.hlsl" }
 	});
 	return lst;
 }
@@ -42,7 +43,8 @@ std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 		{ RENDER_LIGHT_SHAFT,			L"Resource/Shader/lightShaftFS.hlsl" },
 		{ RENDER_FRUSTUM_INSIDE,			L"Resource/Shader/frustumScreenSpaceFS.hlsl" },
 		{ RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectFS.hlsl" },
-		{ RENDER_ONE_COLOR,			L"Resource/Shader/OneColorFS.hlsl" }
+		{ RENDER_ONE_COLOR,			L"Resource/Shader/OneColorFS.hlsl" },
+		{ RENDER_TRANSPARENT,			L"Resource/Shader/TransparentFS.hlsl" }
 	});
 	return lst;
 }
@@ -194,6 +196,11 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	rsDesc.CullMode = D3D11_CULL_FRONT;
 	rsDesc.DepthClipEnable = true;
 	device->CreateRasterizerState(&rsDesc, &RASTR_STATE_CULL_FRONT);
+	D3D11_RASTERIZER_DESC rsCullNoneNoDepth = {};
+	rsCullNoneNoDepth.FillMode = D3D11_FILL_SOLID;
+	rsCullNoneNoDepth.CullMode = D3D11_CULL_NONE;
+	rsCullNoneNoDepth.DepthClipEnable = false;
+	device->CreateRasterizerState(&rsCullNoneNoDepth, &RASTR_STATE_CULL_NONE_NO_DEPTH);
 
 	// Create a depth state so that we can accept pixels
 	// at a depth less than or EQUAL TO an existing depth
