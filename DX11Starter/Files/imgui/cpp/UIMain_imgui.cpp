@@ -66,6 +66,10 @@ void NImGui::UIMain::render()
 {
 	if (!graphicMain) return; // I don't have a pointer to the instance needed to initate drawing cycle
 
+	//ImTextureID tex_id = graphicMain->m_renderTextures[TARGET_FINAL]->getShaderResourceView();
+	//ImTextureID tex_id = ImGui::GetIO().Fonts->TexID;
+	//ImGui::Text("%.0fx%.0f", 500, 500);
+	//ImGui::Image(tex_id, ImVec2(1500, 1500), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
 	//ImGui::ShowTestWindow();
 
 	ImGui::BeginMainMenuBar();

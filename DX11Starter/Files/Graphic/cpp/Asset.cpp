@@ -196,11 +196,12 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	rsDesc.CullMode = D3D11_CULL_FRONT;
 	rsDesc.DepthClipEnable = true;
 	device->CreateRasterizerState(&rsDesc, &RASTR_STATE_CULL_FRONT);
+
 	D3D11_RASTERIZER_DESC rsCullNoneNoDepth = {};
 	rsCullNoneNoDepth.FillMode = D3D11_FILL_SOLID;
 	rsCullNoneNoDepth.CullMode = D3D11_CULL_NONE;
-	rsCullNoneNoDepth.DepthClipEnable = false;
-	device->CreateRasterizerState(&rsCullNoneNoDepth, &RASTR_STATE_CULL_NONE_NO_DEPTH);
+	rsCullNoneNoDepth.DepthClipEnable = true;
+	device->CreateRasterizerState(&rsCullNoneNoDepth, &RASTR_STATE_CULL_NONE);
 
 	// Create a depth state so that we can accept pixels
 	// at a depth less than or EQUAL TO an existing depth

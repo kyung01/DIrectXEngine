@@ -497,15 +497,15 @@ void NGraphic::GraphicMain::renderDebug(
 
 
 	//renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
-	context->RSSetState(asset.RASTR_STATE_CULL_NONE_NO_DEPTH);
-	context->OMSetBlendState(asset.BLEND_STATE_ADDITIVE, 0, 0xffffffff);
+	//context->RSSetState(asset.RASTR_STATE_CULL_);
+	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
 
 	DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(scene.m_camMain.getViewMatrix())); // Transpose for HLSL!
 	shaderVert.SetMatrix4x4("view", matStore);
 	DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(scene.m_camMain.getProjectionMatrix())); // Transpose for HLSL!
 	shaderVert.SetMatrix4x4("proj", matStore);
 	shaderFrag.SetShaderResourceView("textureEyeDepth", m_depthTextures[DEPTH_WORLD]->getShaderResourceView());
-
+	shaderFrag.SetSamplerState("samplerBoarderZero", asset.m_samplers[SAMPLER_ID_BORDER_ZERO]);
 	shaderFrag.SetFloat("SCREEN_WIDTH", renderTexture.getWidth());
 	shaderFrag.SetFloat("SCREEN_HEIGHT", renderTexture.getHeight() );
 	shaderVert.SetShader();
@@ -618,6 +618,7 @@ void NGraphic::GraphicMain::render(
 	//now start rendering real stuff
 	
 
+	m_renderTextures[TARGET_FINAL]->clear(context, 0, 0, 0, 1);
 	
 
 
@@ -629,30 +630,31 @@ void NGraphic::GraphicMain::render(
 			worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight()),
 			*lightInfo.position, *lightInfo.depth);
 		auto lightWorldMatirx = DirectX::XMMatrixMultiply(worldMatrixFrustum, it->get()->getModelMatrix());
-		renderFrustum(device, context, asset, 
-			scene.m_camMain.m_pos, 
+		renderFrustum(device, context, asset,
+			scene.m_camMain.m_pos,
 			lightWorldMatirx, viewMatirx, projMatrix,
 			*m_renderTextures[TARGET_LIGHTSHAFT_FRONT], *m_depthTextures[TARGET_LIGHTSHAFT_FRONT],
 			*m_renderTextures[TARGET_LIGHTSHAFT_BACK], *m_depthTextures[TARGET_LIGHTSHAFT_BACK]);
 
 		DirectX::XMMATRIX lightMVP = DirectX::XMMatrixMultiply(light.getViewMatrix(), light.getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight()));
-		
-		if(false){
+
+		if (false) {
 			m_depthTextureDummy.clear(context);
 			renderSkyboxReflection(device, context, m_renderTextureDummy, m_depthTextureDummy, asset,
 				scene.m_camMain.m_pos,
-				
+
 				asset.m_texturesCubeMap[TEXTURE_ID_SKYBOX_SUNNY], m_renderTextures[TARGET_WORLD]->getShaderResourceView(), m_renderTextures[TARGET_NORMAL]->getShaderResourceView());
-		
+
 		}
 
 
 		{
 			m_depthTextureDummy.clear(context);
+			m_depthTextures[DEPTH_FINAL]->clear(context);
 			renderDirectLight(
 				device, context,
-			
-				m_renderTextureDummy, m_depthTextureDummy,
+				*m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL],
+				//m_renderTextureDummy, m_depthTextureDummy,
 				//m_renderTextureDummy, m_depthTextureDummy, 
 				asset,
 				scene.m_camMain.m_pos,
@@ -661,9 +663,12 @@ void NGraphic::GraphicMain::render(
 		}
 
 		m_depthTextureDummy.clear(context);
+		//m_depthTextures[DEPTH_FINAL]->clear(context);
+		m_depthTextures[DEPTH_FINAL]->clear(context);
 		renderLightShaft(
 			device, context,
-			m_renderTextureDummy, m_depthTextureDummy,
+			//m_renderTextureDummy, m_depthTextureDummy,
+			*m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL],
 			asset,
 			scene.m_camMain.m_pos, scene.m_camMain.m_dirLook,
 			light.m_pos, light.m_dirLook, light.m_lightColor, light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),
@@ -671,10 +676,10 @@ void NGraphic::GraphicMain::render(
 			m_renderTextures[TARGET_LIGHTSHAFT_BACK],
 			m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());
 	}
-	m_renderTextures[TARGET_FINAL]->clear(context, 0, 0, 0, 1);
-	m_depthTextures[DEPTH_FINAL]->clear(context);
+
 	//let's render debug
 	if (true) {
+		m_depthTextures[DEPTH_FINAL]->clear(context);
 		renderDebug(device, context, *m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL], asset, scene);
 
 	}
