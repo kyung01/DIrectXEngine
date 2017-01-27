@@ -249,10 +249,10 @@ void NGraphic::GraphicMain::renderFrustum(
 	DirectX::XMMATRIX& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
 	RenderTexture& renderTexture, DepthTexture& depthTexture,
 	RenderTexture& renderTexture2, DepthTexture& depthTexture2) {
-#define RENDER_LIGHTS(DshaderVert,DshaderFrag) 	{NGraphic::Mesh& mesh = *asset.m_meshes[MESH_ID_FRUSTUM];\
+#define RENDER_LIGHTS(shaderVertSimpleColor,DshaderFrag) 	{NGraphic::Mesh& mesh = *asset.m_meshes[MESH_ID_SPHERE];\
 DirectX::XMStoreFloat4x4(&matWorld, XMMatrixTranspose( worldMatrix));\
-DshaderVert.SetMatrix4x4("world", matWorld);\
-DshaderVert.CopyAllBufferData();\
+shaderVertSimpleColor.SetMatrix4x4("world", matWorld);\
+shaderVertSimpleColor.CopyAllBufferData();\
 DshaderFrag.CopyAllBufferData();\
 UINT stride = sizeof(Vertex);\
 UINT offset = 0;\
@@ -296,12 +296,7 @@ context->DrawIndexed(\
 		renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
 		shaderVertSimpleColor.SetMatrix4x4("view", matView);
 		shaderVertSimpleColor.SetMatrix4x4("proj", matProj);
-		shaderFragSimpleColor.SetFloat("SCREEN_WIDTH", renderTexture.getWidth());
-		shaderFragSimpleColor.SetFloat("SCREEN_HEIGHT", renderTexture.getWidth());
-
-		auto matInverse = DirectX::XMMatrixInverse(0, DirectX::XMMatrixMultiply(viewMatrix, projMatrix));
-		DirectX::XMStoreFloat4x4(&matView, XMMatrixTranspose(matInverse)); // Transpose for HLSL!
-		shaderFragSimpleColor.SetMatrix4x4("matInverse", matView);
+		shaderFragSimpleColor.SetFloat3("eyePos",eyePosition);
 
 		shaderVertSimpleColor.SetShader();
 		shaderFragSimpleColor.SetShader();
@@ -500,7 +495,7 @@ void NGraphic::GraphicMain::renderDebug(
 
 	//renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
 	//context->RSSetState(asset.RASTR_STATE_CULL_);
-	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
+	context->OMSetBlendState(asset.BLEND_STATE_ADDITIVE, 0, 0xffffffff);
 
 	DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(scene.m_camMain.getViewMatrix())); // Transpose for HLSL!
 	shaderVert.SetMatrix4x4("view", matStore);
@@ -521,7 +516,7 @@ void NGraphic::GraphicMain::renderDebug(
 		std::cout << it->get()->m_pos.x << "\n";
 		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix()) ); // Transpose for HLSL!
 		shaderVert.SetMatrix4x4("world", matStore);
-		shaderFrag.SetFloat3("lightColor",Vector3( (**it).m_lightColor)*0.2f );
+		shaderFrag.SetFloat3("lightColor",Vector3( (**it).m_lightColor) );
 
 
 		shaderVert.CopyAllBufferData();
@@ -637,7 +632,7 @@ void NGraphic::GraphicMain::render(
 
 	}
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
-
+		
 
 		NScene::Light& light = **it;
 		LightInfo& lightInfo = m_lightInfos[it->get()->m_id];

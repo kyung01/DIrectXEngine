@@ -18,7 +18,7 @@ void NGame::LoadExample00(Context &context)
 		auto e = new Entity();
 		context.addEntity(std::shared_ptr<Entity>(e));
 		e->m_graphicObjects.push_back(obj);
-		e->setPos(-5.0f + i, -2.5 + j, 3);
+		e->setPos(-5.0f + i, -2.5 + j, 6);
 		e->setRotation(Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), rand() * 100) *Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), rand() * 100)*Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), rand() * 100));
 	}
 	for (int i = 0; i < 10; i++) for (int j = 0; j < 5; j++)
@@ -36,14 +36,69 @@ void NGame::LoadExample00(Context &context)
 		e->setPos(-5.0f + i, -2.5 + j, 9);
 		e->setRotation(Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), rand() * 100) *Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), rand() * 100)*Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), rand() * 100));
 	}
+	{
+		auto obj = context.m_scene->getObjSolid();
+		obj.get()->m_meshId = NGraphic::MESH_ID_PLANE;
+		obj.get()->setScale(Vector3(100, 100, 100));
+		auto e = new Entity();
+		context.addEntity(std::shared_ptr<Entity>(e));
+		e->m_graphicObjects.push_back(obj);
+		e->setPos(0, 0, 0);
+	}
+	{
+		auto obj = context.m_scene->getObjSolid();
+		obj.get()->m_meshId = NGraphic::MESH_ID_PLANE;
+		obj.get()->setScale(Vector3(100, 100, 100));
+		auto e = new Entity();
+		context.addEntity(std::shared_ptr<Entity>(e));
+		e->m_graphicObjects.push_back(obj);
+		e->setPos(0, 0,10);
+		e->setRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), 3.14));
+	}
+	{
+		auto obj = context.m_scene->getObjSolid();
+		obj.get()->m_meshId = NGraphic::MESH_ID_PLANE;
+		obj.get()->setScale(Vector3(100, 100, 100));
+		auto e = new Entity();
+		context.addEntity(std::shared_ptr<Entity>(e));
+		e->m_graphicObjects.push_back(obj);
+		e->setPos(0, -10, 0);
+		e->setRotation(Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), -3.14 / 2));
+	}
+	{
+		auto obj = context.m_scene->getObjSolid();
+		obj.get()->m_meshId = NGraphic::MESH_ID_PLANE;
+		obj.get()->setScale(Vector3(100, 100, 100));
+		auto e = new Entity();
+		context.addEntity(std::shared_ptr<Entity>(e));
+		e->m_graphicObjects.push_back(obj);
+		e->setPos(10, 0, 0);
+		e->setRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), -3.14 / 2));
+	}
+	{
+		auto obj = context.m_scene->getObjSolid();
+		obj.get()->m_meshId = NGraphic::MESH_ID_PLANE;
+		obj.get()->setScale(Vector3(100, 100, 100));
+		auto e = new Entity();
+		context.addEntity(std::shared_ptr<Entity>(e));
+		e->m_graphicObjects.push_back(obj);
+		e->setPos(-10, 0, 0);
+		e->setRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), 3.14 / 2));
+	}
 	
+
+
+
+
+
+
 	{
 		auto lightObj = context.m_scene->getObjLight();
 		auto lightEntity = new Entity();
 		lightEntity->m_graphicObjects.push_back(lightObj);
-		lightEntity->setPos(-1.0, 0, -1);
+		lightEntity->setPos(-1.0, 0, 1.5);
 		lightObj->m_lightColor = Vector4(1,0,0,10);
-		lightObj->setScale(Vector3(300, 300, 300));
+		lightObj->setScale(Vector3(50, 50, 50));
 		context.addEntity(std::shared_ptr<Entity>(lightEntity));
 
 	}
@@ -51,18 +106,18 @@ void NGame::LoadExample00(Context &context)
 		auto lightObj = context.m_scene->getObjLight();
 		auto lightEntity = new Entity();
 		lightEntity->m_graphicObjects.push_back(lightObj);
-		lightEntity->setPos(0, 0, -1);
+		lightEntity->setPos(0, 0, 1.5);
 		lightObj->m_lightColor = Vector4(0, 1, 0,10);
-		lightObj->setScale(Vector3(300, 300, 300));
+		lightObj->setScale(Vector3(50, 50, 50));
 		context.addEntity(std::shared_ptr<Entity>(lightEntity));
 	}
 	{
 		auto lightObj = context.m_scene->getObjLight();
 		auto lightEntity = new Entity();
 		lightEntity->m_graphicObjects.push_back(lightObj);
-		lightEntity->setPos(1, 0, -1);
+		lightEntity->setPos(1, 0, 1.5);
 		lightObj->m_lightColor = Vector4(0, 0, 1, 10);
-		lightObj->setScale(Vector3(300, 300, 300));
+		lightObj->setScale(Vector3(50, 50, 50));
 		context.addEntity(std::shared_ptr<Entity>(lightEntity));
 	}
 

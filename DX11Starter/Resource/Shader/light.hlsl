@@ -1,5 +1,8 @@
 
 static float RATIO_FALLOFF = 1.0f;
+float spotLight(float alpha, float  inner, float outter) {
+	return pow((alpha - cos(outter / 2)) / (cos(inner / 2) - cos(outter / 2)), RATIO_FALLOFF);
+}
 float spotLight(float alpha,float fallOff, float  inner,float outter) {
 	return pow((alpha -cos(outter/2) ) / (cos(inner/2) - cos(outter/2) ), fallOff);	
 }

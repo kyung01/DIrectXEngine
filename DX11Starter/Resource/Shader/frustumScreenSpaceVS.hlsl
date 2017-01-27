@@ -21,6 +21,7 @@ struct VertexShaderInput
 struct VertexToPixel
 {
 	float4 position		: SV_POSITION;
+	float4 posWorld		: POSITION;
 };
 
 // --------------------------------------------------------
@@ -31,5 +32,6 @@ VertexToPixel main(VertexShaderInput input)
 	VertexToPixel output;
 	matrix worldViewProj = mul(mul(world, view), proj);
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);
+	output.posWorld = mul(float4(input.position, 1.0f), world);
 	return output;
 }

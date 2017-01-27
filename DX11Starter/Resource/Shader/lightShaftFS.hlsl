@@ -36,7 +36,7 @@ struct VertexToPixel
 // Out of the vertex shader (and eventually input to the PS)
 
 static float M_PI = 3.14159265359;
-static float stepSize = 0.05f;
+static float stepSize = 0.0001f;
 float henyeyGreenstein(float g, float costh)
 {
 	return (1.0 - g * g) / (0.000001 + 4.0 * M_PI * pow(1.0 + g * g - 2.0 * g * costh, 3.0 / 2.0));
@@ -50,37 +50,51 @@ float3 project(float3 original, float3 unit) {
 }
 float4 main(VertexToPixel input) : SV_TARGET
 {
+	float MAX_SAMPLING = 20;
 	float4 front = textureFrustumFront.Sample(samplerWrap, input.uv);//
 	float4 back = textureFrustumBack.Sample(samplerWrap, input.uv);
-	if (front.w == 0.0 || back.w ==0.0 ) return float4(0, 0, 0, 0);
+	if (front.w == 0.0 || back.w == 0.0) return float4(0, 0, 0, 0);
 	float4 posWorld = textureWorld.Sample(samplerWrap, input.uv);
 
 
-	float estimatedStart = length (project(front.xyz -eyePos, eyeLook) );
-	float estimatedVolumn = length(project(back.xyz - eyePos, eyeLook));
-	if (posWorld.w == 1.0) {
-		float estimatedEndInWorld = length(project(posWorld.xyz - eyePos, eyeLook));// length(posWorld.xyz - eyePos);
+	float estimatedStart = front.w;
+	float estimatedVolumn = back.w;
+	if (posWorld.x != 0.0) {
+		float estimatedEndInWorld = length(posWorld.xyz - eyePos);// length(posWorld.xyz - eyePos);
 		if (estimatedEndInWorld < estimatedVolumn)
 			estimatedVolumn = estimatedEndInWorld;
 	}
-
+	estimatedStart += 0.0000001;
+	estimatedVolumn -= 0.0000001;
 	float color = 0;
-	float3 dirEyeToPixelOriginal = normalize(back.xyz - eyePos);
-	float3 dirEyeToPixel = project(eyeLook, dirEyeToPixelOriginal);// dirEyeToPixelOriginal * dot(dirEyeToPixelOriginal, eyeLook);
-	//dirEyeToPixel *= 1 / dirEyeToPixel.z;
-	//estimatedStart /= length(dirEyeToPixel);
-	//estimatedVolumn /= length(dirEyeToPixel);
-
-	estimatedStart = floor(estimatedStart / stepSize)*stepSize;
+	float3 dirEyeToPixel = normalize(back.xyz -front.xyz);
+	//float3 dirEyeToPixel = project(eyeLook, dirEyeToPixelOriginal);// dirEyeToPixelOriginal * dot(dirEyeToPixelOriginal, eyeLook);
+																   //dirEyeToPixel *= 1 / dirEyeToPixel.z;
+																   //estimatedStart /= length(dirEyeToPixel);
+																   //estimatedVolumn /= length(dirEyeToPixel);
+	//float dirLightToPos2 = normalize(back.xyz - lightPos );
+	//float alpha = dot(dirLightToPos2, lightDir);
+	//float MAX_DISTANCE = sqrt((lightPower  *spotLight(alpha, lightInner, lightOutter) )/ 0.001 - 1);
+	//estimatedVolumn = min(MAX_DISTANCE, estimatedVolumn);
+	
+	//if (estimatedVolumn - estimatedStart > 30)
+	//	estimatedVolumn = estimatedStart + 30;
 	//estimatedStart = floor(estimatedStart / stepSize)*stepSize;
+	//estimatedVolumn = floor(estimatedVolumn / stepSize)*stepSize;
+	//float estimatedSteps = (estimatedVolumn - estimatedStart) / stepSize;
+	float stepCorrected = (estimatedVolumn - estimatedStart) / MAX_SAMPLING; //the number of steps that you will take in this new version. Use it like stepSize *stepCorrected
+	float power = stepCorrected;
+	power /= (estimatedVolumn - estimatedStart);
+																			 //estimatedStart = floor(estimatedStart / stepSize)*stepSize;
+	
 
 	float3 normalSafe = float3(0, 0, 0.0001);
 	int count = 0;
-	for (float i = estimatedStart; 
+	for (float i = estimatedStart;
 		i <= estimatedVolumn &&
-		 count++ <200; i+= stepSize) {
-		float3 pos = eyePos + dirEyeToPixel * i ;
-		float3 distanceFromLight	= pos- lightPos;
+		count++ <200; i += stepSize) {
+		float3 pos = eyePos + dirEyeToPixel * i;
+		float3 distanceFromLight = pos - lightPos;
 		float3 dirLightToPos = normalize(pos - lightPos);
 		//color.x = h;
 		//return float4(h, 0, 0, 1);
@@ -88,13 +102,29 @@ float4 main(VertexToPixel input) : SV_TARGET
 		//float radiance = lightPower  * / (1 + lengthFast(distanceFromLight));
 		float radiance = lightPower* spotLight(lightPos, lightDir, lightInner, lightOutter, pos);
 
-		float rayAlong = dot(dirLightToPos, -dirEyeToPixelOriginal);
+		float rayAlong = dot(dirLightToPos, -dirEyeToPixel);
 		float h = henyeyGreenstein(density, rayAlong);
 		//color += h;// rayAlong;
-		color += radiance*sqrt(h) *isPixelLit(textureShadow, samplerBoarderZero, matLightMVP, pos);// *random(float2(pos.x - pos.z, pos.y + pos.z));
-
+		color += radiance*sqrt(h) *isPixelLit(textureShadow, samplerBoarderZero, matLightMVP, pos) * power;// *random(float2(pos.x - pos.z, pos.y + pos.z));
+		break;
 	}
-	color *= stepSize;
+	for (float i =  stepCorrected;
+		count++ <MAX_SAMPLING; i += stepCorrected) {
+		float3 pos = front.xyz + dirEyeToPixel * i;
+		float3 distanceFromLight = pos - lightPos;
+		float3 dirLightToPos = normalize(pos - lightPos);
+		//color.x = h;
+		//return float4(h, 0, 0, 1);
+		//break;
+		//float radiance = lightPower  * / (1 + lengthFast(distanceFromLight));
+		float radiance = lightPower* spotLight(lightPos, lightDir, lightInner, lightOutter, pos);
+
+		float rayAlong = dot(dirLightToPos, -dirEyeToPixel);
+		float h = henyeyGreenstein(density, rayAlong);
+		//color += h;// rayAlong;
+		color += radiance*sqrt(h) *isPixelLit(textureShadow, samplerBoarderZero, matLightMVP, pos) *power;// *random(float2(pos.x - pos.z, pos.y + pos.z));
+		
+	}
 
 	//color *= 0.000001;
 	//for (float i = 1; i < 10; i++) {
