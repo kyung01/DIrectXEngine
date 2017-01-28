@@ -658,7 +658,7 @@ void NGraphic::GraphicMain::render(
 				m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());
 		}
 
-		if (true) {
+		if (false) {
 			renderFrustum(device, context, asset,
 				scene.m_camMain.m_pos,
 				lightWorldMatirx, viewMatirx, projMatrix,
