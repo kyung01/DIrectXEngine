@@ -249,7 +249,7 @@ void NGraphic::GraphicMain::renderFrustum(
 	DirectX::XMMATRIX& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
 	RenderTexture& renderTexture, DepthTexture& depthTexture,
 	RenderTexture& renderTexture2, DepthTexture& depthTexture2) {
-#define RENDER_LIGHTS(shaderVertSimpleColor,DshaderFrag) 	{NGraphic::Mesh& mesh = *asset.m_meshes[MESH_ID_SPHERE];\
+#define RENDER_LIGHTS(shaderVertSimpleColor,DshaderFrag) 	{NGraphic::Mesh& mesh = *asset.m_meshes[MESH_POINTLIGHT];\
 DirectX::XMStoreFloat4x4(&matWorld, XMMatrixTranspose( worldMatrix));\
 shaderVertSimpleColor.SetMatrix4x4("world", matWorld);\
 shaderVertSimpleColor.CopyAllBufferData();\

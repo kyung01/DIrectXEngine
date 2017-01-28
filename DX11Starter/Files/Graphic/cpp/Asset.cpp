@@ -12,7 +12,8 @@ std::list<LoadInfoMesh> Asset::getLoadListMesh()
 		{ KEnum::MESH_ID_SPHERE, "Resource/Mesh/sphere.obj" },
 		{ KEnum::MESH_ID_TORUS, "Resource/Mesh/torus.obj" },
 		{ KEnum::MESH_ID_PLANE, "Resource/Mesh/plane.obj" },
-		{ KEnum::MESH_ID_FRUSTUM, "Resource/Mesh/frustum.obj" }
+		{ KEnum::MESH_ID_FRUSTUM, "Resource/Mesh/frustum.obj" },
+		{ KEnum::MESH_POINTLIGHT, "Resource/Mesh/pointlight.obj" }
 	});
 	return lst;
 }
