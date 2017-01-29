@@ -134,13 +134,14 @@
     <ClCompile Include="Files\Game\cpp\Script Game.cpp" />
     <ClCompile Include="Files\Game\Script\X_Axis_Rotate.cpp" />
     <ClCompile Include="Files\Game\Script\Y_Axis_Rotate.cpp" />
-    <ClCompile Include="Files\Graphic\cpp\Asset.cpp" />
+    <ClCompile Include="Files\Graphic\Asset\Asset.cpp" />
     <ClCompile Include="Files\Graphic\cpp\DepthTexture.cpp" />
     <ClCompile Include="Files\Graphic\cpp\Mesh.cpp" />
     <ClCompile Include="Files\Graphic\cpp\RenderTexture.cpp" />
     <ClCompile Include="Files\Graphic\cpp\Scene Graphic.cpp" />
     <ClCompile Include="Files\Graphic\Light.cpp" />
     <ClCompile Include="Files\Graphic\cpp\RenderStateStack.cpp" />
+    <ClCompile Include="Files\Graphic\Mesh\Meshes.cpp" />
     <ClCompile Include="Files\imgui\cpp\Context_imgui.cpp" />
     <ClCompile Include="Files\imgui\cpp\UIMain_imgui.cpp" />
     <ClCompile Include="Files\imgui\cpp\dx11_imgui.cpp" />
@@ -153,7 +154,7 @@
     <ClCompile Include="Files\Graphic\cpp\Object Graphic.cpp" />
     <ClCompile Include="Files\Object.cpp" />
     <ClCompile Include="Files\Graphic\cpp\SimpleShader.cpp" />
-    <ClCompile Include="Files\Vertex.cpp" />
+    <ClCompile Include="Files\Graphic\Vertex.cpp" />
     <ClCompile Include="Files\WorldCamera.cpp" />
     <ClCompile Include="Files\WorldMain.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -174,6 +175,8 @@
     <ClInclude Include="Files\Graphic\Enum.h" />
     <ClInclude Include="Files\Graphic\Light.h" />
     <ClInclude Include="Files\Graphic\Asset\Mesh.h" />
+    <ClInclude Include="Files\Graphic\Mesh\IMesh.h" />
+    <ClInclude Include="Files\Graphic\Mesh\MeshLine.h" />
     <ClInclude Include="Files\Graphic\RenderStateStack.h" />
     <ClInclude Include="Files\imgui\DirectX\Context.h" />
     <ClInclude Include="Files\imgui\DirectX\imgui_impl_dx11.h" />
@@ -195,7 +198,7 @@
     <ClInclude Include="Files\Object.h" />
     <ClInclude Include="Files\Graphic\RenderTexture.h" />
     <ClInclude Include="Files\Graphic\SimpleShader.h" />
-    <ClInclude Include="Files\Vertex.h" />
+    <ClInclude Include="Files\Graphic\Vertex.h" />
     <ClInclude Include="Files\WorldMain.h" />
   </ItemGroup>
   <ItemGroup>

@@ -486,6 +486,7 @@ void NGraphic::GraphicMain::renderDebug(
 	auto &shaderVert = *asset.m_shadersVert[RENDER_TRANSPARENT];
 	auto &shaderFrag = *asset.m_shadersFrag[RENDER_TRANSPARENT];
 	NGraphic::Mesh& sphere = *asset.m_meshes[MESH_ID_SPHERE];
+	NGraphic::MeshLine& line = *asset.m_meshLine;
 	auto r = renderTexture.getRenderTargetView();
 	auto &view = renderTexture.getViewPort();
 	//atuo d = depthTexture.getDepthStencilView();
@@ -508,15 +509,16 @@ void NGraphic::GraphicMain::renderDebug(
 	shaderVert.SetShader();
 	shaderFrag.SetShader();
 
+	context->RSSetState(asset.RASTR_WIREFRAME);
 
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+		
 		Vector3 lightScale = it->get()->m_scale;
 		it->get()->setScale(Vector3::One);
 
-		std::cout << it->get()->m_pos.x << "\n";
-		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix()) ); // Transpose for HLSL!
+		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix())); // Transpose for HLSL!
 		shaderVert.SetMatrix4x4("world", matStore);
-		shaderFrag.SetFloat3("lightColor",Vector3( (**it).m_lightColor) );
+		shaderFrag.SetFloat3("lightColor", Vector3((**it).m_lightColor));
 
 
 		shaderVert.CopyAllBufferData();
@@ -529,6 +531,33 @@ void NGraphic::GraphicMain::renderDebug(
 		context->IASetIndexBuffer(sphere.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
 		context->DrawIndexed(
 			sphere.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
+			0,     // Offset to the first index we want to use
+			0);    // Offset to add to each index when looking up vertices
+		it->get()->setScale(lightScale);
+	}
+	ID3D11Buffer * bufferVertices,* bufferIndices;
+	std::cout << line.getBufferIndexCount()<<"\n"  ;
+	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+		bufferVertices = line.getBufferVertices();
+		bufferIndices = line.getBufferIndices();
+		Vector3 lightScale = it->get()->m_scale;
+		it->get()->setScale(Vector3::One);
+
+		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix())); // Transpose for HLSL!
+		shaderVert.SetMatrix4x4("world", matStore);
+		shaderFrag.SetFloat3("color", Vector3((**it).m_lightColor));
+
+
+		shaderVert.CopyAllBufferData();
+		shaderFrag.CopyAllBufferData();
+
+		
+		UINT stride = sizeof(VertexPosition);
+		UINT offset = 0;
+		context->IASetVertexBuffers(0, 1, &bufferVertices, &stride, &offset);
+		context->IASetIndexBuffer(bufferIndices, DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(
+			line.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
 			0,     // Offset to the first index we want to use
 			0);    // Offset to add to each index when looking up vertices
 		it->get()->setScale(lightScale);

@@ -6,6 +6,7 @@ NGame::Context::Context()
 }
 void NGame::Context::update(float timeElapsed)
 {
+	std::cout << "erer\n";
 	for (auto it = m_entities.begin(); it != m_entities.end(); it++) {
 		(*it)->update(*this, timeElapsed);
 	}

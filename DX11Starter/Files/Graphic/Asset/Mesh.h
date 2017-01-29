@@ -3,7 +3,7 @@
 #include <list>
 #include <vector>
 #include <d3d11.h>
-#include "Vertex.h"
+#include <Graphic\Vertex.h>
 #include <SimpleMath.h>
 namespace NGraphic
 {

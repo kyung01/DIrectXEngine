@@ -7,11 +7,11 @@
 #include <Graphic\Asset\Mesh.h>
 #include <Graphic\SimpleShader.h>
 #include <Graphic\Enum.h>
+#include <Graphic\Mesh\MeshLine.h>
 //For debug purpose use buitin tools
 #include <PrimitiveBatch.h>
 #include <VertexTypes.h>
 #include <Effects.h>
-
 
 namespace NGraphic {
 	struct LoadInfoMesh {
@@ -37,6 +37,7 @@ namespace NGraphic {
 
 	public:
 		//Debug purpose.
+		std::shared_ptr<MeshLine> m_meshLine;
 		std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionColor> > m_primitiveBatch;
 		std::unique_ptr<DirectX::BasicEffect> m_basicEffect;
 
@@ -51,8 +52,9 @@ namespace NGraphic {
 		ID3D11BlendState * BLEND_STATE_ADDITIVE, *BLEND_STATE_TRANSPARENT;
 		ID3D11RasterizerState 
 			* RASTR_STATE_CULL_FRONT,
-			*RASTR_STATE_CULL_BACK,
-			* RASTR_STATE_CULL_NONE;
+			* RASTR_STATE_CULL_BACK,
+			* RASTR_STATE_CULL_NONE,
+			* RASTR_WIREFRAME;
 		ID3D11DepthStencilState *	DEPTH_STATE_SKYBOX;
 	};
  }

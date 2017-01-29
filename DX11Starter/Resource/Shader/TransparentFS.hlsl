@@ -1,7 +1,7 @@
 cbuffer externalData : register(b0)
 {
 	float SCREEN_WIDTH, SCREEN_HEIGHT;
-	float3 lightColor;
+	float3 color;
 };
 struct VertexToPixel
 {
@@ -20,7 +20,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 	float4 d = textureEyeDepth.Sample(samplerBoarderZero, uv );//
 	float shadow = (input.position.z < d.x + 0.00000001);
-	return float4(lightColor*shadow,shadow );
+	return float4(color*shadow,shadow );
 	//return float4(input.position.x / SCREEN_WIDTH, input.position.y / SCREEN_HEIGHT, 0,1);
 }
 

@@ -1,6 +1,5 @@
 #pragma once
 #include "KContext.h"
-#include "Vertex.h"
 #include <iostream>
 
 

@@ -57,9 +57,6 @@
     <ClCompile Include="Files\imgui\cpp\dx11_imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Files\Vertex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Files\Graphic\Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -79,9 +76,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Files\Game\Script\X_Axis_Rotate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Files\Graphic\cpp\Asset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Files\Graphic\cpp\Camera Graphic.cpp">
@@ -111,6 +105,15 @@
     <ClCompile Include="Files\Graphic\cpp\SimpleShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Files\Graphic\Mesh\Meshes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Graphic\Asset\Asset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Graphic\Vertex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\imgui\imconfig.h">
@@ -138,9 +141,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Files\Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\WorldMain.h">
@@ -225,6 +225,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Graphic\RenderStateStack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\Mesh\MeshLine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\Mesh\IMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
