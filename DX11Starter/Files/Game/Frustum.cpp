@@ -34,17 +34,18 @@ bool NGame::Frustum::test(Vector3 center, float radius) {
 	std::cout << "result";
 	int x0=-1, x1=-1;
 	for (int i = 0; i < planesX.size(); i++) {
-		if (abs(planesX[i].DotCoordinate(center)  ) <= radius ) {
-			x0 = max(0, i - 1);
+		if (planesX[i].DotCoordinate(center)   <= radius ) {
+			x0 = max(0,i-1);
 			break;
 		}
 	}
-	if(x0!= -1) for (int i = m_size.x ; i >= x0; i--) {
-		if (abs(planesX[i].DotCoordinate(center)) <= radius) {
-			x1 = min(m_size.x-1, i);
+	for (int i = planesX.size()-1; i >= x0; i--) {
+		if (-planesX[i].DotCoordinate(center) <= radius) {
+			x1 = min(i+1, planesX.size() - 1);
 			break;
 		}
 	}
+	
 	std::cout << "X:" << x0 << "->" << x1 << "\n";
 	return false;
 }
