@@ -20,6 +20,7 @@
 #include <Graphic\Asset\Mesh.h>// TODO delete this
 #include <Graphic\Enum.h>
 #include <Graphic\RenderStateStack.h>
+#include <Game\Context.h>
 
 
 
@@ -99,13 +100,15 @@ namespace NGraphic {
 			RenderTexture &renderTexture2 , DepthTexture &depthTexture2 );//rendering the normal scene
 
 		void render(
-			ID3D11Device * device, ID3D11DeviceContext *context,
-			ID3D11RenderTargetView* target, ID3D11DepthStencilView* targetDepth, D3D11_VIEWPORT& viewport,
-			Asset& asset, NScene::Scene& scene);
+			ID3D11Device * device, ID3D11DeviceContext * context,
+			ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
+			Asset& asset, NGame::Context &game);
 		void renderDebug(
-			ID3D11Device * device, ID3D11DeviceContext *context,
+			ID3D11Device * device, ID3D11DeviceContext * context,
 			RenderTexture& renderTexture, DepthTexture& depthTexture,
-			Asset& asset, NScene::Scene& scene);
+			
+			Asset& asset, NGame::Context game, NScene::Scene& scene
+			);
 
 		void renderSkyboxReflection(
 			ID3D11Device * device, ID3D11DeviceContext *context,

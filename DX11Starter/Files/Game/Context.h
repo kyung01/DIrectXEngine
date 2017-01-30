@@ -2,10 +2,17 @@
 #include <list>
 #include <memory>
 #include <Game\Entity.h>
+#include <Game\Frustum.h>
 #include <Graphic\Scene.h>
 namespace NGame {
 	class Context {
+	private:
+		Entity * debugSphere = 0;
+
+	protected:
+
 	public:
+		Frustum frustum;
 
 		NGraphic::NScene::Scene *m_scene; // is going to ask the scene to get graphical objects it needs 
 		std::list<std::shared_ptr<Entity>> m_entities;

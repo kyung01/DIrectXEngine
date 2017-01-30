@@ -480,13 +480,15 @@ void NGraphic::GraphicMain::renderLightShaft(
 void NGraphic::GraphicMain::renderDebug(
 	ID3D11Device * device, ID3D11DeviceContext * context,
 	RenderTexture& renderTexture, DepthTexture& depthTexture, 
-	Asset& asset, NScene::Scene& scene) {
+	
+	Asset& asset, NGame::Context game, NScene::Scene& scene) {
 	beginRendering(context);
 	DirectX::XMFLOAT4X4 matStore;
 	auto &shaderVert = *asset.m_shadersVert[RENDER_TRANSPARENT];
 	auto &shaderFrag = *asset.m_shadersFrag[RENDER_TRANSPARENT];
-	NGraphic::Mesh& sphere = *asset.m_meshes[MESH_ID_SPHERE];
-	NGraphic::MeshLine& line = *asset.m_meshLine;
+	NGraphic::Mesh&		sphere = *asset.m_meshes[MESH_ID_SPHERE];
+	NGraphic::Mesh&		box = *asset.m_meshes[MESH_ID_CUBE];
+	NGraphic::MeshLine&	line = *asset.m_meshLine;
 	auto r = renderTexture.getRenderTargetView();
 	auto &view = renderTexture.getViewPort();
 	//atuo d = depthTexture.getDepthStencilView();
@@ -509,8 +511,7 @@ void NGraphic::GraphicMain::renderDebug(
 	shaderVert.SetShader();
 	shaderFrag.SetShader();
 
-	context->RSSetState(asset.RASTR_WIREFRAME);
-
+	
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		
 		Vector3 lightScale = it->get()->m_scale;
@@ -518,7 +519,7 @@ void NGraphic::GraphicMain::renderDebug(
 
 		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix())); // Transpose for HLSL!
 		shaderVert.SetMatrix4x4("world", matStore);
-		shaderFrag.SetFloat3("lightColor", Vector3((**it).m_lightColor));
+		shaderFrag.SetFloat3("color", Vector3((**it).m_lightColor));
 
 
 		shaderVert.CopyAllBufferData();
@@ -535,6 +536,39 @@ void NGraphic::GraphicMain::renderDebug(
 			0);    // Offset to add to each index when looking up vertices
 		it->get()->setScale(lightScale);
 	}
+	float red = 0;
+	float angle = -game.frustum.m_angle/2;
+	float angleIncrease = game.frustum.m_angle / game.frustum.m_division;
+	for (auto it = game.frustum.planesX.begin(); it != game.frustum.planesX.end(); it++) {
+		auto matRotation = DirectX::XMMatrixRotationY( angle);
+		auto matScale = DirectX::XMMatrixScaling(0.051, 0.5f, 20);
+		red += 0.2f;
+
+
+		//DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(matRotation,)); // Transpose for HLSL!
+		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(DirectX::XMMatrixMultiply(matScale, matRotation))); // Transpose for HLSL!
+		shaderVert.SetMatrix4x4("world", matStore);
+		shaderFrag.SetFloat3("color", Vector3(red,1,1) );
+
+
+		shaderVert.CopyAllBufferData();
+		shaderFrag.CopyAllBufferData();
+
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+		context->IASetVertexBuffers(0, 1, &box.getBufferVertexRef(), &stride, &offset);
+		context->IASetIndexBuffer(box.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(
+			box.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
+			0,     // Offset to the first index we want to use
+			0);    // Offset to add to each index when looking up vertices
+
+		angle += angleIncrease;
+	
+	}
+	context->RSSetState(asset.RASTR_WIREFRAME);
+
 	ID3D11Buffer * bufferVertices,* bufferIndices;
 	std::cout << line.getBufferIndexCount()<<"\n"  ;
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
@@ -562,6 +596,7 @@ void NGraphic::GraphicMain::renderDebug(
 			0);    // Offset to add to each index when looking up vertices
 		it->get()->setScale(lightScale);
 	}
+	
 	shaderFrag.SetShaderResourceView("textureEyeDepth", 0);
 
 	
@@ -569,10 +604,12 @@ void NGraphic::GraphicMain::renderDebug(
 
 }
 void NGraphic::GraphicMain::render(
-	ID3D11Device * device, ID3D11DeviceContext * context,
+	ID3D11Device * device, ID3D11DeviceContext * context, 
 	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
-	Asset& asset, NScene::Scene& scene)
+	Asset& asset, NGame::Context &game	
+	)
 {
+	NScene::Scene & scene = *game.m_scene;
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		NScene::Light& light = **it;
 		//light.setRotation(light.m_rotation * Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), 0.000051f));
@@ -657,7 +694,8 @@ void NGraphic::GraphicMain::render(
 
 	if (true) {
 		m_depthTextures[DEPTH_FINAL]->clear(context);
-		renderDebug(device, context, *m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL], asset, scene);
+		renderDebug(device, context, *m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL],
+			 asset, game, scene);
 
 	}
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {

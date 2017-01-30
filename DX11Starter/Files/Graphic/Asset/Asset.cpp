@@ -1,7 +1,6 @@
 #include <Graphic\Asset\Asset.h>
 #include <DDSTextureLoader.h>
 using namespace NGraphic;
-
 std::list<LoadInfoMesh> Asset::getLoadListMesh()
 {
 	std::list<LoadInfoMesh> lst({

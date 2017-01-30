@@ -132,6 +132,7 @@
     <ClCompile Include="Files\Game\cpp\Context Game.cpp" />
     <ClCompile Include="Files\Game\cpp\Entity Game.cpp" />
     <ClCompile Include="Files\Game\cpp\Script Game.cpp" />
+    <ClCompile Include="Files\Game\Frustum.cpp" />
     <ClCompile Include="Files\Game\Script\X_Axis_Rotate.cpp" />
     <ClCompile Include="Files\Game\Script\Y_Axis_Rotate.cpp" />
     <ClCompile Include="Files\Graphic\Asset\Asset.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="Files\Game\ContextExamples.h" />
     <ClInclude Include="Files\Game\Entity.h" />
     <ClInclude Include="Files\Game\Context.h" />
+    <ClInclude Include="Files\Game\Frustum.h" />
     <ClInclude Include="Files\Game\Script.h" />
     <ClInclude Include="Files\Game\Script\X_Axis_Rotate.h" />
     <ClInclude Include="Files\Game\Script\Y_Axis_Rotate.h" />
