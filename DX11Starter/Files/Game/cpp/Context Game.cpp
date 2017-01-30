@@ -31,7 +31,7 @@ void Context::init(NGraphic::NScene::Scene * scene)
 	testSphere->setPos(0, 0, 5);
 	addEntity(testSphere);
 
-	frustum.init(3.14 / 4, 5);
+	frustum.init(3.14 / 4,1.0f,100.f, 5,5,5);
 
 }
 void Context::addEntity(std::shared_ptr<Entity> entity) {
