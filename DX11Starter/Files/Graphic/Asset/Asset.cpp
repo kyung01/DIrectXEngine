@@ -250,6 +250,13 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	device->CreateBlendState(&transparent, &BLEND_STATE_TRANSPARENT);
 }
 
+Vector3* colors = new Vector3[3]{ Vector3(1,0,0) ,Vector3(0,1,0),Vector3(0,0,1) };
+Vector3 NGraphic::Asset::getRandomColor(int seed)
+{
+	return colors[(int)seed%3];
+	//return Vector3();
+}
+
 void NGraphic::Asset::loadDebug_frustums(ID3D11Device * device, std::map<int, NGame::KBox> cubes)
 {
 	for (auto it = cubes.begin(); it != cubes.end(); it++) {

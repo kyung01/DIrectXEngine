@@ -59,6 +59,7 @@ namespace NGraphic {
 			* RASTR_STATE_CULL_NONE,
 			* RASTR_WIREFRAME;
 		ID3D11DepthStencilState *	DEPTH_STATE_SKYBOX;
+		Vector3 getRandomColor(int seed);
 
 		/*
 		Load frustums from game class for debugging purpose 

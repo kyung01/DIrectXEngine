@@ -495,9 +495,9 @@ void NGraphic::GraphicMain::renderDebug(
 	//atuo d = depthTexture.getDepthStencilView();
 	context->OMSetRenderTargets(1, &r, NULL);
 	context->RSSetViewports(1, &view);
+	
 
 
-	//renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
 	//context->RSSetState(asset.RASTR_STATE_CULL_);
 	context->OMSetBlendState(asset.BLEND_STATE_ADDITIVE, 0, 0xffffffff);
 
@@ -540,7 +540,7 @@ void NGraphic::GraphicMain::renderDebug(
 	float red = 0;
 	float angle = -game.frustum.m_angle/2;
 	float angleIncrease = game.frustum.m_angle / game.frustum.m_division;
-	if (false)for (auto it = game.frustum.planesX.begin(); it != game.frustum.planesX.end(); it++) {
+	for (auto it = game.frustum.planesX.begin(); it != game.frustum.planesX.end(); it++) {
 		auto matRotation = DirectX::XMMatrixRotationY( angle);
 		auto matScale = DirectX::XMMatrixScaling(0.051, 0.5f, 20);
 		red += 0.2f;
@@ -549,7 +549,7 @@ void NGraphic::GraphicMain::renderDebug(
 		//DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(matRotation,)); // Transpose for HLSL!
 		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(DirectX::XMMatrixMultiply(matScale, matRotation))); // Transpose for HLSL!
 		shaderVert.SetMatrix4x4("world", matStore);
-		shaderFrag.SetFloat3("color", Vector3(red,1,1) );
+		shaderFrag.SetFloat4("color", Vector4(red,1,1,1.0) );
 
 
 		shaderVert.CopyAllBufferData();
@@ -579,7 +579,8 @@ void NGraphic::GraphicMain::renderDebug(
 
 		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix())); // Transpose for HLSL!
 		shaderVert.SetMatrix4x4("world", matStore);
-		shaderFrag.SetFloat3("color", Vector3((**it).m_lightColor));
+		Vector3 color = (**it).m_lightColor;
+		shaderFrag.SetFloat4("color", Vector4(color.x, color.y, color.z,1));
 
 
 		shaderVert.CopyAllBufferData();
@@ -600,11 +601,15 @@ void NGraphic::GraphicMain::renderDebug(
 
 	DirectX::XMStoreFloat4x4(&matStore, Matrix::Identity); // Transpose for HLSL!
 	shaderVert.SetMatrix4x4("world", matStore);
+	float randomSeed = 100;
+
+	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
+	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
 	for (auto it = asset.m_frustums.begin(); it != asset.m_frustums.end(); it++) {
 		bufferVertices = it->second->getBufferVertices();
 		bufferIndices = it->second->getBufferIndices();
-
-		shaderFrag.SetFloat3("color", Vector3(0, 0.11, 0));
+		auto color = asset.getRandomColor(randomSeed++);
+		shaderFrag.SetFloat4("color", Vector4(color.x,color.y,color.z,0.5f) );
 
 
 		shaderVert.CopyAllBufferData();
@@ -616,7 +621,7 @@ void NGraphic::GraphicMain::renderDebug(
 		context->IASetVertexBuffers(0, 1, &bufferVertices, &stride, &offset);
 		context->IASetIndexBuffer(bufferIndices, DXGI_FORMAT_R32_UINT, 0);
 		context->DrawIndexed(
-			3 * 2 ,
+			it->second->getBufferIndexCount(),
 			//cube.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
 			0,     // Offset to the first index we want to use
 			0);    // Offset to add to each index when looking up vertices

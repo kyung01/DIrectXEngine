@@ -56,6 +56,11 @@ void NGame::Frustum::init(float angle,float nearDistance, float farDistance, int
 					cube.a1 = a + (Vector3)((b - a) / divisionX)*(i + 1) + (Vector3)((c - a) / divisionY)*j;
 					cube.a2 = a + (Vector3)((b - a) / divisionX)*(i + 1) + (Vector3)((c - a) / divisionY)*(j + 1);
 					cube.a3 = a + (Vector3)((b - a) / divisionX)*i + (Vector3)((c - a) / divisionY)*(j + 1);
+
+					cube.b0 = e + (Vector3)((f - e) / divisionX)*i + (Vector3)((g - e) / divisionY)*j;
+					cube.b1 = e + (Vector3)((f - e) / divisionX)*(i + 1) + (Vector3)((g - e) / divisionY)*j;
+					cube.b2 = e + (Vector3)((f - e) / divisionX)*(i + 1) + (Vector3)((g - e) / divisionY)*(j + 1);
+					cube.b3 = e + (Vector3)((f - e) / divisionX)*i + (Vector3)((g - e) / divisionY)*(j + 1);
 				}
 			}
 		}
