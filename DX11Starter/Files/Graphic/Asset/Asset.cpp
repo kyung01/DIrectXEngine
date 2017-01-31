@@ -72,6 +72,7 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 {
 	//initialize debugging tools
 	m_meshLine = std::make_shared<NGraphic::MeshLine>(device);
+	m_meshCube = std::make_shared<NGraphic::MeshCube>(device);
 	m_basicEffect = std::make_unique<DirectX::BasicEffect>(device);
 	m_primitiveBatch = std::make_unique<DirectX::PrimitiveBatch<DirectX::VertexPositionColor>>(context);
 
@@ -194,22 +195,26 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	D3D11_RASTERIZER_DESC rsDesc = {};
 	rsDesc.FillMode = D3D11_FILL_SOLID;
 	rsDesc.CullMode = D3D11_CULL_FRONT;
+	//rsDesc.FrontCounterClockwise = true;
 	rsDesc.DepthClipEnable = true;
 	device->CreateRasterizerState(&rsDesc, &RASTR_STATE_CULL_FRONT);
 	D3D11_RASTERIZER_DESC rsWireframe = {};
 	rsWireframe.FillMode = D3D11_FILL_WIREFRAME;
 	rsWireframe.CullMode = D3D11_CULL_NONE;
+	//rsWireframe.FrontCounterClockwise = true;
 	rsWireframe.DepthClipEnable = true;
 	device->CreateRasterizerState(&rsWireframe, &RASTR_WIREFRAME);
 	D3D11_RASTERIZER_DESC rsDescBack = {};
 	rsDescBack.FillMode = D3D11_FILL_SOLID;
 	rsDescBack.CullMode = D3D11_CULL_BACK;
+	//rsDescBack.FrontCounterClockwise = true;
 	rsDescBack.DepthClipEnable = true;
 	device->CreateRasterizerState(&rsDescBack, &RASTR_STATE_CULL_BACK);
 
 	D3D11_RASTERIZER_DESC rsCullNoneNoDepth = {};
 	rsCullNoneNoDepth.FillMode = D3D11_FILL_SOLID;
 	rsCullNoneNoDepth.CullMode = D3D11_CULL_NONE;
+	//rsCullNoneNoDepth.FrontCounterClockwise = true;
 	rsCullNoneNoDepth.DepthClipEnable = true;
 	device->CreateRasterizerState(&rsCullNoneNoDepth, &RASTR_STATE_CULL_NONE);
 

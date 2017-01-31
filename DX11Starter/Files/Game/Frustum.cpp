@@ -28,6 +28,39 @@ void NGame::Frustum::init(float angle,float nearDistance, float farDistance, int
 	for (int i = 0; i <= divisionZ; i++) {
 		planesZ[i] = DirectX::SimpleMath::Plane(Vector3(0,0, nearDistance+ distanceZ*i), Vector3(1,0, nearDistance + distanceZ*i), Vector3(0, 1, nearDistance + distanceZ*i));
 	}
+	
+	float scale = 1 / sin(3.14159 / 2 + angle / 2);
+	Vector3
+		dirTopLeft(cos(3.14159 / 2 + angle / 2),0, sin(3.14159 / 2 + angle / 2)), dirTopRight(-cos(3.14159 / 2 + angle / 2), 0, sin(3.14159 / 2 + angle / 2)),
+		dirBotLeft(cos(3.14159 / 2 + angle / 2), 0, sin(3.14159 / 2 + angle / 2)), dirBotRight(-cos(3.14159 / 2 + angle / 2), 0, sin(3.14159 / 2 + angle / 2));
+	float halfHeight = cos(3.14159 / 2 - angle / 2) *scale;
+	dirTopLeft  *= scale;
+	dirTopRight *= scale;
+	dirBotLeft  *= scale;
+	dirBotRight	*= scale;
+	dirTopLeft.y += halfHeight;
+	dirTopRight.y += halfHeight;
+	dirBotLeft.y -= halfHeight;
+	dirBotRight.y -= halfHeight;
+	{
+		for (int k = 0; k < divisionZ; k++) {
+			float ZNear = nearDistance + (farDistance - nearDistance) / divisionZ *k;
+			float ZFar = nearDistance + (farDistance - nearDistance) / divisionZ *(k+1);
+			DirectX::SimpleMath::Vector3 
+				a(dirTopLeft*ZNear), b(dirTopRight*ZNear), c(dirBotLeft*ZNear), d(dirBotRight*ZNear), 
+				e(dirTopLeft*ZFar), f(dirTopRight*ZFar), g(dirBotLeft*ZFar), h(dirBotRight*ZFar);
+			for (int j = 0; j < divisionY; j++) {
+				for (int i = 0; i < divisionX; i++) {
+					auto& cube = m_cubes[i + j*divisionX + k *(divisionX*divisionY)];
+					cube.a0 = a + (Vector3)((b - a) / (divisionX*i)) + (Vector3)((c - a) / (divisionY*j));
+					cube.a1 = a + (Vector3)((b - a) / (divisionX*(i + 1))) + (Vector3)((c - a) / (divisionY*j));
+					cube.a2 = a + (Vector3)((b - a) / (divisionX*(i + 1))) + (Vector3)((c - a) / (divisionY*(j + 1)));
+					cube.a3 = a + (Vector3)((b - a) / (divisionX*i )) + (Vector3)((c - a) / (divisionY*(j + 1)));
+				}
+			}
+		}
+
+	}
 }
 void NGame::Frustum::testPointlight(Vector3 center, float radius)
 {

@@ -8,6 +8,7 @@
 #include <Graphic\SimpleShader.h>
 #include <Graphic\Enum.h>
 #include <Graphic\Mesh\MeshLine.h>
+#include <Graphic\Mesh\MeshCube.h>
 //For debug purpose use buitin tools
 #include <PrimitiveBatch.h>
 #include <VertexTypes.h>
@@ -38,6 +39,7 @@ namespace NGraphic {
 	public:
 		//Debug purpose.
 		std::shared_ptr<MeshLine> m_meshLine;
+		std::shared_ptr<MeshCube> m_meshCube;
 		std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionColor> > m_primitiveBatch;
 		std::unique_ptr<DirectX::BasicEffect> m_basicEffect;
 

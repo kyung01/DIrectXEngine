@@ -489,6 +489,7 @@ void NGraphic::GraphicMain::renderDebug(
 	NGraphic::Mesh&		sphere = *asset.m_meshes[MESH_ID_SPHERE];
 	NGraphic::Mesh&		box = *asset.m_meshes[MESH_ID_CUBE];
 	NGraphic::MeshLine&	line = *asset.m_meshLine;
+	NGraphic::MeshCube&	cube = *asset.m_meshCube;
 	auto r = renderTexture.getRenderTargetView();
 	auto &view = renderTexture.getViewPort();
 	//atuo d = depthTexture.getDepthStencilView();
@@ -567,10 +568,40 @@ void NGraphic::GraphicMain::renderDebug(
 		angle += angleIncrease;
 	
 	}
+	context->RSSetState(asset.RASTR_STATE_CULL_BACK);
+	ID3D11Buffer * bufferVertices, *bufferIndices;
+	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+		bufferVertices = cube.getBufferVertices();
+		bufferIndices = cube.getBufferIndices();
+		Vector3 lightScale = it->get()->m_scale;
+		it->get()->setScale(Vector3::One);
+
+		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix())); // Transpose for HLSL!
+		shaderVert.SetMatrix4x4("world", matStore);
+		shaderFrag.SetFloat3("color", Vector3((**it).m_lightColor));
+
+
+		shaderVert.CopyAllBufferData();
+		shaderFrag.CopyAllBufferData();
+
+
+		UINT stride = sizeof(VertexPosition);
+		UINT offset = 0;
+		context->IASetVertexBuffers(0, 1, &bufferVertices, &stride, &offset);
+		context->IASetIndexBuffer(bufferIndices, DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(
+			3*2*6,
+			//cube.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
+			0,     // Offset to the first index we want to use
+			0);    // Offset to add to each index when looking up vertices
+		it->get()->setScale(lightScale);
+	}
+	
+
+
 	context->RSSetState(asset.RASTR_WIREFRAME);
 
-	ID3D11Buffer * bufferVertices,* bufferIndices;
-	std::cout << line.getBufferIndexCount()<<"\n"  ;
+	std::cout << line.getBufferIndexCount() << "\n";
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		bufferVertices = line.getBufferVertices();
 		bufferIndices = line.getBufferIndices();
@@ -585,7 +616,7 @@ void NGraphic::GraphicMain::renderDebug(
 		shaderVert.CopyAllBufferData();
 		shaderFrag.CopyAllBufferData();
 
-		
+
 		UINT stride = sizeof(VertexPosition);
 		UINT offset = 0;
 		context->IASetVertexBuffers(0, 1, &bufferVertices, &stride, &offset);
@@ -596,7 +627,7 @@ void NGraphic::GraphicMain::renderDebug(
 			0);    // Offset to add to each index when looking up vertices
 		it->get()->setScale(lightScale);
 	}
-	
+
 	shaderFrag.SetShaderResourceView("textureEyeDepth", 0);
 
 	
