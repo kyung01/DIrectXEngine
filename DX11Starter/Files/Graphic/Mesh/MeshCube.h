@@ -3,11 +3,11 @@
 
 namespace NGraphic {
 	
-	class MeshLine : public IMesh{
+	class MeshCube : public IMesh {
 	private:
 	protected:
 	public:
-		MeshLine(ID3D11Device * device);
+		MeshCube(ID3D11Device * device);
 		int getBufferIndexCount() override;
 	};
 }

@@ -210,10 +210,7 @@ void KContext::OnMouseUp(WPARAM buttonState, int x, int y)
 int mouseMoveXY[2] = {-1,-1};
 void KContext::OnMouseMove(WPARAM buttonState, int x, int y)
 {
-	if (!(buttonState & 0x0001))
-	{
-		return;
-	}
+	
 	float power = .010;
 	bool isContinue = true;
 	auto &cam = m_renderContexts.begin()->scene.m_camMain;
@@ -226,7 +223,10 @@ void KContext::OnMouseMove(WPARAM buttonState, int x, int y)
 	mouseMoveXY[1] = y;
 	if (!isContinue)return;
 	//if (xDis*xDis + yDis*yDis > 100) return; 
-	
+	if (!(buttonState & 0x0001))
+	{
+		return;
+	}
 	cam.setRotation(cam.m_rotation * Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), xDis*power));
 	//	+ Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), yDis*power));
 	Vector3 dirAxis = -cam.m_dirLook.Cross(Vector3(0, 1, 0));

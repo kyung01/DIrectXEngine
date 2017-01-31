@@ -114,6 +114,9 @@
     <ClCompile Include="Files\Graphic\Vertex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Files\Game\Frustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\imgui\imconfig.h">
@@ -234,6 +237,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Graphic\Vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Game\Frustum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\Mesh\MeshCube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

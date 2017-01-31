@@ -26,6 +26,7 @@ namespace NGame {
 		std::vector<DirectX::SimpleMath::Plane> planesX,planesY,planesZ;
 		
 		void init(float angle, float nearDistance, float farDistance, int divisionX, int divisionY, int divisionZ);
-		bool test(DirectX::SimpleMath::Vector3 center, float radius);
+		void testPointlight(Vector3 center, float radius);
+		bool test(std::pair<int, int> &result,std::vector<Plane> planes, DirectX::SimpleMath::Vector3 center, float radius);
 	};
 }

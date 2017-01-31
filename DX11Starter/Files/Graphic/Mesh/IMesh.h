@@ -7,6 +7,10 @@
 #include <SimpleMath.h>
 #include <iostream>
 namespace NGraphic {
+	struct VertexPosition
+	{
+		DirectX::XMFLOAT3 position;
+	};
 	class IMesh {
 	private:
 	protected:

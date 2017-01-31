@@ -29,23 +29,35 @@ void NGame::Frustum::init(float angle,float nearDistance, float farDistance, int
 		planesZ[i] = DirectX::SimpleMath::Plane(Vector3(0,0, nearDistance+ distanceZ*i), Vector3(1,0, nearDistance + distanceZ*i), Vector3(0, 1, nearDistance + distanceZ*i));
 	}
 }
-bool NGame::Frustum::test(Vector3 center, float radius) {
+void NGame::Frustum::testPointlight(Vector3 center, float radius)
+{
+	std::pair<int, int> resultX,resultY,resultZ;
+
+
+	if (test(resultX, planesX, center, radius) && test(resultY, planesY, center, radius) && test(resultZ, planesZ, center, radius)) {
+	}
+	std::cout << "X: " << resultX.first << "->" << resultX.second << "\n";
+	std::cout << "Y: " << resultY.first << "->" << resultY.second << "\n";
+	std::cout << "Z: " << resultZ.first << "->" << resultZ.second << "\n";
+}
+bool NGame::Frustum::test(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 center, float radius) {
 	
-	std::cout << "result";
 	int x0=-1, x1=-1;
-	for (int i = 0; i < planesX.size(); i++) {
-		if (planesX[i].DotCoordinate(center)   <= radius ) {
+	for (int i = 0; i < planes.size(); i++) {
+		if (planes[i].DotCoordinate(center)   <= radius ) {
 			x0 = max(0,i-1);
 			break;
 		}
 	}
-	for (int i = planesX.size()-1; i >= x0; i--) {
-		if (-planesX[i].DotCoordinate(center) <= radius) {
-			x1 = min(i+1, planesX.size() - 1);
+	for (int i = planes.size()-1; i >= x0; i--) {
+		if (-planes[i].DotCoordinate(center) <= radius) {
+			x1 = min(i+1, planes.size() - 1);
 			break;
 		}
 	}
 	
-	std::cout << "X:" << x0 << "->" << x1 << "\n";
-	return false;
+	if (x0 == -1 || x1 == -1) return false;
+	result.first = x0;
+	result.second = x1;
+	return true;
 }
