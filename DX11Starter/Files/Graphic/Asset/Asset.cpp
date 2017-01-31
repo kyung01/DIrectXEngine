@@ -249,3 +249,11 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	transparent.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	device->CreateBlendState(&transparent, &BLEND_STATE_TRANSPARENT);
 }
+
+void NGraphic::Asset::loadDebug_frustums(ID3D11Device * device, std::map<int, NGame::KBox> cubes)
+{
+	for (auto it = cubes.begin(); it != cubes.end(); it++) {
+		m_frustums[it->first] = std::make_shared<MeshCube>(device,
+			it->second.a0, it->second.a1, it->second.a2, it->second.a3, it->second.b0, it->second.b1, it->second.b2, it->second.b3);
+	}
+}

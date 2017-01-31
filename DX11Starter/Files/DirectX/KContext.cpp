@@ -76,6 +76,7 @@ void KContext::Init()
 	m_ui.init(hInstance, hWnd, device, context, swapChain, backBufferRTV);
 	m_ui.m_uiMain.init(&m_renderContexts.begin()->main);//TODO delete this line
 	m_asset.init(device, context);
+	m_asset.loadDebug_frustums(device, m_renderContexts.begin()->gameContext.frustum.m_cubes);
 	world.objs.push_back(World::Object());
 	world.objs.push_back(World::Object());
 	world.objs.push_back(World::Object());

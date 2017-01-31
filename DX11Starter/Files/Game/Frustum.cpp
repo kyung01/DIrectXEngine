@@ -44,18 +44,18 @@ void NGame::Frustum::init(float angle,float nearDistance, float farDistance, int
 	dirBotRight.y -= halfHeight;
 	{
 		for (int k = 0; k < divisionZ; k++) {
-			float ZNear = nearDistance + (farDistance - nearDistance) / divisionZ *k;
-			float ZFar = nearDistance + (farDistance - nearDistance) / divisionZ *(k+1);
+			float ZNear = nearDistance + distanceZ *k;
+			float ZFar = nearDistance + distanceZ  *(k+1);
 			DirectX::SimpleMath::Vector3 
 				a(dirTopLeft*ZNear), b(dirTopRight*ZNear), c(dirBotLeft*ZNear), d(dirBotRight*ZNear), 
 				e(dirTopLeft*ZFar), f(dirTopRight*ZFar), g(dirBotLeft*ZFar), h(dirBotRight*ZFar);
 			for (int j = 0; j < divisionY; j++) {
 				for (int i = 0; i < divisionX; i++) {
 					auto& cube = m_cubes[i + j*divisionX + k *(divisionX*divisionY)];
-					cube.a0 = a + (Vector3)((b - a) / (divisionX*i)) + (Vector3)((c - a) / (divisionY*j));
-					cube.a1 = a + (Vector3)((b - a) / (divisionX*(i + 1))) + (Vector3)((c - a) / (divisionY*j));
-					cube.a2 = a + (Vector3)((b - a) / (divisionX*(i + 1))) + (Vector3)((c - a) / (divisionY*(j + 1)));
-					cube.a3 = a + (Vector3)((b - a) / (divisionX*i )) + (Vector3)((c - a) / (divisionY*(j + 1)));
+					cube.a0 = a + (Vector3)((b - a) / divisionX)*i + (Vector3)((c - a) / divisionY)*j;
+					cube.a1 = a + (Vector3)((b - a) / divisionX)*(i + 1) + (Vector3)((c - a) / divisionY)*j;
+					cube.a2 = a + (Vector3)((b - a) / divisionX)*(i + 1) + (Vector3)((c - a) / divisionY)*(j + 1);
+					cube.a3 = a + (Vector3)((b - a) / divisionX)*i + (Vector3)((c - a) / divisionY)*(j + 1);
 				}
 			}
 		}

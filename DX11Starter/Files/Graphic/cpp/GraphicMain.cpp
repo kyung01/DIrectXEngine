@@ -513,7 +513,7 @@ void NGraphic::GraphicMain::renderDebug(
 	shaderFrag.SetShader();
 
 	
-	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+	if (false)for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		
 		Vector3 lightScale = it->get()->m_scale;
 		it->get()->setScale(Vector3::One);
@@ -540,7 +540,7 @@ void NGraphic::GraphicMain::renderDebug(
 	float red = 0;
 	float angle = -game.frustum.m_angle/2;
 	float angleIncrease = game.frustum.m_angle / game.frustum.m_division;
-	for (auto it = game.frustum.planesX.begin(); it != game.frustum.planesX.end(); it++) {
+	if (false)for (auto it = game.frustum.planesX.begin(); it != game.frustum.planesX.end(); it++) {
 		auto matRotation = DirectX::XMMatrixRotationY( angle);
 		auto matScale = DirectX::XMMatrixScaling(0.051, 0.5f, 20);
 		red += 0.2f;
@@ -570,7 +570,8 @@ void NGraphic::GraphicMain::renderDebug(
 	}
 	context->RSSetState(asset.RASTR_STATE_CULL_BACK);
 	ID3D11Buffer * bufferVertices, *bufferIndices;
-	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+	
+	if (false)for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		bufferVertices = cube.getBufferVertices();
 		bufferIndices = cube.getBufferIndices();
 		Vector3 lightScale = it->get()->m_scale;
@@ -596,13 +597,37 @@ void NGraphic::GraphicMain::renderDebug(
 			0);    // Offset to add to each index when looking up vertices
 		it->get()->setScale(lightScale);
 	}
-	
+
+	DirectX::XMStoreFloat4x4(&matStore, Matrix::Identity); // Transpose for HLSL!
+	shaderVert.SetMatrix4x4("world", matStore);
+	for (auto it = asset.m_frustums.begin(); it != asset.m_frustums.end(); it++) {
+		bufferVertices = it->second->getBufferVertices();
+		bufferIndices = it->second->getBufferIndices();
+
+		shaderFrag.SetFloat3("color", Vector3(0, 0.11, 0));
+
+
+		shaderVert.CopyAllBufferData();
+		shaderFrag.CopyAllBufferData();
+
+
+		UINT stride = sizeof(VertexPosition);
+		UINT offset = 0;
+		context->IASetVertexBuffers(0, 1, &bufferVertices, &stride, &offset);
+		context->IASetIndexBuffer(bufferIndices, DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(
+			3 * 2 ,
+			//cube.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
+			0,     // Offset to the first index we want to use
+			0);    // Offset to add to each index when looking up vertices
+		
+	}
 
 
 	context->RSSetState(asset.RASTR_WIREFRAME);
 
 	std::cout << line.getBufferIndexCount() << "\n";
-	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+	if(false)for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		bufferVertices = line.getBufferVertices();
 		bufferIndices = line.getBufferIndices();
 		Vector3 lightScale = it->get()->m_scale;
@@ -756,7 +781,7 @@ void NGraphic::GraphicMain::render(
 				m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());
 		}
 
-		if (false) {
+		if (true) {
 			renderFrustum(device, context, asset,
 				scene.m_camMain.m_pos,
 				lightWorldMatirx, viewMatirx, projMatrix,
