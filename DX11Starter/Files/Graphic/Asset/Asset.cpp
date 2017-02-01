@@ -250,10 +250,10 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	device->CreateBlendState(&transparent, &BLEND_STATE_TRANSPARENT);
 }
 
-Vector3* colors = new Vector3[3]{ Vector3(1,0,0) ,Vector3(0,1,0),Vector3(0,0,1) };
+Vector3* colors = new Vector3[8]{ Vector3(1,0,0),Vector3(1,0.5,0),Vector3(1,1,0) ,Vector3(0,1,0),Vector3(0.3,0.3,1),Vector3(0,0,1),Vector3(1,0,1),Vector3(0,1,1) };
 Vector3 NGraphic::Asset::getRandomColor(int seed)
 {
-	return colors[(int)seed%3];
+	return colors[(int)seed%9];
 	//return Vector3();
 }
 

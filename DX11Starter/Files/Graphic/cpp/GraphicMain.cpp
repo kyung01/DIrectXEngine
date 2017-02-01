@@ -540,7 +540,8 @@ void NGraphic::GraphicMain::renderDebug(
 	float red = 0;
 	float angle = -game.frustum.m_angle/2;
 	float angleIncrease = game.frustum.m_angle / game.frustum.m_division;
-	for (auto it = game.frustum.planesX.begin(); it != game.frustum.planesX.end(); it++) {
+
+	if(false)for (auto it = game.frustum.planesX.begin(); it != game.frustum.planesX.end(); it++) {
 		auto matRotation = DirectX::XMMatrixRotationY( angle);
 		auto matScale = DirectX::XMMatrixScaling(0.051, 0.5f, 20);
 		red += 0.2f;
@@ -605,9 +606,35 @@ void NGraphic::GraphicMain::renderDebug(
 
 	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
 	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
-	for (auto it = asset.m_frustums.begin(); it != asset.m_frustums.end(); it++) {
-		bufferVertices = it->second->getBufferVertices();
-		bufferIndices = it->second->getBufferIndices();
+	int index = 0;
+	for (auto it = game.frustum.m_clusters.begin(); it != game.frustum.m_clusters.end(); it++, index++) {
+		if (it->light.size()) {
+			auto frustum = asset.m_frustums[index];
+			bufferVertices = frustum->getBufferVertices();
+			bufferIndices = frustum->getBufferIndices();
+			auto color = asset.getRandomColor(randomSeed++);
+			shaderFrag.SetFloat4("color", Vector4(color.x, color.y, color.z, 0.5f));
+
+
+			shaderVert.CopyAllBufferData();
+			shaderFrag.CopyAllBufferData();
+
+
+			UINT stride = sizeof(VertexPosition);
+			UINT offset = 0;
+			context->IASetVertexBuffers(0, 1, &bufferVertices, &stride, &offset);
+			context->IASetIndexBuffer(bufferIndices, DXGI_FORMAT_R32_UINT, 0);
+			context->DrawIndexed(
+				frustum->getBufferIndexCount(),
+				//cube.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
+				0,     // Offset to the first index we want to use
+				0);    // Offset to add to each index when looking up vertices
+		}
+	}
+	/*
+	for (auto frustum = asset.m_frustums.begin(); frustum != asset.m_frustums.end(); frustum++) {
+		bufferVertices = frustum->second->getBufferVertices();
+		bufferIndices = frustum->second->getBufferIndices();
 		auto color = asset.getRandomColor(randomSeed++);
 		shaderFrag.SetFloat4("color", Vector4(color.x,color.y,color.z,0.5f) );
 
@@ -621,12 +648,13 @@ void NGraphic::GraphicMain::renderDebug(
 		context->IASetVertexBuffers(0, 1, &bufferVertices, &stride, &offset);
 		context->IASetIndexBuffer(bufferIndices, DXGI_FORMAT_R32_UINT, 0);
 		context->DrawIndexed(
-			it->second->getBufferIndexCount(),
+			frustum->second->getBufferIndexCount(),
 			//cube.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
 			0,     // Offset to the first index we want to use
 			0);    // Offset to add to each index when looking up vertices
-		
 	}
+	*/
+		
 
 
 	context->RSSetState(asset.RASTR_WIREFRAME);

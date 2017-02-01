@@ -9,6 +9,7 @@ void NGame::Frustum::init(float angle,float nearDistance, float farDistance, int
 	planesX.resize(divisionX + 1);
 	planesY.resize(divisionY + 1);
 	planesZ.resize(divisionZ + 1);
+	m_clusters.resize(divisionX*divisionY*divisionZ);
 	float r = 3.14159 / 2 + angle/2 ;
 	float distance = angle / divisionX;
 	float nearToFar = farDistance - nearDistance;
@@ -20,7 +21,7 @@ void NGame::Frustum::init(float angle,float nearDistance, float farDistance, int
 	r = 3.14159 / 2 + angle / 2;
 	distance = angle / divisionY;
 	for (int i = 0; i <= divisionY; i++) {
-		planesY[i] = DirectX::SimpleMath::Plane(Vector3(), Vector3(0, -cos(r), sin(r)), Vector3(1, 0, 0));
+		planesY[i] = DirectX::SimpleMath::Plane(Vector3(), Vector3(1, 0, 0),Vector3(0, -cos(r), sin(r)));
 		r -= distance;
 	}
 	r = 3.14159 / 2 + angle / 2;
@@ -69,17 +70,31 @@ void NGame::Frustum::init(float angle,float nearDistance, float farDistance, int
 }
 void NGame::Frustum::testPointlight(Vector3 center, float radius)
 {
+	
 	std::pair<int, int> resultX,resultY,resultZ;
 
 
 	if (test(resultX, planesX, center, radius) && test(resultY, planesY, center, radius) && test(resultZ, planesZ, center, radius)) {
+		std::cout << "Checked\n";
+		/*
+		for (auto it = m_clusters.begin(); it != m_clusters.end(); it++) {
+			it->decal.clear();
+			it->light.clear();
+			it->reflection.clear();
+		}
+		for (int k = resultZ.first; k < resultZ.second; k++) 
+			for(int j = resultY.first; j < resultY.second; j++)
+				for (int i = resultX.first; i < resultX.second; i++) {
+					m_clusters[i + j* m_size.x + k*m_size.x*m_size.y].light.push_back(0);
+				}
+		*/
 	}
 	std::cout << "X: " << resultX.first << "->" << resultX.second << "\n";
 	std::cout << "Y: " << resultY.first << "->" << resultY.second << "\n";
 	std::cout << "Z: " << resultZ.first << "->" << resultZ.second << "\n";
 }
 bool NGame::Frustum::test(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 center, float radius) {
-	
+	return false;
 	int x0=-1, x1=-1;
 	for (int i = 0; i < planes.size(); i++) {
 		if (planes[i].DotCoordinate(center)   <= radius ) {
