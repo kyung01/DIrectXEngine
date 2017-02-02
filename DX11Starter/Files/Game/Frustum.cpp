@@ -1,6 +1,28 @@
 #include "Frustum.h"
 #include <iostream>
 using namespace DirectX::SimpleMath;
+Vector3 NGame::Frustum::getMaxVector(Vector3 & a, Vector3 & b)
+{
+	return Vector3(max(a.x, b.x), max(a.y, b.y), max(a.z, b.z));
+}
+Vector3 NGame::Frustum::getMinVector(Vector3 & a, Vector3 & b)
+{
+	return Vector3(min(a.x, b.x), min(a.y, b.y), min(a.z, b.z));
+}
+bool NGame::Frustum::aabbArvo(Vector3 C1, Vector3 C2, Vector3 S, float R)
+{
+#define squared(num) ((num)*(num))
+	float dist_squared = R * R;
+	/* assume C1 and C2 are element-wise sorted, if not, do that now */
+	if (S.x < C1.x) dist_squared -= squared(S.x - C1.x);
+	else if (S.x > C2.x) dist_squared -= squared(S.x - C2.x);
+
+	if (S.y < C1.y) dist_squared -= squared(S.y - C1.y);
+	else if (S.y > C2.y) dist_squared -= squared(S.y - C2.y);
+	if (S.z < C1.z) dist_squared -= squared(S.z - C1.z);
+	else if (S.z > C2.z) dist_squared -= squared(S.z - C2.z);
+	return dist_squared > 0;
+}
 void NGame::Frustum::init(float angle,float nearDistance, float farDistance, int divisionX,int divisionY, int divisionZ)
 {
 	m_size = Vector3(divisionX, divisionY, divisionZ);
@@ -62,6 +84,10 @@ void NGame::Frustum::init(float angle,float nearDistance, float farDistance, int
 					cube.b1 = e + (Vector3)((f - e) / divisionX)*(i + 1) + (Vector3)((g - e) / divisionY)*j;
 					cube.b2 = e + (Vector3)((f - e) / divisionX)*(i + 1) + (Vector3)((g - e) / divisionY)*(j + 1);
 					cube.b3 = e + (Vector3)((f - e) / divisionX)*i + (Vector3)((g - e) / divisionY)*(j + 1);
+					float back  = (cube.a1 - cube.b1).z;
+					float back2 = (cube.a3 - cube.b3).z;
+					cube.rightTopNear = getMaxVector(getMaxVector(getMaxVector(getMaxVector(getMaxVector(getMaxVector(getMaxVector(cube.a0, cube.a1),cube.a2),cube.a3),cube.b0),cube.b1),cube.b2),cube.b3) ;
+					cube.leftBottomFar = getMinVector(getMinVector(getMinVector(getMinVector(getMinVector(getMinVector(getMinVector(cube.a0, cube.a1), cube.a2), cube.a3), cube.b0), cube.b1), cube.b2), cube.b3);
 				}
 			}
 		}
@@ -70,6 +96,7 @@ void NGame::Frustum::init(float angle,float nearDistance, float farDistance, int
 }
 void NGame::Frustum::testPointlight(Vector3 center, float radius)
 {
+	int index;
 	std::pair<int, int> resultX,resultY,resultZ;
 
 
@@ -84,7 +111,16 @@ void NGame::Frustum::testPointlight(Vector3 center, float radius)
 		for (int k = resultZ.first; k < resultZ.second; k++) 
 			for(int j = resultY.first; j < resultY.second; j++)
 				for (int i = resultX.first; i < resultX.second; i++) {
-					m_clusters[i + j* m_size.x + k*m_size.x*m_size.y].light.push_back(0);
+					index = i + j* m_size.x + k*m_size.x*m_size.y;
+					auto &cube = m_cubes[index];
+					if (aabbArvo(cube.leftBottomFar, cube.rightTopNear, center, radius))
+					{
+						m_clusters[index].light.push_back(0);
+						std::cout << "YES ARVO\n";
+					}
+					std::cout << "NO ARVO\n";
+					//else
+						//std::cout << "Failed ARVO\n";
 				}
 		
 	}

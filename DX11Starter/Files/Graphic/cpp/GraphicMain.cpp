@@ -602,17 +602,19 @@ void NGraphic::GraphicMain::renderDebug(
 
 	DirectX::XMStoreFloat4x4(&matStore, Matrix::Identity); // Transpose for HLSL!
 	shaderVert.SetMatrix4x4("world", matStore);
-	float randomSeed = 100;
 
 	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
 	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
 	int index = 0;
+
+	float randomSeed = 0;
 	for (auto it = game.frustum.m_clusters.begin(); it != game.frustum.m_clusters.end(); it++, index++) {
+		randomSeed++;
 		if (it->light.size()) {
 			auto frustum = asset.m_frustums[index];
 			bufferVertices = frustum->getBufferVertices();
 			bufferIndices = frustum->getBufferIndices();
-			auto color = asset.getRandomColor(randomSeed++);
+			auto color = asset.getRandomColor(randomSeed);
 			shaderFrag.SetFloat4("color", Vector4(color.x, color.y, color.z, 0.5f));
 
 
