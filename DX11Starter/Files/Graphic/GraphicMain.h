@@ -107,7 +107,7 @@ namespace NGraphic {
 			ID3D11Device * device, ID3D11DeviceContext * context,
 			RenderTexture& renderTexture, DepthTexture& depthTexture,
 			
-			Asset& asset, NGame::Context game, NScene::Scene& scene
+			Asset& asset, NGame::Context &game, NScene::Scene& scene
 			);
 
 		void renderSkyboxReflection(

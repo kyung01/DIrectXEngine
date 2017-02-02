@@ -67,7 +67,7 @@ m_depthTextures[key]->init(device, defWidth, defHeight);
 #define INIT_RENDER_TEXTURE(key,defWidth, defHeight) \
 this->m_renderTextures[key]	= std::shared_ptr<RenderTexture>(new RenderTexture());\
 this->m_renderTextures[key]	->init(device, defWidth, defHeight);
-	std::cout << "initTextures";
+	std::cout << "initTextures\n";
 	
 	INIT_RENDER_TEXTURE(TARGET_WORLD,			width, height);
 	INIT_RENDER_TEXTURE(TARGET_NORMAL,			width, height);
@@ -481,7 +481,7 @@ void NGraphic::GraphicMain::renderDebug(
 	ID3D11Device * device, ID3D11DeviceContext * context,
 	RenderTexture& renderTexture, DepthTexture& depthTexture, 
 	
-	Asset& asset, NGame::Context game, NScene::Scene& scene) {
+	Asset& asset, NGame::Context& game, NScene::Scene& scene) {
 	beginRendering(context);
 	DirectX::XMFLOAT4X4 matStore;
 	auto &shaderVert = *asset.m_shadersVert[RENDER_TRANSPARENT];
@@ -659,7 +659,6 @@ void NGraphic::GraphicMain::renderDebug(
 
 	context->RSSetState(asset.RASTR_WIREFRAME);
 
-	std::cout << line.getBufferIndexCount() << "\n";
 	if(false)for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		bufferVertices = line.getBufferVertices();
 		bufferIndices = line.getBufferIndices();

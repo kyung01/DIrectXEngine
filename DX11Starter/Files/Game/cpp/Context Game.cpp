@@ -9,12 +9,10 @@ void NGame::Context::update(float timeElapsed)
 {
 	cosMag += timeElapsed;
 	if (debugSphere) {
-		Vector3 pos = Vector3(0, 0, 5) + Vector3(cos(cosMag*0.1) * 3, 0, 0);
+		Vector3 pos = Vector3(0, 0, 5) + Vector3(cos(cosMag*0.5) , sin(cosMag*0.5) * 3, 0);
 		debugSphere->setPos(pos.x, pos.y, pos.z);
-		//frustum.test(result, frustum.planesX, debugSphere->position, 0.2);
-		//frustum.testPointlight( debugSphere->position, .5);
+		frustum.testPointlight( debugSphere->position, .5);
 	}
-	std::cout << "erer\n";
 	for (auto it = m_entities.begin(); it != m_entities.end(); it++) {
 		(*it)->update(*this, timeElapsed);
 	}

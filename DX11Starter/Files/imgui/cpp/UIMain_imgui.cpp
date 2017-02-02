@@ -91,8 +91,8 @@ void NImGui::UIMain::render()
 	ImGui::EndMainMenuBar();
 
 	//render(graphicMain->m_renderTextures);
-	render(graphicMain->m_depthTextures);
-	render(graphicMain->m_lightInfos);
+	//render(graphicMain->m_depthTextures);
+	//render(graphicMain->m_lightInfos);
 	//render(graphicMain->m_lightDepthTextures);
 	//render(graphicMain->m_RSM);
 	/*
