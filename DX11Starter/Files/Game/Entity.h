@@ -5,6 +5,7 @@
 //#include <Game\Context.h>
 #include <d3d11.h>
 #include <SimpleMath.h>
+using namespace DirectX::SimpleMath;
 namespace NGraphic {
 	namespace NScene{
 		class Object;
@@ -16,9 +17,8 @@ namespace NGame {
 	class Entity {
 		std::list<std::shared_ptr<Script>> m_scripts;
 	public:
-		DirectX::SimpleMath::Vector3 position;
-		DirectX::SimpleMath::Vector3 scale;
-		DirectX::SimpleMath::Quaternion rotation;
+		DirectX::SimpleMath::Vector3 m_pos,m_scale,m_look;
+		DirectX::SimpleMath::Quaternion m_rot;
 		std::list<std::shared_ptr<NGraphic::NScene::Object>> m_graphicObjects;
 		Entity();
 		void update(Context &context, float timeElapsed);

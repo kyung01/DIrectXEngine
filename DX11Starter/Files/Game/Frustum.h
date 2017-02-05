@@ -36,7 +36,11 @@ namespace NGame {
 		std::vector<Cluster> m_clusters;
 
 		void init(float angle, float nearDistance, float farDistance, int divisionX, int divisionY, int divisionZ);
+
+		void testBegin();
 		void testPointlight(Vector3 center, float radius);
-		bool test(std::pair<int, int> &result,std::vector<Plane> planes, DirectX::SimpleMath::Vector3 center, float radius);
+		void testSpotlight(Vector3 vertex, Vector3	axis, float H, float alpha);
+		bool testPointlight(std::pair<int, int> &result, std::vector<Plane> planes, DirectX::SimpleMath::Vector3 center, float radius);
+		bool testSpotlight(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 vertex, Vector3 axis, float H, float alpha);
 	};
 }

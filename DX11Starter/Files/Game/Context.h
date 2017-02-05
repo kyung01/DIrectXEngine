@@ -1,21 +1,22 @@
 #pragma once
 #include <list>
 #include <memory>
-#include <Game\Entity.h>
+#include <Game\Light.h>
 #include <Game\Frustum.h>
 #include <Graphic\Scene.h>
 namespace NGame {
 	class Context {
 	private:
-		Entity * debugSphere = 0;
 
 	protected:
 
 	public:
 		Frustum frustum;
 
+		std::shared_ptr<Light> lightPoint, lightSpot;
 		NGraphic::NScene::Scene *m_scene; // is going to ask the scene to get graphical objects it needs 
-		std::list<std::shared_ptr<Entity>> m_entities;
+		std::list<std::shared_ptr<Entity>>	m_entities;
+		std::list<std::shared_ptr<Light>>	m_lights;
 
 		Context();
 		void update(float timeElapsed);

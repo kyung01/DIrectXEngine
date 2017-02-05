@@ -94,20 +94,24 @@ void NGame::Frustum::init(float angle,float nearDistance, float farDistance, int
 
 	}
 }
+void NGame::Frustum::testBegin()
+{
+
+	for (auto it = m_clusters.begin(); it != m_clusters.end(); it++) {
+		it->decal.clear();
+		it->light.clear();
+		it->reflection.clear();
+	}
+}
 void NGame::Frustum::testPointlight(Vector3 center, float radius)
 {
 	int index;
 	std::pair<int, int> resultX,resultY,resultZ;
 
 
-	if (test(resultX, planesX, center, radius) && test(resultY, planesY, center, radius) && test(resultZ, planesZ, center, radius)) {
+	if (testPointlight(resultX, planesX, center, radius) && testPointlight(resultY, planesY, center, radius) && testPointlight(resultZ, planesZ, center, radius)) {
 		//std::cout << "Checked\n";
 		
-		for (auto it = m_clusters.begin(); it != m_clusters.end(); it++) {
-			it->decal.clear();
-			it->light.clear();
-			it->reflection.clear();
-		}
 		for (int k = resultZ.first; k < resultZ.second; k++) 
 			for(int j = resultY.first; j < resultY.second; j++)
 				for (int i = resultX.first; i < resultX.second; i++) {
@@ -116,9 +120,9 @@ void NGame::Frustum::testPointlight(Vector3 center, float radius)
 					if (aabbArvo(cube.leftBottomFar, cube.rightTopNear, center, radius))
 					{
 						m_clusters[index].light.push_back(0);
-						std::cout << "YES ARVO\n";
+						//std::cout << "YES ARVO\n";
 					}
-					std::cout << "NO ARVO\n";
+					//std::cout << "NO ARVO\n";
 					//else
 						//std::cout << "Failed ARVO\n";
 				}
@@ -128,7 +132,133 @@ void NGame::Frustum::testPointlight(Vector3 center, float radius)
 	//std::cout << "Y: " << resultY.first << "->" << resultY.second << "\n";
 	//std::cout << "Z: " << resultZ.first << "->" << resultZ.second << "\n";
 }
-bool NGame::Frustum::test(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 center, float radius) {
+bool willDebug = false;
+void NGame::Frustum::testSpotlight(Vector3 vertex, Vector3 axis, float H, float alpha)
+{
+	//;axis.z += 0.1435;//add noise to make sure they are not perfectly aligned
+	int index;
+	std::pair<int, int> resultX, resultY, resultZ;
+
+
+	if (	testSpotlight(resultX, planesX, vertex, axis,H,alpha) 
+			&& testSpotlight(resultY, planesY, vertex, axis, H, alpha)
+			&& testSpotlight(resultZ, planesZ, vertex, axis, H, alpha)) {
+		//std::cout << "Checked\n";
+
+		//std::cout << "spotlight registered\n";
+		for (int k = resultZ.first; k < resultZ.second; k++)
+			for (int j = resultY.first; j < resultY.second; j++)
+				for (int i = resultX.first; i < resultX.second; i++) {
+					index = i + j* m_size.x + k*m_size.x*m_size.y;
+					auto &cube = m_cubes[index];
+					m_clusters[index].light.push_back(0);
+					//else
+				}
+
+	}
+}
+bool NGame::Frustum::testSpotlight(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 vertex, Vector3 axis, float H, float alpha) {
+
+	int x0 = -1, x1 = -1;
+	for (int i = 0; i < planes.size(); i++) {
+
+		Vector3 n1 = ((Vector3)planes[i].Normal()).Cross(axis);
+		Vector3 n2 = n1.Cross(axis);
+		n2.Normalize();
+		//if (((Vector3)planes[i].Normal()).Dot(axis) <= 0.1) {
+		if (n1.x*n1.x + n1.y*n1.y + n1.z*n1.z <= 0.01) {
+			if (abs(planes[i].DotCoordinate(vertex)) < H) {
+				x0 = max(0, i - 1);
+				break;
+			}
+		}
+		//auto n2 = Vector3::Cross(Vector3::Cross(((Vector3)planes[i].Normal), axis), axis);
+		Vector3 p0 = vertex + H * axis - tan(alpha / 2) *H * n2;
+		Vector3 p1 = vertex + H * axis + tan(alpha / 2) *H * n2;
+		float disVertex = planes[i].DotCoordinate(vertex);
+		if (disVertex * planes[i].DotCoordinate(p0) < 0 || disVertex * planes[i].DotCoordinate(p1) < 0) {
+			x0 = max(0, i - 1);
+			break;
+		}
+	}
+	if (x0 == -1) return false;
+	for (int i = planes.size() - 1; i >= 0; i--) {
+
+		Vector3 n1 = ((Vector3)planes[i].Normal()).Cross(axis);
+		Vector3 n2 = n1.Cross(axis);
+		n2.Normalize();
+		if (n1.x*n1.x + n1.y*n1.y + n1.z*n1.z <= 0.01) {
+			if (abs(planes[i].DotCoordinate(vertex)) < H) {
+				x1 = min(i + 1, planes.size() - 1);
+				break;
+			}
+		}
+		//auto n2 = Vector3::Cross(Vector3::Cross(((Vector3)planes[i].Normal), axis), axis);
+		Vector3 p0 = vertex + H * axis - tan(alpha / 2) *H * n2;
+		Vector3 p1 = vertex + H * axis + tan(alpha / 2) *H * n2;
+		float disVertex = planes[i].DotCoordinate(vertex);
+		if (disVertex * planes[i].DotCoordinate(p0) < 0 || disVertex * planes[i].DotCoordinate(p1) < 0) {
+			x1 = min(i + 1, planes.size() - 1);
+			break;
+		}
+	}
+
+	if (x0 == -1 || x1 == -1) return false;
+	result.first = x0;
+	result.second = x1;
+	return true;
+}
+/*
+
+bool NGame::Frustum::testSpotlight(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 vertex, Vector3 axis, float H, float alpha) {
+int x0 = -1, x1 = -1;
+for (int i = 0; i < planes.size(); i++) {
+
+Vector3 n2 = ((Vector3)planes[i].Normal()).Cross(axis).Cross(axis);
+if (n2.x*n2.x + n2.y*n2.y + n2.z*n2.z == 0.0) {
+if (abs(planes[i].DotCoordinate(vertex)) < H) {
+std::cout << "ZERO1\n";
+x0 = max(0, i - 1);
+break;
+}
+}
+//auto n2 = Vector3::Cross(Vector3::Cross(((Vector3)planes[i].Normal), axis), axis);
+Vector3 p0 = vertex + H * axis - tan(alpha / 2) *H * n2;
+Vector3 p1 = vertex + H * axis + tan(alpha / 2) *H * n2;
+float disVertex = planes[i].DotCoordinate(vertex);
+if (disVertex * planes[i].DotCoordinate(p0) < 0 || disVertex * planes[i].DotCoordinate(p1) < 0) {
+x0 = max(0, i - 1);
+break;
+}
+}
+if (x0 == -1) return false;
+for (int i = planes.size() - 1; i >= x0; i--) {
+
+Vector3 n2 = ((Vector3)planes[i].Normal()).Cross(axis).Cross(axis);
+if (n2.x*n2.x + n2.y*n2.y + n2.z*n2.z == 0.0) {
+if (abs(planes[i].DotCoordinate(vertex)) < H) {
+std::cout << "ZERO2\n";
+x1 = min(i + 1, planes.size() - 1);
+break;
+}
+}
+//auto n2 = Vector3::Cross(Vector3::Cross(((Vector3)planes[i].Normal), axis), axis);
+Vector3 p0 = vertex + H * axis - tan(alpha / 2) *H * n2;
+Vector3 p1 = vertex + H * axis + tan(alpha / 2) *H * n2;
+float disVertex = planes[i].DotCoordinate(vertex);
+if (disVertex * planes[i].DotCoordinate(p0) < 0 || disVertex * planes[i].DotCoordinate(p1) < 0) {
+x1 = min(i + 1, planes.size() - 1);
+break;
+}
+}
+
+if (x0 == -1 || x1 == -1) return false;
+result.first = x0;
+result.second = x1;
+return true;
+}
+*/
+bool NGame::Frustum::testPointlight(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 center, float radius) {
 
 	int x0=-1, x1=-1;
 	for (int i = 0; i < planes.size(); i++) {

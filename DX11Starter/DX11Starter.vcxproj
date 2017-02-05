@@ -130,7 +130,7 @@
     <ClCompile Include="Files\DirectX\KContext.cpp" />
     <ClCompile Include="Files\Game\cpp\ContextExamples Game.cpp" />
     <ClCompile Include="Files\Game\cpp\Context Game.cpp" />
-    <ClCompile Include="Files\Game\cpp\Entity Game.cpp" />
+    <ClCompile Include="Files\Game\cpp\Entities.cpp" />
     <ClCompile Include="Files\Game\cpp\Script Game.cpp" />
     <ClCompile Include="Files\Game\Frustum.cpp" />
     <ClCompile Include="Files\Game\Script\X_Axis_Rotate.cpp" />
@@ -169,6 +169,8 @@
     <ClInclude Include="Files\Game\Entity.h" />
     <ClInclude Include="Files\Game\Context.h" />
     <ClInclude Include="Files\Game\Frustum.h" />
+    <ClInclude Include="Files\Game\GameEnum.h" />
+    <ClInclude Include="Files\Game\Light.h" />
     <ClInclude Include="Files\Game\Script.h" />
     <ClInclude Include="Files\Game\Script\X_Axis_Rotate.h" />
     <ClInclude Include="Files\Game\Script\Y_Axis_Rotate.h" />

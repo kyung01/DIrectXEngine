@@ -60,9 +60,6 @@
     <ClCompile Include="Files\Graphic\Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Files\Game\cpp\Entity Game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Files\Game\cpp\ContextExamples Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -115,6 +112,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Files\Game\Frustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Game\cpp\Entities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -243,6 +243,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Graphic\Mesh\MeshCube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Game\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Game\GameEnum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
