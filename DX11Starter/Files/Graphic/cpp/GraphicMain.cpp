@@ -96,6 +96,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	this->m_height = height;
 	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
 	m_rsm_flux_eye_perspective_height = textureIndirectLightHeight;
+	m_frustum.init(3.14 / 2, 0.1, 10, 10, 10, 10);
 
 	if (
 		!initTextures(device,context,width,height, textureIndirectLightWidth, textureIndirectLightHeight)
@@ -129,6 +130,23 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 		DirectX::XMMatrixOrthographicLH(1,1,0.1,100) );
 
 	return true;
+}
+
+void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene)
+{
+	m_frustum.testBegin();
+	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+		auto &light = **it;
+		switch (light.m_lightType) {
+		case NScene::POINTLIGHT:
+			m_frustum.testPointlight(light.m_pos, light.m_lightDistance);
+			break;
+		case NScene::SPOTLIGHT:
+			m_frustum.testSpotlight(light.m_pos,light.m_dirLook, light.m_lightDistance,light.m_lightAngle);
+			break;
+		}
+	}
+	
 }
 
 void NGraphic::GraphicMain::renderWorldNormalDiffuse(
@@ -513,10 +531,10 @@ void NGraphic::GraphicMain::renderDebug(
 	shaderFrag.SetShader();
 
 	
-	if (false)for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+	if(false)for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		
 		Vector3 lightScale = it->get()->m_scale;
-		it->get()->setScale(Vector3::One);
+		it->get()->setScale(Vector3(it->get()->m_lightDistance * 2));
 
 		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix())); // Transpose for HLSL!
 		shaderVert.SetMatrix4x4("world", matStore);
@@ -538,10 +556,11 @@ void NGraphic::GraphicMain::renderDebug(
 		it->get()->setScale(lightScale);
 	}
 	float red = 0;
-	float angle = -game.frustum.m_angle/2;
-	float angleIncrease = game.frustum.m_angle / game.frustum.m_division;
+	
+	float angle = -m_frustum.m_angle/2;
+	float angleIncrease = m_frustum.m_angle / m_frustum.m_division;
 
-	if(false)for (auto it = game.frustum.planesX.begin(); it != game.frustum.planesX.end(); it++) {
+	if(false)for (auto it = m_frustum.planesX.begin(); it != m_frustum.planesX.end(); it++) {
 		auto matRotation = DirectX::XMMatrixRotationY( angle);
 		auto matScale = DirectX::XMMatrixScaling(0.051, 0.5f, 20);
 		red += 0.2f;
@@ -608,7 +627,8 @@ void NGraphic::GraphicMain::renderDebug(
 	int index = 0;
 
 	float randomSeed = 0;
-	for (auto it = game.frustum.m_clusters.begin(); it != game.frustum.m_clusters.end(); it++, index++) {
+	
+	for (auto it = m_frustum.m_clusters.begin(); it != m_frustum.m_clusters.end(); it++, index++) {
 		randomSeed++;
 		if (it->light.size()) {
 			auto frustum = asset.m_frustums[index];
@@ -633,6 +653,8 @@ void NGraphic::GraphicMain::renderDebug(
 				0);    // Offset to add to each index when looking up vertices
 		}
 	}
+	
+
 	/*
 	for (auto frustum = asset.m_frustums.begin(); frustum != asset.m_frustums.end(); frustum++) {
 		bufferVertices = frustum->second->getBufferVertices();

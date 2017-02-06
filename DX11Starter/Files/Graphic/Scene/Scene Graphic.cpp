@@ -39,6 +39,7 @@ std::shared_ptr<Light> NGraphic::NScene::Scene::getPointLight(Vector4 lightColor
 	light->m_lightType = LIGHT_TYPE::POINTLIGHT;
 	light->m_lightColor = lightColor;
 	light->m_lightDistance = lightDistance;
+	objs_lights.push_back(light);
 
 	return light;
 }
@@ -50,13 +51,7 @@ std::shared_ptr<Light> NGraphic::NScene::Scene::getSpotLight(float angle, Vector
 	light->m_lightColor = lightColor;
 	light->m_lightAngle = angle;
 	light->m_lightDistance = lightDistance;
+	objs_lights.push_back(light);
 
 	return light;
-}
-
-std::shared_ptr<Light> NGraphic::NScene::Scene::getObjLight()
-{
-	auto obj = std::shared_ptr<Light>(new Light());
-	objs_lights.push_back(obj);
-	return obj;
 }

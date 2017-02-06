@@ -13,7 +13,7 @@
 #include <PrimitiveBatch.h>
 #include <VertexTypes.h>
 #include <Effects.h>
-#include <Game\Frustum.h>
+#include <Graphic\Frustum.h>
 
 namespace NGraphic {
 	struct LoadInfoMesh {
@@ -65,6 +65,6 @@ namespace NGraphic {
 		Load frustums from game class for debugging purpose 
 		*/
 		std::map<int,std::shared_ptr< MeshCube >> m_frustums;
-		void loadDebug_frustums(ID3D11Device * device, std::map<int, NGame::KBox> cubes);
+		void loadDebug_frustums(ID3D11Device * device, std::map<int, NGraphic::ClusterAABB> cubes);
 	};
  }

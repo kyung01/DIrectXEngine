@@ -77,6 +77,8 @@ namespace NGraphic {
 		int m_width, m_height;
 		Mesh * mesh00;
 
+
+		Frustum m_frustum;
 		std::map<int, LightInfo> m_lightInfos;
 		std::map<KEnum, std::shared_ptr<RenderTexture>>	m_renderTextures;
 		std::map<KEnum, std::shared_ptr<DepthTexture>>	m_depthTextures;
@@ -85,6 +87,9 @@ namespace NGraphic {
 		// Width and hieght is for the resolution in wihich this graphic main will adjust to render things onto
 		GraphicMain();
 		bool init(ID3D11Device *device, ID3D11DeviceContext *context, int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight);
+		void update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene);
+		
+		
 		void renderWorldNormalDiffuse(ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset, NScene::Scene& scene, DirectX::SimpleMath::Matrix worldMatrix);//rendering the normal scene
 		void renderUI(ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset, NScene::Scene& scene, DirectX::SimpleMath::Matrix worldMatrix);//rendering the normal scene
 

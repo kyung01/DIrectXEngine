@@ -68,15 +68,15 @@ void KContext::Init()
 		float ratio = 0.5f;
 
 		//if (!it->main.init(this->device, this->context, (int)round( ((float)this->width )*ratio), (int)round( ((float)this->height   )*ratio), 256, 256)) {
-		if (!it->main.init(this->device, this->context, 700,700, 256, 256)) {
+		if (!it->engine.init(this->device, this->context, 700,700, 256, 256)) {
 			std::cout << "GraphicMain failed to init" << std::endl;
 		}
 		it->scene.loadExample00();
 	}
 	m_ui.init(hInstance, hWnd, device, context, swapChain, backBufferRTV);
-	m_ui.m_uiMain.init(&m_renderContexts.begin()->main);//TODO delete this line
+	m_ui.m_uiMain.init(&m_renderContexts.begin()->engine);//TODO delete this line
 	m_asset.init(device, context);
-	m_asset.loadDebug_frustums(device, m_renderContexts.begin()->gameContext.frustum.m_cubes);
+	m_asset.loadDebug_frustums(device, m_renderContexts.begin()->engine.m_frustum.m_cubes);
 	world.objs.push_back(World::Object());
 	world.objs.push_back(World::Object());
 	world.objs.push_back(World::Object());
@@ -116,6 +116,7 @@ void KContext::Update(float deltaTime, float totalTime)
 	world.update(deltaTime);
 	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
 		it->gameContext.update(deltaTime);
+		it->engine.update(device, context, deltaTime, totalTime,it->scene);
 	}
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
@@ -169,7 +170,7 @@ void KContext::Draw(float deltaTime, float totalTime)
 
 	
 	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
-		it->main.render(this->device, this->context, 
+		it->engine.render(this->device, this->context, 
 			backBufferRTV,depthStencilView,viewport,
 			m_asset, it->gameContext);
 	}

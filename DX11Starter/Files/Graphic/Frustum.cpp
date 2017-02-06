@@ -1,15 +1,16 @@
 #include "Frustum.h"
 #include <iostream>
 using namespace DirectX::SimpleMath;
-Vector3 NGame::Frustum::getMaxVector(Vector3 & a, Vector3 & b)
+using namespace NGraphic;
+Vector3 Frustum::getMaxVector(Vector3 & a, Vector3 & b)
 {
 	return Vector3(max(a.x, b.x), max(a.y, b.y), max(a.z, b.z));
 }
-Vector3 NGame::Frustum::getMinVector(Vector3 & a, Vector3 & b)
+Vector3 Frustum::getMinVector(Vector3 & a, Vector3 & b)
 {
 	return Vector3(min(a.x, b.x), min(a.y, b.y), min(a.z, b.z));
 }
-bool NGame::Frustum::aabbArvo(Vector3 C1, Vector3 C2, Vector3 S, float R)
+bool Frustum::aabbArvo(Vector3 C1, Vector3 C2, Vector3 S, float R)
 {
 #define squared(num) ((num)*(num))
 	float dist_squared = R * R;
@@ -23,7 +24,7 @@ bool NGame::Frustum::aabbArvo(Vector3 C1, Vector3 C2, Vector3 S, float R)
 	else if (S.z > C2.z) dist_squared -= squared(S.z - C2.z);
 	return dist_squared > 0;
 }
-void NGame::Frustum::init(float angle,float nearDistance, float farDistance, int divisionX,int divisionY, int divisionZ)
+void Frustum::init(float angle,float nearDistance, float farDistance, int divisionX,int divisionY, int divisionZ)
 {
 	m_size = Vector3(divisionX, divisionY, divisionZ);
 	m_angle = angle;
@@ -36,16 +37,20 @@ void NGame::Frustum::init(float angle,float nearDistance, float farDistance, int
 	float distance = angle / divisionX;
 	float nearToFar = farDistance - nearDistance;
 	float distanceZ = nearToFar / divisionZ;
+
+	//Cut off vertically
 	for (int i = 0; i <= divisionX; i++) {
 		planesX[i] = DirectX::SimpleMath::Plane(Vector3(), Vector3(0, 1, 0), Vector3(cos(r), 0, sin(r)));
 		r -= distance;
 	}
+	//Cut off ver
 	r = 3.14159 / 2 + angle / 2;
 	distance = angle / divisionY;
 	for (int i = 0; i <= divisionY; i++) {
 		planesY[i] = DirectX::SimpleMath::Plane(Vector3(), Vector3(1, 0, 0),Vector3(0, -cos(r), sin(r)));
 		r -= distance;
 	}
+	//Cut off screen space 
 	r = 3.14159 / 2 + angle / 2;
 	distance = angle / divisionZ;
 	for (int i = 0; i <= divisionZ; i++) {
@@ -94,7 +99,7 @@ void NGame::Frustum::init(float angle,float nearDistance, float farDistance, int
 
 	}
 }
-void NGame::Frustum::testBegin()
+void Frustum::testBegin()
 {
 
 	for (auto it = m_clusters.begin(); it != m_clusters.end(); it++) {
@@ -103,7 +108,7 @@ void NGame::Frustum::testBegin()
 		it->reflection.clear();
 	}
 }
-void NGame::Frustum::testPointlight(Vector3 center, float radius)
+void Frustum::testPointlight(Vector3 center, float radius)
 {
 	int index;
 	std::pair<int, int> resultX,resultY,resultZ;
@@ -122,6 +127,7 @@ void NGame::Frustum::testPointlight(Vector3 center, float radius)
 						m_clusters[index].light.push_back(0);
 						//std::cout << "YES ARVO\n";
 					}
+					m_clusters[index].light.push_back(0);
 					//std::cout << "NO ARVO\n";
 					//else
 						//std::cout << "Failed ARVO\n";
@@ -133,7 +139,7 @@ void NGame::Frustum::testPointlight(Vector3 center, float radius)
 	//std::cout << "Z: " << resultZ.first << "->" << resultZ.second << "\n";
 }
 bool willDebug = false;
-void NGame::Frustum::testSpotlight(Vector3 vertex, Vector3 axis, float H, float alpha)
+void Frustum::testSpotlight(Vector3 vertex, Vector3 axis, float H, float alpha)
 {
 	//;axis.z += 0.1435;//add noise to make sure they are not perfectly aligned
 	int index;
@@ -157,7 +163,7 @@ void NGame::Frustum::testSpotlight(Vector3 vertex, Vector3 axis, float H, float 
 
 	}
 }
-bool NGame::Frustum::testSpotlight(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 vertex, Vector3 axis, float H, float alpha) {
+bool Frustum::testSpotlight(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 vertex, Vector3 axis, float H, float alpha) {
 
 	int x0 = -1, x1 = -1;
 	for (int i = 0; i < planes.size(); i++) {
@@ -208,57 +214,7 @@ bool NGame::Frustum::testSpotlight(std::pair<int, int> &result, std::vector<Plan
 	result.second = x1;
 	return true;
 }
-/*
-
-bool NGame::Frustum::testSpotlight(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 vertex, Vector3 axis, float H, float alpha) {
-int x0 = -1, x1 = -1;
-for (int i = 0; i < planes.size(); i++) {
-
-Vector3 n2 = ((Vector3)planes[i].Normal()).Cross(axis).Cross(axis);
-if (n2.x*n2.x + n2.y*n2.y + n2.z*n2.z == 0.0) {
-if (abs(planes[i].DotCoordinate(vertex)) < H) {
-std::cout << "ZERO1\n";
-x0 = max(0, i - 1);
-break;
-}
-}
-//auto n2 = Vector3::Cross(Vector3::Cross(((Vector3)planes[i].Normal), axis), axis);
-Vector3 p0 = vertex + H * axis - tan(alpha / 2) *H * n2;
-Vector3 p1 = vertex + H * axis + tan(alpha / 2) *H * n2;
-float disVertex = planes[i].DotCoordinate(vertex);
-if (disVertex * planes[i].DotCoordinate(p0) < 0 || disVertex * planes[i].DotCoordinate(p1) < 0) {
-x0 = max(0, i - 1);
-break;
-}
-}
-if (x0 == -1) return false;
-for (int i = planes.size() - 1; i >= x0; i--) {
-
-Vector3 n2 = ((Vector3)planes[i].Normal()).Cross(axis).Cross(axis);
-if (n2.x*n2.x + n2.y*n2.y + n2.z*n2.z == 0.0) {
-if (abs(planes[i].DotCoordinate(vertex)) < H) {
-std::cout << "ZERO2\n";
-x1 = min(i + 1, planes.size() - 1);
-break;
-}
-}
-//auto n2 = Vector3::Cross(Vector3::Cross(((Vector3)planes[i].Normal), axis), axis);
-Vector3 p0 = vertex + H * axis - tan(alpha / 2) *H * n2;
-Vector3 p1 = vertex + H * axis + tan(alpha / 2) *H * n2;
-float disVertex = planes[i].DotCoordinate(vertex);
-if (disVertex * planes[i].DotCoordinate(p0) < 0 || disVertex * planes[i].DotCoordinate(p1) < 0) {
-x1 = min(i + 1, planes.size() - 1);
-break;
-}
-}
-
-if (x0 == -1 || x1 == -1) return false;
-result.first = x0;
-result.second = x1;
-return true;
-}
-*/
-bool NGame::Frustum::testPointlight(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 center, float radius) {
+bool Frustum::testPointlight(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 center, float radius) {
 
 	int x0=-1, x1=-1;
 	for (int i = 0; i < planes.size(); i++) {

@@ -24,7 +24,7 @@ namespace NDirectX {
 		std::string description; // describe what this scene is
 		//NGame::Context gameContext;
 		NGame::Context			gameContext;
-		NGraphic::GraphicMain	main;
+		NGraphic::GraphicMain	engine;
 		NGraphic::NScene::Scene scene;
 	};
 

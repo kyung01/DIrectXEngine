@@ -2,7 +2,6 @@
 #include <list>
 #include <memory>
 #include <Game\Light.h>
-#include <Game\Frustum.h>
 #include <Graphic\Scene\Scene.h>
 namespace NGame {
 	class Context {
@@ -11,9 +10,8 @@ namespace NGame {
 	protected:
 
 	public:
-		Frustum frustum;
 
-		std::shared_ptr<Light> lightPoint, lightSpot;
+		std::shared_ptr<Light> solidLightPoint, solidLightSpot;
 		NGraphic::NScene::Scene *m_scene; // is going to ask the scene to get graphical objects it needs 
 		std::list<std::shared_ptr<Entity>>	m_entities;
 		std::list<std::shared_ptr<Light>>	m_lights;
