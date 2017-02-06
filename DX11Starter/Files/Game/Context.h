@@ -3,7 +3,7 @@
 #include <memory>
 #include <Game\Light.h>
 #include <Game\Frustum.h>
-#include <Graphic\Scene.h>
+#include <Graphic\Scene\Scene.h>
 namespace NGame {
 	class Context {
 	private:

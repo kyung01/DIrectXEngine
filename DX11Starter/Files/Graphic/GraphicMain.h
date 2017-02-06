@@ -1,6 +1,5 @@
 #pragma once
 #include <map>
-#include "Scene.h"
 #include "Model.h"
 #include "Shader.h"
 #include "Camera.h"
@@ -8,7 +7,7 @@
 #include "SimpleShader.h"
 #include "RenderTexture.h"
 #include "DepthTexture.h"
-#include "Graphic\Light.h"
+#include "Graphic\Scene\Light.h"
 #include <list>
 #include <map>
 #include <memory>
@@ -22,6 +21,7 @@
 #include <Graphic\RenderStateStack.h>
 #include <Game\Context.h>
 
+#include <Graphic\Scene\Scene.h>
 
 
 namespace NGraphic {
