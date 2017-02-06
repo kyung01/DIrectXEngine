@@ -29,9 +29,29 @@ std::shared_ptr<Object> NGraphic::NScene::Scene::getObjSolid()
 std::shared_ptr<Object> NGraphic::NScene::Scene::getObjUI()
 {
 	auto obj = std::shared_ptr<Object>(new Object());
-	obj->m_ObjectType = KEnum::OBJ_TYPE_UI;
 	objs_ui.push_back(obj);
 	return obj;
+}
+
+std::shared_ptr<Light> NGraphic::NScene::Scene::getPointLight(Vector4 lightColor, float lightDistance)
+{
+	std::shared_ptr<Light> light = std::make_shared<Light>();
+	light->m_lightType = LIGHT_TYPE::POINTLIGHT;
+	light->m_lightColor = lightColor;
+	light->m_lightDistance = lightDistance;
+
+	return light;
+}
+
+std::shared_ptr<Light> NGraphic::NScene::Scene::getSpotLight(float angle, Vector4 lightColor, float lightDistance)
+{
+	std::shared_ptr<Light> light = std::make_shared<Light>();
+	light->m_lightType = LIGHT_TYPE::SPOTLIGHT;
+	light->m_lightColor = lightColor;
+	light->m_lightAngle = angle;
+	light->m_lightDistance = lightDistance;
+
+	return light;
 }
 
 std::shared_ptr<Light> NGraphic::NScene::Scene::getObjLight()

@@ -5,6 +5,7 @@
 #include <d3d11.h>
 #include <SimpleMath.h>
 #include <Graphic\Enum.h>
+#include <Graphic\Scene\SceneEnums.h>
 //#include "glm\glm.hpp"
 //#include "Shader.h"
 using namespace DirectX::SimpleMath;
@@ -23,9 +24,7 @@ namespace NGraphic {
 			Vector3 m_dirLook;
 			Quaternion m_rotation;
 			Matrix m_matModel;
-			
-			//Information required for rendering process
-			KEnum				m_ObjectType;
+			OBJ_TYPE m_ObjectType;
 			KEnum				m_renderType;
 			KEnum					m_meshId;
 			std::map<KEnum, KEnum> m_textures;

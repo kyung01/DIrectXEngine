@@ -233,16 +233,19 @@
     <ClInclude Include="Files\Game\GameEnum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Files\Graphic\Scene\Light.h">
+    <ClInclude Include="Files\Graphic\Scene\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Files\Graphic\Scene\Camera.h">
+    <ClInclude Include="Files\Graphic\Scene\Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Graphic\Scene\Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Graphic\Scene\Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\Scene\SceneEnums.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

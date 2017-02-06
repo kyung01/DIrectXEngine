@@ -1,6 +1,4 @@
 #pragma once
-
-#pragma once
 #include "Camera.h"
 #include <SimpleMath.h>
 using namespace DirectX::SimpleMath;
@@ -12,9 +10,11 @@ namespace NGraphic {
 		protected:
 		public:
 			Light();
+			LIGHT_TYPE m_lightType;
 			Vector4 m_lightColor;
-			float m_lightPower;
+			float m_lightDistance;
 			float m_lightAngle;
+
 		};
 	}
 }

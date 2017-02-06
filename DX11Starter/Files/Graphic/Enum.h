@@ -1,10 +1,8 @@
 #pragma once
 namespace NGraphic {
+	
 	enum KEnum {
 		SHADER_TYPE_VERTEX, SHADER_TYPE_FRAGMENT,
-		OBJ_TYPE_SOLID,
-		OBJ_TYPE_UI,
-		OBJ_TYPE_LIGHT,
 		MESH_ID_CONE,
 		MESH_ID_CYLINDER,
 		MESH_ID_CUBE,

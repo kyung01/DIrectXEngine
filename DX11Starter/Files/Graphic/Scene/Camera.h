@@ -1,10 +1,8 @@
 #pragma once
 #include "Object.h"
-#include <SimpleMath.h>
 using namespace DirectX::SimpleMath;
 //using namespace glm;
 namespace NGraphic {
-	enum CAMERA_TYPE { PERSPECTIVE, ORTHOGONAL };
 
 	namespace NScene {
 		class Camera : public Object {

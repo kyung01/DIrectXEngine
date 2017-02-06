@@ -22,6 +22,8 @@ namespace NGraphic {
 			std::shared_ptr<Object> getObjSolid();
 			std::shared_ptr<Object> getObjUI();
 			std::shared_ptr<Light>	getObjLight();
+			std::shared_ptr<Light> getPointLight(Vector4 lightColor, float lightDistance);
+			std::shared_ptr<Light> getSpotLight(float angle, Vector4 lightColor, float lightDistance);
 		};
 	}
 }

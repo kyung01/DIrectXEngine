@@ -9,7 +9,7 @@ int Object::OBJECT_UNIQUE_ID = 0;
 Object::Object() :
 	m_isAlive(true),
 	m_id(OBJECT_UNIQUE_ID++),
-	m_ObjectType(KEnum::OBJ_TYPE_SOLID),
+	m_ObjectType(OBJ_TYPE::SOLID),
 	m_meshId(KEnum::MESH_ID_CUBE),
 	m_renderType(KEnum::RENDER_DEFAULT),
 	m_isDirty(true),
@@ -144,7 +144,8 @@ Light::Light()
 {
 	//The light model bases 26.56 degree or 0.463 radiance as the base
 	Camera::Camera();
-	m_ObjectType = OBJ_TYPE_LIGHT;
+	m_lightType = LIGHT_TYPE::POINTLIGHT;
+	m_ObjectType = OBJ_TYPE::LIGHT;
 	m_fov = 3.14f * 0.5;// 26.56 / (360 / 6.28318530718);
 	m_lightColor = Vector4(1, 1, 1, 1);
 	setScale(Vector3(1, 1, 1));
