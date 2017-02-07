@@ -7,7 +7,7 @@ NGame::Context::Context()
 float cosMag = 0;
 void NGame::Context::update(float timeElapsed)
 {
-	cosMag += timeElapsed*0.15;
+	cosMag += timeElapsed*0.02;
 
 	Vector3 pos = Vector3(0, 0, 5) + Vector3(cos(cosMag), sin(cosMag) * 2, 0);
 	solidLightPoint->setPos(pos.x, pos.y, pos.z);
@@ -16,13 +16,13 @@ void NGame::Context::update(float timeElapsed)
 		float angleY = cosMag*1.5;
 		float angleZ = cosMag*1.23;
 
-		Vector3 pos = Vector3(0, 0, 5) + Vector3(-cos(cosMag)*0.5, -sin(cosMag) * 2, 0);
+		Vector3 pos = Vector3(0, 0, 5) + Vector3(-cos(cosMag)*10, -sin(cosMag) * 2, 0);
 		solidLightSpot->setPos(pos.x, pos.y, pos.z);
 
 		solidLightSpot->setRotation(solidLightSpot->m_rot
-			* Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), timeElapsed*1.1)
-			* Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), timeElapsed*2.37)
-			* Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), timeElapsed*3.25)
+			* Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), timeElapsed*.1)
+			* Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), timeElapsed*.07)
+			* Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), timeElapsed*.05)
 		);
 		solidLightSpot->m_graphicObjects.begin()->get()->setRotation(
 			DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), -3.14 / 2) *solidLightSpot->m_rot);

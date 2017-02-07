@@ -36,19 +36,19 @@ void Frustum::init(float angle,float nearDistance, float farDistance, int divisi
 	float r = 3.14159 / 2 + angle/2 ;
 	float distance = angle / divisionX;
 	float nearToFar = farDistance - nearDistance;
-	float distanceZ = nearToFar / divisionZ;
+	float distanceZ = (farDistance - nearDistance) / divisionZ;
 
-	//Cut off vertically
+	//Cut off horiozon
 	for (int i = 0; i <= divisionX; i++) {
 		planesX[i] = DirectX::SimpleMath::Plane(Vector3(), Vector3(0, 1, 0), Vector3(cos(r), 0, sin(r)));
 		r -= distance;
 	}
 	//Cut off ver
-	r = 3.14159 / 2 + angle / 2;
+	r = 3.14159 / 2 - angle / 2;
 	distance = angle / divisionY;
 	for (int i = 0; i <= divisionY; i++) {
-		planesY[i] = DirectX::SimpleMath::Plane(Vector3(), Vector3(1, 0, 0),Vector3(0, -cos(r), sin(r)));
-		r -= distance;
+		planesY[i] = DirectX::SimpleMath::Plane(Vector3(), Vector3(0,cos(r),sin(r)),Vector3(-1, cos(r), sin(r) ));
+		r += distance;
 	}
 	//Cut off screen space 
 	r = 3.14159 / 2 + angle / 2;
@@ -108,11 +108,11 @@ void Frustum::testBegin()
 		it->reflection.clear();
 	}
 }
+bool willDebug = false;
 void Frustum::testPointlight(Vector3 center, float radius)
 {
 	int index;
 	std::pair<int, int> resultX,resultY,resultZ;
-
 
 	if (testPointlight(resultX, planesX, center, radius) && testPointlight(resultY, planesY, center, radius) && testPointlight(resultZ, planesZ, center, radius)) {
 		//std::cout << "Checked\n";
@@ -127,7 +127,7 @@ void Frustum::testPointlight(Vector3 center, float radius)
 						m_clusters[index].light.push_back(0);
 						//std::cout << "YES ARVO\n";
 					}
-					m_clusters[index].light.push_back(0);
+					//m_clusters[index].light.push_back(0);
 					//std::cout << "NO ARVO\n";
 					//else
 						//std::cout << "Failed ARVO\n";
@@ -138,7 +138,6 @@ void Frustum::testPointlight(Vector3 center, float radius)
 	//std::cout << "Y: " << resultY.first << "->" << resultY.second << "\n";
 	//std::cout << "Z: " << resultZ.first << "->" << resultZ.second << "\n";
 }
-bool willDebug = false;
 void Frustum::testSpotlight(Vector3 vertex, Vector3 axis, float H, float alpha)
 {
 	//;axis.z += 0.1435;//add noise to make sure they are not perfectly aligned
@@ -216,22 +215,56 @@ bool Frustum::testSpotlight(std::pair<int, int> &result, std::vector<Plane> plan
 }
 bool Frustum::testPointlight(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 center, float radius) {
 
-	int x0=-1, x1=-1;
+
+	if(willDebug)std::cout<<"TEST POINT LIGHT\n";
+	int x0 = -1, x1 = -1;
 	for (int i = 0; i < planes.size(); i++) {
-		if (planes[i].DotCoordinate(center)   <= radius ) {
-			x0 = max(0,i-1);
+		if (willDebug)std::cout << "FIRST CYCLE "<< i<< " " <<planes[i].DotCoordinate(center)<< " NORMAL " << planes[i].Normal().x << ","<< planes[i].Normal().y<< ","<< planes[i].Normal().z << " RESULT " << (planes[i].DotCoordinate(center) < radius) <<"\n";
+		if (planes[i].DotCoordinate(center) < radius) {
+			x0 = max(0, i - 1);
 			break;
 		}
 	}
-	for (int i = planes.size()-1; i >= x0; i--) {
-		if (-planes[i].DotCoordinate(center) <= radius) {
-			x1 = min(i+1, planes.size() - 1);
+	for (int i = planes.size() - 1; i >= x0; i--) {
+		if (willDebug)std::cout << "SECOND CYCLE " <<i << " " << planes[i].DotCoordinate(center) << " NORMAL " << planes[i].Normal().x << "," << planes[i].Normal().y << "," << planes[i].Normal().z << " RESULT " << (-planes[i].DotCoordinate(center) < radius) << "\n";
+		if (-planes[i].DotCoordinate(center) < radius) {
+			x1 = min(i + 1, planes.size() - 1);
 			break;
 		}
 	}
-	
-	if (x0 == -1 || x1 == -1) return false;
+
+	if (x0 == -1 || x1 == -1) {
+		return false;
+	}
 	result.first = x0;
 	result.second = x1;
 	return true;
 }
+/*
+
+std::cout << "Start\n";
+int x0=-1, x1=-1;
+for (int i = 0; i < planes.size(); i++) {
+std::cout << "DEBUG LOG" << planes[i].DotNormal(center) << "\n";
+if (planes[i].DotNormal(center)   <= radius ) {
+std::cout << "CUT\n";
+x0 = max(0,i-1);
+break;
+}
+}
+for (int i = planes.size()-1; i >= x0; i--) {
+std::cout << "DEBUG LOG" << planes[i].DotNormal(center) << "\n";
+if (-planes[i].DotNormal(center) <= radius) {
+std::cout << "CUT\n";
+x1 = min(i+1, planes.size() - 1);
+break;
+}
+}
+
+if (x0 == -1 || x1 == -1) {
+return false;
+}
+result.first = x0;
+result.second = x1;
+return true;
+*/

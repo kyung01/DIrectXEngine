@@ -96,7 +96,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	this->m_height = height;
 	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
 	m_rsm_flux_eye_perspective_height = textureIndirectLightHeight;
-	m_frustum.init(3.14 / 2, 0.1, 10, 10, 10, 10);
+	m_frustum.init(3.14 / 2, 1, 10, 10, 10, 10);
 
 	if (
 		!initTextures(device,context,width,height, textureIndirectLightWidth, textureIndirectLightHeight)

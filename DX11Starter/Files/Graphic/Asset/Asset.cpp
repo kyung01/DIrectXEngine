@@ -4,11 +4,11 @@ using namespace NGraphic;
 std::list<LoadInfoMesh> Asset::getLoadListMesh()
 {
 	std::list<LoadInfoMesh> lst({
-		{ KEnum::MESH_ID_CONE, "Resource/Mesh/cone.obj" },
+		{ KEnum::MESH_ID_SPHERE, "Resource/Mesh/sphere.obj" },
 		{ KEnum::MESH_ID_CUBE, "Resource/Mesh/cube.obj" },
+		{ KEnum::MESH_ID_CONE, "Resource/Mesh/cone.obj" },
 		{ KEnum::MESH_ID_CYLINDER, "Resource/Mesh/cylinder.obj" },
 		{ KEnum::MESH_ID_HELIX, "Resource/Mesh/helix.obj" },
-		{ KEnum::MESH_ID_SPHERE, "Resource/Mesh/sphere.obj" },
 		{ KEnum::MESH_ID_TORUS, "Resource/Mesh/torus.obj" },
 		{ KEnum::MESH_ID_PLANE, "Resource/Mesh/plane.obj" },
 		{ KEnum::MESH_ID_FRUSTUM, "Resource/Mesh/frustum.obj" },

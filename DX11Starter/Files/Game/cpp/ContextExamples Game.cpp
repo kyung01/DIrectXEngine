@@ -91,7 +91,6 @@ void NGame::LoadExample00(Context &context)
 
 
 
-
 	{
 		auto lightObj = context.m_scene->getSpotLight(3.14/2, Vector4(1,0,0,20),1);
 		auto lightEntity = new Entity();
