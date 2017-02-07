@@ -46,6 +46,18 @@ void Entity::update(Context &context, float timeElapsed)
 		(**it).update(context, *this, timeElapsed);
 	}
 }
+void NGame::Light::setAngle(float value)
+{
+	m_angle = value;
+	for (auto it = m_lights.begin(); it != m_lights.end(); it++) {
+		it->setFOV(value);
+	}
+
+}
+float NGame::Light::getAngle()
+{
+	return m_angle;
+}
 std::shared_ptr<Light> Light::GET_POINTLIGHT( Vector4 lightColor, float lightDistance)
 {
 	std::shared_ptr<Light> light = std::make_shared<Light>();
@@ -59,7 +71,7 @@ std::shared_ptr<Light> Light::GET_SPOTLIGHT(float angle, Vector4 lightColor, flo
 {
 	std::shared_ptr<Light> light = std::make_shared<Light>();
 	light->lightType = LIGHT_SPOTLIGHT;
-	light->angle = angle;
+	light->m_angle = angle;
 	light->distance = lightDistance;
 	light->color = lightColor;
 	return light;

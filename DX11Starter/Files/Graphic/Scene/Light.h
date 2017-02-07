@@ -7,13 +7,12 @@ namespace NGraphic {
 
 	namespace NScene {
 		class Light : public Camera {
-		protected:
+		
 		public:
 			Light();
 			LIGHT_TYPE m_lightType;
 			Vector4 m_lightColor;
 			float m_lightDistance;
-			float m_lightAngle;
 
 		};
 	}

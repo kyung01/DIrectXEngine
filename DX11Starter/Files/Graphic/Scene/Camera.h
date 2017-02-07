@@ -29,6 +29,7 @@ namespace NGraphic {
 			Matrix getProjectionMatrix(float width, float height);
 			Matrix getProjectionMatrix(float fov,float screen_width, float screen_height, float cam_near, float cam_far);
 			Matrix getViewMatrix();
+			void setFOV(float value);
 			Object setPos(Vector3 pos) override;
 			Object setRotation(Quaternion quaternion) override ;
 			

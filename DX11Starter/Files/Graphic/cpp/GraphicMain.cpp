@@ -142,7 +142,7 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 			m_frustum.testPointlight(light.m_pos, light.m_lightDistance);
 			break;
 		case NScene::SPOTLIGHT:
-			m_frustum.testSpotlight(light.m_pos,light.m_dirLook, light.m_lightDistance,light.m_lightAngle);
+			m_frustum.testSpotlight(light.m_pos,light.m_dirLook, light.m_lightDistance,light.getFOV());
 			break;
 		}
 	}
@@ -531,12 +531,17 @@ void NGraphic::GraphicMain::renderDebug(
 	shaderFrag.SetShader();
 
 	
-	if(false)for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+	//Render virtual objects in scale of light
+	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		
 		Vector3 lightScale = it->get()->m_scale;
 		it->get()->setScale(Vector3(it->get()->m_lightDistance * 2));
 
-		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix())); // Transpose for HLSL!
+		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(
+			
+			
+			
+			(**it).getModelMatrix())); // Transpose for HLSL!
 		shaderVert.SetMatrix4x4("world", matStore);
 		shaderFrag.SetFloat3("color", Vector3((**it).m_lightColor));
 

@@ -49,7 +49,7 @@ std::shared_ptr<Light> NGraphic::NScene::Scene::getSpotLight(float angle, Vector
 	std::shared_ptr<Light> light = std::make_shared<Light>();
 	light->m_lightType = LIGHT_TYPE::SPOTLIGHT;
 	light->m_lightColor = lightColor;
-	light->m_lightAngle = angle;
+	light->setFOV(angle);
 	light->m_lightDistance = lightDistance;
 	objs_lights.push_back(light);
 

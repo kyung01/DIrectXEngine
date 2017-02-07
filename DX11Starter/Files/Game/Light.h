@@ -5,11 +5,15 @@
 #include <Game\Entity.h>
 #include <Game\GameEnum.h>
 #include <SimpleMath.h>
+#include <Graphic\Scene\Light.h>
 namespace NGame {
 
 	class Script;
 	class Context;
 	class Light:public Entity {
+	private:
+		float m_angle;
+		std::list<NGraphic::NScene::Light> m_lights;
 	public:
 		/*
 		LIGHT_SPOTLIGHT or LIGHT_POINTLIGHT
@@ -17,7 +21,9 @@ namespace NGame {
 		GAME_ENUM lightType;
 		float distance;
 		Vector4 color; // R G B A
-		float angle;
+
+		void setAngle(float value);
+		float getAngle();
 		static std::shared_ptr<Light> GET_POINTLIGHT(Vector4 lightColor, float lightDistance);
 		static std::shared_ptr<Light> GET_SPOTLIGHT(float angle, Vector4 lightColor, float lightDistance);
 

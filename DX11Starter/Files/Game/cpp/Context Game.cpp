@@ -42,28 +42,28 @@ void NGame::Context::update(float timeElapsed)
 void Context::init(NGraphic::NScene::Scene * scene)
 {
 	m_scene = scene;
-	auto sphere00 = scene->getObjSolid();
-	sphere00->m_meshId = NGraphic::MESH_ID_SPHERE;
-	sphere00->setScale(Vector3(2.0f));
+	//auto sphere00 = scene->getObjSolid();
+	//sphere00->m_meshId = NGraphic::MESH_ID_SPHERE;
+	//sphere00->setScale(Vector3(2.0f));
 
 
 	auto sphereLight = scene->getPointLight(Vector4(1, 1, 1, 1), 1);
 
 
-	auto cone = scene->getObjSolid();
+	//auto cone = scene->getObjSolid();
 	auto coneLight = scene->getSpotLight(3.14/2,Vector4(1,1,1,1),1);
-	cone->m_meshId = NGraphic::MESH_ID_CONE;
-	cone->setScale(Vector3(2.0f));
-	cone->setRotation(DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), -3.14 / 2));
+	//cone->m_meshId = NGraphic::MESH_ID_CONE;
+	//cone->setScale(Vector3(2.0f));
+	//cone->setRotation(DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), -3.14 / 2));
 
 	auto objSolidPointLight = Light::GET_POINTLIGHT(Vector4(1, 1, 1, 1), 0.5f);
 	this->solidLightPoint = objSolidPointLight;
 	auto objSolidSpotLight = Light::GET_SPOTLIGHT(3.14159265359 /2.0f,Vector4(1, 1, 1, 1), 1.0f);
 	this->solidLightSpot = objSolidSpotLight;
-	objSolidPointLight->m_graphicObjects.push_back(sphere00);
+	//objSolidPointLight->m_graphicObjects.push_back(sphere00);
 	objSolidPointLight->m_graphicObjects.push_back(sphereLight);
 	objSolidPointLight->setPos(0, 0, 5);
-	objSolidSpotLight->m_graphicObjects.push_back(cone);
+	//objSolidSpotLight->m_graphicObjects.push_back(cone);
 	objSolidSpotLight->m_graphicObjects.push_back(coneLight);
 	objSolidSpotLight->setPos(0, 0, 5);
 

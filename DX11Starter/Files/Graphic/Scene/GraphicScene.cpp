@@ -123,6 +123,12 @@ Matrix Camera::getViewMatrix()
 	return m_matView;
 }
 
+void NGraphic::NScene::Camera::setFOV(float value)
+{
+	m_isDirty_matProjection = true;
+	m_fov = value;
+}
+
 Object Camera::setPos(Vector3 pos)
 {
 	Object::setPos(pos);
@@ -150,3 +156,4 @@ Light::Light()
 	m_lightColor = Vector4(1, 1, 1, 1);
 	setScale(Vector3(1, 1, 1));
 }
+
