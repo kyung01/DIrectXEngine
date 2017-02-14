@@ -29,7 +29,7 @@ namespace NGraphic {
 		Vector3 m_size;
 		float m_angle;
 		float m_division;
-		std::map<int, ClusterAABB> m_cubes;
+		std::vector<ClusterAABB> m_cubes;
 		std::vector<DirectX::SimpleMath::Plane> planesX,planesY,planesZ;
 		std::vector<Cluster> m_clusters;
 
