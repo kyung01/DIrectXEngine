@@ -26,6 +26,7 @@ bool Frustum::aabbArvo(Vector3 C1, Vector3 C2, Vector3 S, float R)
 }
 void Frustum::init(float angle,float nearDistance, float farDistance, int divisionX,int divisionY, int divisionZ)
 {
+	m_cubes.resize(divisionX*divisionY*divisionZ);
 	m_size = Vector3(divisionX, divisionY, divisionZ);
 	m_angle = angle;
 	m_division = divisionX;

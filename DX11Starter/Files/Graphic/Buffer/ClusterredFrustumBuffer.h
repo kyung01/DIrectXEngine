@@ -12,7 +12,7 @@ namespace NGraphic {
 		protected:
 		public:
 			ClustteredFrustumBuffer(ID3D11Device * device, int width,int height,int depth);
-			bool copy()
+			bool copy();
 
 
 		};

@@ -153,7 +153,17 @@ Light::Light()
 	m_lightType = LIGHT_TYPE::POINTLIGHT;
 	m_ObjectType = OBJ_TYPE::LIGHT;
 	m_fov = 3.14f * 0.5;// 26.56 / (360 / 6.28318530718);
-	m_lightColor = Vector4(1, 1, 1, 1);
+	m_lightColor = Vector3(1, 1, 1);
 	setScale(Vector3(1, 1, 1));
 }
+void Light::setLightColor(Vector3 color)
+{
+	m_isLightDirty = true;
+	m_lightColor = color;
+}
 
+void NGraphic::NScene::Light::setLightColor(float r, float g, float b)
+{
+	m_isLightDirty = ture;
+	m_lightColor = Vector3(r,g,b);
+}
