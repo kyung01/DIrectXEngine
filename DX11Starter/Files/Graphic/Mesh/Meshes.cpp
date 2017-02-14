@@ -21,6 +21,7 @@ ID3D11Buffer* IMesh::getBufferIndices() {
 
 
 MeshLine::MeshLine(ID3D11Device * device) {
+
 	VertexPosition* vertices = new VertexPosition[4];
 	UINT* indices = new UINT[4];
 	vertices[0].position = DirectX::XMFLOAT3(0, 0, 0);

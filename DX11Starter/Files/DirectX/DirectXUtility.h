@@ -3,6 +3,14 @@
 #include <string>
 namespace DirectX {
 	struct DirectXUtility {
+
+		static bool HRESULT_CHECK(HRESULT hrs) {
+			if (hrs == S_OK)
+				return true;
+			std::cout << HRESULT_TO_STRING(hrs) << "\n";
+			system("pause");
+			return false;
+		}
 		static std::string HRESULT_TO_STRING(HRESULT hrs) {
 			std::string translated = "";
 			switch (hrs) {

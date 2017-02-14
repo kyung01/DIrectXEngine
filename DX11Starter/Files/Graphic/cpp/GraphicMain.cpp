@@ -97,6 +97,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
 	m_rsm_flux_eye_perspective_height = textureIndirectLightHeight;
 	m_frustum.init(3.14 / 2, 1, 10, 10, 10, 10);
+	m_lightBuffer = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(device,256);
 
 	if (
 		!initTextures(device,context,width,height, textureIndirectLightWidth, textureIndirectLightHeight)

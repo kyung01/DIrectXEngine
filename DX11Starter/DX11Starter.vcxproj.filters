@@ -111,6 +111,9 @@
     <ClCompile Include="Files\Graphic\Frustum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Files\Graphic\Buffer\Buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\imgui\imconfig.h">
@@ -246,6 +249,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Graphic\Frustum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\Buffer\KDynamicBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\Buffer\ClusterIndex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\Buffer\ClusterItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\Buffer\LightParameter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\Buffer\DecalParameter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\Buffer\ProbeParameter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

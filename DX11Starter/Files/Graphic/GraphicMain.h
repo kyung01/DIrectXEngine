@@ -19,6 +19,8 @@
 #include <Graphic\Asset\Mesh.h>// TODO delete this
 #include <Graphic\Enum.h>
 #include <Graphic\RenderStateStack.h>
+#include <Graphic\Buffer\KDynamicBuffer.h>
+#include <Graphic\Buffer\LightParameter.h>
 #include <Game\Context.h>
 
 #include <Graphic\Scene\Scene.h>
@@ -31,14 +33,6 @@ namespace NGraphic {
 		std::shared_ptr<RenderTexture>	position;
 		std::shared_ptr<DepthTexture>	depth;
 	};
-	struct MeshLoadInformation {
-		KEnum id;
-		char* path;
-	};
-	struct TextureLoadInformation {
-		KEnum id;
-		LPCWSTR path;
-	};
 
 	class GraphicMain {
 	private:
@@ -48,6 +42,8 @@ namespace NGraphic {
 		RenderTexture	m_renderTextureDummy;
 		DepthTexture	m_depthTextureDummy;
 		int m_rsm_flux_eye_perspective_width, m_rsm_flux_eye_perspective_height;
+	
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::LightParameter>> m_lightBuffer;
 
 
 		DirectX::XMMATRIX getOrthogonalMatrixProj();
