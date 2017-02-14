@@ -269,6 +269,9 @@
     <ClInclude Include="Files\Graphic\Buffer\ProbeParameter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Files\Graphic\Buffer\ClusterredFrustumBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

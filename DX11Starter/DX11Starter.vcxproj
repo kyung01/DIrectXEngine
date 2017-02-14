@@ -169,6 +169,7 @@
     <ClInclude Include="Files\Game\Context.h" />
     <ClInclude Include="Files\Graphic\Buffer\ClusterIndex.h" />
     <ClInclude Include="Files\Graphic\Buffer\ClusterItem.h" />
+    <ClInclude Include="Files\Graphic\Buffer\ClusterredFrustumBuffer.h" />
     <ClInclude Include="Files\Graphic\Buffer\DecalParameter.h" />
     <ClInclude Include="Files\Graphic\Buffer\LightParameter.h" />
     <ClInclude Include="Files\Graphic\Buffer\KDynamicBuffer.h" />

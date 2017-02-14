@@ -8,7 +8,7 @@
 #include <iostream>
 namespace NGraphic {
 	namespace NBuffer {
-		struct ClusterIndex {
+		struct ClusterItem {
 			unsigned short light;
 			unsigned short decal;
 			unsigned short probe;
