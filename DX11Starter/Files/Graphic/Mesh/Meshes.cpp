@@ -1,6 +1,8 @@
 #include "Graphic\Mesh\IMesh.h"
 #include "Graphic\Mesh\MeshLine.h"
 #include "Graphic\Mesh\MeshCube.h"
+#include <Graphic\Mesh\Vertex.h>
+#include <Graphic\Mesh\VertexPosition.h>
 
 using namespace NGraphic;
 

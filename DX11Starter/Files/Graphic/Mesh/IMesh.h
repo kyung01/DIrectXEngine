@@ -3,14 +3,10 @@
 #include <list>
 #include <vector>
 #include <d3d11.h>
-#include <Graphic\Vertex.h>
 #include <SimpleMath.h>
 #include <iostream>
 namespace NGraphic {
-	struct VertexPosition
-	{
-		DirectX::XMFLOAT3 position;
-	};
+
 	class IMesh {
 	private:
 	protected:

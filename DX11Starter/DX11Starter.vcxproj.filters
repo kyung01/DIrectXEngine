@@ -96,9 +96,6 @@
     <ClCompile Include="Files\Graphic\Asset\Asset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Files\Graphic\Vertex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Files\Game\cpp\Entities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -112,6 +109,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Files\Graphic\Buffer\Buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Graphic\Mesh\Vertex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Graphic\RenderInstruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -221,9 +224,6 @@
     <ClInclude Include="Files\Graphic\Mesh\IMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Files\Graphic\Vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Files\Graphic\Mesh\MeshCube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -270,6 +270,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Graphic\Buffer\ClusterredFrustumBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\Mesh\Vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\Mesh\VertexPosition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\RenderInstruction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -142,6 +142,7 @@
     <ClCompile Include="Files\Graphic\cpp\RenderTexture.cpp" />
     <ClCompile Include="Files\Graphic\cpp\RenderStateStack.cpp" />
     <ClCompile Include="Files\Graphic\Mesh\Meshes.cpp" />
+    <ClCompile Include="Files\Graphic\RenderInstruction.cpp" />
     <ClCompile Include="Files\Graphic\Scene\GraphicScene.cpp" />
     <ClCompile Include="Files\Graphic\Scene\Scene Graphic.cpp" />
     <ClCompile Include="Files\imgui\cpp\Context_imgui.cpp" />
@@ -154,7 +155,7 @@
     <ClCompile Include="Files\Graphic\cpp\GraphicMain.cpp" />
     <ClCompile Include="Files\Object.cpp" />
     <ClCompile Include="Files\Graphic\cpp\SimpleShader.cpp" />
-    <ClCompile Include="Files\Graphic\Vertex.cpp" />
+    <ClCompile Include="Files\Graphic\Mesh\Vertex.cpp" />
     <ClCompile Include="Files\WorldCamera.cpp" />
     <ClCompile Include="Files\WorldMain.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -187,6 +188,8 @@
     <ClInclude Include="Files\Graphic\Mesh\IMesh.h" />
     <ClInclude Include="Files\Graphic\Mesh\MeshCube.h" />
     <ClInclude Include="Files\Graphic\Mesh\MeshLine.h" />
+    <ClInclude Include="Files\Graphic\Mesh\VertexPosition.h" />
+    <ClInclude Include="Files\Graphic\RenderInstruction.h" />
     <ClInclude Include="Files\Graphic\RenderStateStack.h" />
     <ClInclude Include="Files\Graphic\Scene\Camera.h" />
     <ClInclude Include="Files\Graphic\Scene\Light.h" />
@@ -210,7 +213,7 @@
     <ClInclude Include="Files\Object.h" />
     <ClInclude Include="Files\Graphic\RenderTexture.h" />
     <ClInclude Include="Files\Graphic\SimpleShader.h" />
-    <ClInclude Include="Files\Graphic\Vertex.h" />
+    <ClInclude Include="Files\Graphic\Mesh\Vertex.h" />
     <ClInclude Include="Files\WorldMain.h" />
   </ItemGroup>
   <ItemGroup>

@@ -83,19 +83,13 @@ namespace NGraphic {
 		void update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene);
 		
 		
-		void renderWorldNormalDiffuse(ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset, NScene::Scene& scene, DirectX::SimpleMath::Matrix worldMatrix);//rendering the normal scene
 		void renderUI(ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset, NScene::Scene& scene, DirectX::SimpleMath::Matrix worldMatrix);//rendering the normal scene
 
 		void renderWorld(ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
 			NScene::Scene& scene,
 			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
 			RenderTexture &renderTexture, DepthTexture& depthTexture);//rendering the normal scene
-		void renderFrustum(
-			ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
-			Vector3 eyePosition,
-			DirectX::XMMATRIX& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
-			RenderTexture &renderTexture, DepthTexture &depthTexture,
-			RenderTexture &renderTexture2 , DepthTexture &depthTexture2 );//rendering the normal scene
+		
 
 		void render(
 			ID3D11Device * device, ID3D11DeviceContext * context,
@@ -121,16 +115,6 @@ namespace NGraphic {
 			Vector3 eyePos,
 			Vector3 lightPos, Vector3 lightDir, Vector3 lightColor, float lightInner, float lightOutter,
 			std::shared_ptr<RenderTexture> lightShadow, DirectX::XMMATRIX lightMVP, float lightFOV);
-		void renderLightShaft(
-			ID3D11Device * device, ID3D11DeviceContext *context,
-			RenderTexture& renderTexture, DepthTexture& depthTexture,
-			Asset& asset,
-			Vector3 eyePos, Vector3 eyeLook,
-			Vector3 lightPos, Vector3 lightDir, Vector3 lightColor, float lightInner, float lightOutter,
-			std::shared_ptr<RenderTexture> frustumFront,
-			std::shared_ptr<RenderTexture> frustumBack,
-
-			std::shared_ptr<RenderTexture> lightShadow, 
-			DirectX::XMMATRIX lightMVP, float lightFOV);
+	
 	};
 }

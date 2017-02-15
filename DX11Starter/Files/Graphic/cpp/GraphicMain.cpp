@@ -1,6 +1,6 @@
 #include "Graphic\GraphicMain.h"
 #include <string>
-
+#include "Graphic\RenderInstruction.h"
 using namespace NGraphic;
 
 static int SIZE_LIGHT_TEXTURE = 512*2;
@@ -129,65 +129,6 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 	
 }
 
-void NGraphic::GraphicMain::renderWorldNormalDiffuse(
-	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene, 
-	DirectX::SimpleMath::Matrix worldMatrix)
-{
-	beginRendering(context);
-	DirectX::XMFLOAT4X4 matrixStore;
-	SimpleVertexShader&		shaderVert	= *asset.m_shadersVert[RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY];
-	SimpleFragmentShader&	shaderFrag	= *asset.m_shadersFrag[RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY];
-	
-	m_renderTextures[TARGET_WORLD]	->clear(context, 0, 0, 0, 0);
-	m_renderTextures[TARGET_NORMAL]	->clear(context, 0, 0, 0, 0);
-	m_renderTextures[TARGET_DIFFUSE]->clear(context, 0, 0, 0, 0);
-	m_renderTextures[TARGET_PROPERTY]->clear(context, 0, 0, 0,0);
-	m_depthTextures[DEPTH_WORLD]	->clear(context);
-	ID3D11RenderTargetView *renderTargets[]{
-		m_renderTextures[TARGET_WORLD]->getRenderTargetView(),
-		m_renderTextures[TARGET_NORMAL]->getRenderTargetView(),
-		m_renderTextures[TARGET_DIFFUSE]->getRenderTargetView(),
-		m_renderTextures[TARGET_PROPERTY]->getRenderTargetView()
-	};
-	context->OMSetRenderTargets(4, renderTargets, m_depthTextures[DEPTH_WORLD]->getDepthStencilView());
-	context->RSSetViewports(1, &m_renderTextures[TARGET_WORLD]->getViewPort() );
-
-	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(scene.m_camMain.getViewMatrix())); // Transpose for HLSL!
-	shaderVert.SetMatrix4x4("view", matrixStore);
-	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(scene.m_camMain.getProjectionMatrix(m_renderTextures[TARGET_WORLD]->getWidth(), m_renderTextures[TARGET_WORLD]->getHeight()))); // Transpose for HLSL!
-	shaderVert.SetMatrix4x4("proj", matrixStore);
-	shaderFrag.SetSamplerState("samplerWrap", asset.m_samplers[SAMPLER_ID_WRAP]);
-
-	shaderVert.SetShader();
-	shaderFrag.SetShader();
-	for (auto it = scene.objs_solid.begin(); it != scene.objs_solid.end(); it++) {
-		NGraphic::NScene::Object& object = **it;
-		NGraphic::Mesh& mesh = *asset.m_meshes[(*it)->m_meshId];
-		auto modelWorldMatrix = DirectX::XMMatrixMultiply(worldMatrix, object.getModelMatrix());
-		DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(object.getModelMatrix()) ); // Transpose for HLSL!
-		shaderVert.SetMatrix4x4("world", matrixStore);
-		shaderFrag.SetShaderResourceView("texture_diffuse", asset.m_textures[object.m_textures[TEXTURE_TYPE_DIFFUSE]]);
-		shaderFrag.SetShaderResourceView("texture_normal", asset.m_textures[object.m_textures[TEXTURE_TYPE_NORMAL]]);
-		shaderFrag.SetShaderResourceView("texture_property", asset.m_textures[object.m_textures[TEXTURE_TYPE_PROPERTY]]);
-		shaderVert.CopyAllBufferData();
-		shaderFrag.CopyAllBufferData();
-
-		UINT stride = sizeof(Vertex);
-		UINT offset = 0;
-		context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);
-		context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
-
-		context->DrawIndexed(
-			mesh.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
-			0,     // Offset to the first index we want to use
-			0);    // Offset to add to each index when looking up vertices
-	}
-	//clean up bindings
-	shaderFrag.SetShaderResourceView("texture_diffuse", 0);
-	shaderFrag.SetShaderResourceView("texture_normal", 0);
-	shaderFrag.SetShaderResourceView("texture_property", 0);
-	endRendering(context);
-}
 
 void NGraphic::GraphicMain::renderUI(ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene, DirectX::SimpleMath::Matrix worldMatrix)
 {
@@ -241,68 +182,6 @@ void NGraphic::GraphicMain::renderWorld(
 
 }
 
-void NGraphic::GraphicMain::renderFrustum(
-	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
-	Vector3 eyePosition,
-	DirectX::XMMATRIX& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
-	RenderTexture& renderTexture, DepthTexture& depthTexture,
-	RenderTexture& renderTexture2, DepthTexture& depthTexture2) {
-#define RENDER_LIGHTS(shaderVertSimpleColor,DshaderFrag) 	{NGraphic::Mesh& mesh = *asset.m_meshes[MESH_POINTLIGHT];\
-DirectX::XMStoreFloat4x4(&matWorld, XMMatrixTranspose( worldMatrix));\
-shaderVertSimpleColor.SetMatrix4x4("world", matWorld);\
-shaderVertSimpleColor.CopyAllBufferData();\
-DshaderFrag.CopyAllBufferData();\
-UINT stride = sizeof(Vertex);\
-UINT offset = 0;\
-context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);\
-context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);\
-context->DrawIndexed(\
-	mesh.getBufferIndexCount(),\
-	0,\
-	0);};
-
-	beginRendering(context);
-	DirectX::XMFLOAT4X4 matWorld,matView,matProj;
-	SimpleVertexShader&		shaderVert = *asset.m_shadersVert[RENDER_WORLD];
-	SimpleFragmentShader&	shaderFrag = *asset.m_shadersFrag[RENDER_WORLD];
-	SimpleVertexShader&		shaderVertSimpleColor = *asset.m_shadersVert[RENDER_FRUSTUM_INSIDE];
-	SimpleFragmentShader&	shaderFragSimpleColor = *asset.m_shadersFrag[RENDER_FRUSTUM_INSIDE];
-	renderTexture.clear(context, 0, 0, 0, 0);
-	depthTexture.clear(context);
-	//render the front face first
-	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
-	DirectX::XMStoreFloat4x4(&matView, XMMatrixTranspose(viewMatrix)); // Transpose for HLSL!
-	DirectX::XMStoreFloat4x4(&matProj, XMMatrixTranspose(projMatrix)); // Transpose for HLSL!
-
-	shaderVert.SetMatrix4x4("view", matView);
-	shaderVert.SetMatrix4x4("proj", matProj);
-	//shaderFrag.SetSamplerState("samplerWrap", asset.m_samplers[SAMPLER_ID_WRAP]);
-	shaderVert.SetShader();
-	shaderFrag.SetShader();
-	RENDER_LIGHTS(shaderVert,shaderFrag);
-
-	context->RSSetState(asset.RASTR_STATE_CULL_FRONT);
-	renderTexture2.clear(context, 0, 0, 0, 0);
-	depthTexture2.clear(context);
-	renderTexture2.setRenderTarget(context, depthTexture2.getDepthStencilView());
-
-	RENDER_LIGHTS(shaderVert, shaderFrag);
-	//context->OMSetDepthStencilState(asset.DEPTH_STATE_SKYBOX, 0);
-	{
-
-
-		renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
-		shaderVertSimpleColor.SetMatrix4x4("view", matView);
-		shaderVertSimpleColor.SetMatrix4x4("proj", matProj);
-		shaderFragSimpleColor.SetFloat3("eyePos",eyePosition);
-
-		shaderVertSimpleColor.SetShader();
-		shaderFragSimpleColor.SetShader();
-		RENDER_LIGHTS(shaderVertSimpleColor, shaderFragSimpleColor);
-	}
-
-	endRendering(context);
-}
 
 void NGraphic::GraphicMain::renderSkyboxReflection(
 	ID3D11Device * device, ID3D11DeviceContext * context, RenderTexture & renderTexture, DepthTexture & depthTexture, 
@@ -410,294 +289,9 @@ void NGraphic::GraphicMain::renderDirectLight(
 
 	endRendering(context);
 }
-float density = 0.0;
-
-void NGraphic::GraphicMain::renderLightShaft(
-	ID3D11Device * device, ID3D11DeviceContext * context, 
-	RenderTexture& renderTexture, DepthTexture& depthTexture,
-	Asset & asset, 
-	Vector3 eyePos, Vector3 eyeLook, 
-	Vector3 lightPos, Vector3 lightDir, Vector3 lightColor, float lightInner, float lightOutter,
-	std::shared_ptr<RenderTexture> frustumFront, std::shared_ptr<RenderTexture> frustumBack, std::shared_ptr<RenderTexture> lightShadow, DirectX::XMMATRIX lightMVP, float lightFOV)
-{
-	beginRendering(context);
-
-	context->OMSetBlendState(asset.BLEND_STATE_ADDITIVE, 0, 0xffffffff);
-	context->RSSetState(asset.RASTR_STATE_CULL_BACK);
-
-	DirectX::XMFLOAT4X4 matrixStore;
-	NGraphic::Mesh& mesh = *asset.m_meshes[MESH_ID_PLANE];
-	SimpleVertexShader&		shaderVert = *asset.m_shadersVert[RENDER_LIGHT_SHAFT];
-	SimpleFragmentShader&	shaderFrag = *asset.m_shadersFrag[RENDER_LIGHT_SHAFT];
-
-	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
-	depthTexture.clear(context);
-
-	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(orthoMVP)); // Transpose for HLSL!
-	shaderVert.SetMatrix4x4("matMVP", matrixStore);
-	shaderFrag.SetSamplerState("samplerWrap", asset.m_samplers[SAMPLER_ID_WRAP]);
-	shaderFrag.SetSamplerState("samplerBoarderZero", asset.m_samplers[SAMPLER_ID_BORDER_ZERO]);
-	shaderFrag.SetShaderResourceView("textureShadow", lightShadow->getShaderResourceView());
-	shaderFrag.SetShaderResourceView("textureWorld", m_renderTextures[TARGET_WORLD]->getShaderResourceView());
-	shaderFrag.SetShaderResourceView("textureFrustumFront", frustumFront->getShaderResourceView());
-	shaderFrag.SetShaderResourceView("textureFrustumBack", frustumBack->getShaderResourceView());
-	shaderFrag.SetFloat("density", density);
-	shaderFrag.SetFloat3("eyePos", eyePos);
-	shaderFrag.SetFloat3("eyeLook", eyeLook);
-	shaderFrag.SetFloat3("lightPos", lightPos);
-	shaderFrag.SetFloat3("lightDir", lightDir);
-	shaderFrag.SetFloat3("lightColor", Vector3(lightColor));
-	shaderFrag.SetFloat("lightInner",  lightInner);
-	shaderFrag.SetFloat("lightOutter", lightOutter);
-	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(lightMVP)); // Transpose for HLSL!
-	shaderFrag.SetMatrix4x4("matLightMVP", matrixStore);
-	shaderVert.SetShader();
-	shaderFrag.SetShader();
-	shaderVert.CopyAllBufferData();
-	shaderFrag.CopyAllBufferData();
-
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);
-	context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
-	context->DrawIndexed(
-		mesh.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
-		0,     // Offset to the first index we want to use
-		0);    // Offset to add to each index when looking up vertices
-
-			   //clean up bindings
-	shaderFrag.SetShaderResourceView("textureFrustumFront", 0);
-	shaderFrag.SetShaderResourceView("textureFrustumBack", 0);
-	shaderFrag.SetShaderResourceView("textureShadow", 0);
-	shaderFrag.SetShaderResourceView("textureWorld", 0);
-
-	endRendering(context);
-}
-void NGraphic::GraphicMain::renderDebug(
-	ID3D11Device * device, ID3D11DeviceContext * context,
-	RenderTexture& renderTexture, DepthTexture& depthTexture, 
-	
-	Asset& asset, NGame::Context& game, NScene::Scene& scene) {
-	beginRendering(context);
-	DirectX::XMFLOAT4X4 matStore;
-	auto &shaderVert = *asset.m_shadersVert[RENDER_TRANSPARENT];
-	auto &shaderFrag = *asset.m_shadersFrag[RENDER_TRANSPARENT];
-	NGraphic::Mesh&		sphere = *asset.m_meshes[MESH_ID_SPHERE];
-	NGraphic::Mesh&		box = *asset.m_meshes[MESH_ID_CUBE];
-	NGraphic::MeshLine&	line = *asset.m_meshLine;
-	NGraphic::MeshCube&	cube = *asset.m_meshCube;
-	auto r = renderTexture.getRenderTargetView();
-	auto &view = renderTexture.getViewPort();
-	//atuo d = depthTexture.getDepthStencilView();
-	context->OMSetRenderTargets(1, &r, NULL);
-	context->RSSetViewports(1, &view);
-	
 
 
-	//context->RSSetState(asset.RASTR_STATE_CULL_);
-	context->OMSetBlendState(asset.BLEND_STATE_ADDITIVE, 0, 0xffffffff);
 
-	DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(scene.m_camMain.getViewMatrix())); // Transpose for HLSL!
-	shaderVert.SetMatrix4x4("view", matStore);
-	DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(scene.m_camMain.getProjectionMatrix())); // Transpose for HLSL!
-	shaderVert.SetMatrix4x4("proj", matStore);
-	shaderFrag.SetShaderResourceView("textureEyeDepth", m_depthTextures[DEPTH_WORLD]->getShaderResourceView());
-	shaderFrag.SetSamplerState("samplerBoarderZero", asset.m_samplers[SAMPLER_ID_BORDER_ZERO]);
-	shaderFrag.SetFloat("SCREEN_WIDTH", renderTexture.getWidth());
-	shaderFrag.SetFloat("SCREEN_HEIGHT", renderTexture.getHeight() );
-	shaderVert.SetShader();
-	shaderFrag.SetShader();
-
-	
-	//Render virtual objects in scale of light
-	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
-		
-		Vector3 lightScale = it->get()->m_scale;
-		it->get()->setScale(Vector3(it->get()->m_lightDistance * 2));
-
-		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(
-			
-			
-			
-			(**it).getModelMatrix())); // Transpose for HLSL!
-		shaderVert.SetMatrix4x4("world", matStore);
-		shaderFrag.SetFloat3("color", Vector3((**it).getLightColor()));
-
-
-		shaderVert.CopyAllBufferData();
-		shaderFrag.CopyAllBufferData();
-
-
-		UINT stride = sizeof(Vertex);
-		UINT offset = 0;
-		context->IASetVertexBuffers(0, 1, &sphere.getBufferVertexRef(), &stride, &offset);
-		context->IASetIndexBuffer(sphere.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
-		context->DrawIndexed(
-			sphere.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
-			0,     // Offset to the first index we want to use
-			0);    // Offset to add to each index when looking up vertices
-		it->get()->setScale(lightScale);
-	}
-	float red = 0;
-	
-	float angle = -m_frustum.m_angle/2;
-	float angleIncrease = m_frustum.m_angle / m_frustum.m_division;
-
-	if(false)for (auto it = m_frustum.planesX.begin(); it != m_frustum.planesX.end(); it++) {
-		auto matRotation = DirectX::XMMatrixRotationY( angle);
-		auto matScale = DirectX::XMMatrixScaling(0.051, 0.5f, 20);
-		red += 0.2f;
-
-
-		//DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(matRotation,)); // Transpose for HLSL!
-		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(DirectX::XMMatrixMultiply(matScale, matRotation))); // Transpose for HLSL!
-		shaderVert.SetMatrix4x4("world", matStore);
-		shaderFrag.SetFloat4("color", Vector4(red,1,1,1.0) );
-
-
-		shaderVert.CopyAllBufferData();
-		shaderFrag.CopyAllBufferData();
-
-
-		UINT stride = sizeof(Vertex);
-		UINT offset = 0;
-		context->IASetVertexBuffers(0, 1, &box.getBufferVertexRef(), &stride, &offset);
-		context->IASetIndexBuffer(box.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
-		context->DrawIndexed(
-			box.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
-			0,     // Offset to the first index we want to use
-			0);    // Offset to add to each index when looking up vertices
-
-		angle += angleIncrease;
-	
-	}
-	context->RSSetState(asset.RASTR_STATE_CULL_BACK);
-	ID3D11Buffer * bufferVertices, *bufferIndices;
-	
-	if (false)for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
-		bufferVertices = cube.getBufferVertices();
-		bufferIndices = cube.getBufferIndices();
-		Vector3 lightScale = it->get()->m_scale;
-		it->get()->setScale(Vector3::One);
-
-		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix())); // Transpose for HLSL!
-		shaderVert.SetMatrix4x4("world", matStore);
-		Vector3 color = (**it).getLightColor();
-		shaderFrag.SetFloat4("color", Vector4(color.x, color.y, color.z,1));
-
-
-		shaderVert.CopyAllBufferData();
-		shaderFrag.CopyAllBufferData();
-
-
-		UINT stride = sizeof(VertexPosition);
-		UINT offset = 0;
-		context->IASetVertexBuffers(0, 1, &bufferVertices, &stride, &offset);
-		context->IASetIndexBuffer(bufferIndices, DXGI_FORMAT_R32_UINT, 0);
-		context->DrawIndexed(
-			3*2*6,
-			//cube.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
-			0,     // Offset to the first index we want to use
-			0);    // Offset to add to each index when looking up vertices
-		it->get()->setScale(lightScale);
-	}
-
-	DirectX::XMStoreFloat4x4(&matStore, Matrix::Identity); // Transpose for HLSL!
-	shaderVert.SetMatrix4x4("world", matStore);
-
-	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
-	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
-	int index = 0;
-
-	float randomSeed = 0;
-	
-	for (auto it = m_frustum.m_clusters.begin(); it != m_frustum.m_clusters.end(); it++, index++) {
-		randomSeed++;
-		if (it->light.size()) {
-			auto frustum = asset.m_frustums[index];
-			bufferVertices = frustum->getBufferVertices();
-			bufferIndices = frustum->getBufferIndices();
-			auto color = asset.getRandomColor(randomSeed);
-			shaderFrag.SetFloat4("color", Vector4(color.x, color.y, color.z, 0.5f));
-
-
-			shaderVert.CopyAllBufferData();
-			shaderFrag.CopyAllBufferData();
-
-
-			UINT stride = sizeof(VertexPosition);
-			UINT offset = 0;
-			context->IASetVertexBuffers(0, 1, &bufferVertices, &stride, &offset);
-			context->IASetIndexBuffer(bufferIndices, DXGI_FORMAT_R32_UINT, 0);
-			context->DrawIndexed(
-				frustum->getBufferIndexCount(),
-				//cube.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
-				0,     // Offset to the first index we want to use
-				0);    // Offset to add to each index when looking up vertices
-		}
-	}
-	
-
-	/*
-	for (auto frustum = asset.m_frustums.begin(); frustum != asset.m_frustums.end(); frustum++) {
-		bufferVertices = frustum->second->getBufferVertices();
-		bufferIndices = frustum->second->getBufferIndices();
-		auto color = asset.getRandomColor(randomSeed++);
-		shaderFrag.SetFloat4("color", Vector4(color.x,color.y,color.z,0.5f) );
-
-
-		shaderVert.CopyAllBufferData();
-		shaderFrag.CopyAllBufferData();
-
-
-		UINT stride = sizeof(VertexPosition);
-		UINT offset = 0;
-		context->IASetVertexBuffers(0, 1, &bufferVertices, &stride, &offset);
-		context->IASetIndexBuffer(bufferIndices, DXGI_FORMAT_R32_UINT, 0);
-		context->DrawIndexed(
-			frustum->second->getBufferIndexCount(),
-			//cube.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
-			0,     // Offset to the first index we want to use
-			0);    // Offset to add to each index when looking up vertices
-	}
-	*/
-		
-
-
-	context->RSSetState(asset.RASTR_WIREFRAME);
-
-	if(false)for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
-		bufferVertices = line.getBufferVertices();
-		bufferIndices = line.getBufferIndices();
-		Vector3 lightScale = it->get()->m_scale;
-		it->get()->setScale(Vector3::One);
-
-		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix())); // Transpose for HLSL!
-		shaderVert.SetMatrix4x4("world", matStore);
-		shaderFrag.SetFloat3("color", Vector3((**it).getLightColor()));
-
-
-		shaderVert.CopyAllBufferData();
-		shaderFrag.CopyAllBufferData();
-
-
-		UINT stride = sizeof(VertexPosition);
-		UINT offset = 0;
-		context->IASetVertexBuffers(0, 1, &bufferVertices, &stride, &offset);
-		context->IASetIndexBuffer(bufferIndices, DXGI_FORMAT_R32_UINT, 0);
-		context->DrawIndexed(
-			line.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
-			0,     // Offset to the first index we want to use
-			0);    // Offset to add to each index when looking up vertices
-		it->get()->setScale(lightScale);
-	}
-
-	shaderFrag.SetShaderResourceView("textureEyeDepth", 0);
-
-	
-	endRendering(context);
-
-}
 void NGraphic::GraphicMain::render(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
 	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
@@ -779,8 +373,14 @@ void NGraphic::GraphicMain::render(
 
 	//context->OMSetBlendState(asset.BLEND_STATE_, 0, 0xffffffff);
 	//context->RSSetState(asset.RASTR_STATE_CULL_BACK);
-
-	renderWorldNormalDiffuse(device, context, asset, scene, worldMatrix);
+	RenderInstruction::RENDER_WORLD_NORMAL_DIFFUSE(
+		device, context, asset, scene,
+		*m_renderTextures[TARGET_WORLD],
+		*m_renderTextures[TARGET_NORMAL],
+		*m_renderTextures[TARGET_DIFFUSE],
+		*m_renderTextures[TARGET_PROPERTY],
+		*m_depthTextures[DEPTH_WORLD],
+		worldMatrix);
 	//now start rendering real stuff
 	
 
@@ -789,8 +389,11 @@ void NGraphic::GraphicMain::render(
 
 	if (true) {
 		m_depthTextures[DEPTH_FINAL]->clear(context);
-		renderDebug(device, context, *m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL],
-			 asset, game, scene);
+		RenderInstruction::RENDER_DEBUG(
+			device, context, asset,
+			*m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL],
+			  game, scene,m_frustum,
+			*m_depthTextures[DEPTH_WORLD]);
 
 	}
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
@@ -821,21 +424,31 @@ void NGraphic::GraphicMain::render(
 		}
 
 		if (true) {
-			renderFrustum(device, context, asset,
+			beginRendering(context);
+			RenderInstruction::RENDER_FRUSTUM(
+				device, context, asset,
 				scene.m_camMain.m_pos,
 				lightWorldMatirx, viewMatirx, projMatrix,
 				*m_renderTextures[TARGET_LIGHTSHAFT_FRONT], *m_depthTextures[TARGET_LIGHTSHAFT_FRONT],
-				*m_renderTextures[TARGET_LIGHTSHAFT_BACK], *m_depthTextures[TARGET_LIGHTSHAFT_BACK]);
-			renderLightShaft(
+				*m_renderTextures[TARGET_LIGHTSHAFT_BACK], *m_depthTextures[TARGET_LIGHTSHAFT_BACK]
+			);
+			endRendering(context);
+
+			beginRendering(context);
+			RenderInstruction::RENDER_LIGHTSHAFT_SPOTLIGHT(
 				device, context,
+				asset,
 				//m_renderTextureDummy, m_depthTextureDummy,
 				*m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL],
-				asset,
+				orthoMVP,
 				scene.m_camMain.m_pos, scene.m_camMain.m_dirLook,
-				light.m_pos, light.m_dirLook, light.getLightColor(), light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),
-				m_renderTextures[TARGET_LIGHTSHAFT_FRONT],
-				m_renderTextures[TARGET_LIGHTSHAFT_BACK],
-				m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());
+				light.m_pos, light.m_dirLook, light.getLightColor(), light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),1.0f,
+				*m_renderTextures[TARGET_WORLD],
+				*m_renderTextures[TARGET_LIGHTSHAFT_FRONT],
+				*m_renderTextures[TARGET_LIGHTSHAFT_BACK],
+				*m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());
+			endRendering(context);
+			
 		}
 
 		if (false) {
@@ -847,23 +460,7 @@ void NGraphic::GraphicMain::render(
 
 		}
 
-
-		
-
-		//m_depthTextureDummy.clear(context);
-		//m_depthTextures[DEPTH_FINAL]->clear(context);
-		//m_depthTextures[DEPTH_FINAL]->clear(context);
-		
 	}
-
-	//let's render debug
-	
-
-
-	
-
-
-
 
 }
 
