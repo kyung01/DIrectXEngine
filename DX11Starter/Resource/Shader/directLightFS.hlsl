@@ -7,7 +7,6 @@ cbuffer global00 :register(b0)
 	float3 lightDir;
 	float3 lightColor;
 	float3 eyePos;
-	float lightPower;
 	float lightInner;
 	float lightOutter;
 	matrix matLightMVP; //used to wrap world to screen relative projected position
@@ -41,7 +40,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float3 normal = textureNormal.Sample(samplerDefault, input.uv).xyz;//
 	float4 diffuse = textureDiffuse.Sample(samplerDefault, input.uv);//
 	float l = pointLight(
-		lightPos, lightDir,lightPower, lightInner, lightOutter,
+		lightPos, lightDir, lightInner, lightOutter,
 		textureShadow, matLightMVP, samplerBoarderZero, eyePos, position.xyz, normal);
 	l = saturate(l);
 	return float4(lightColor* diffuse.xyz * l, 0);

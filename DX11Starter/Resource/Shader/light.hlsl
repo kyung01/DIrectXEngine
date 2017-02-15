@@ -27,7 +27,7 @@ float isPixelLit(
 	return max(0,lightDepth - 0.1)< lightDepthClosest ;
 }
 float pointLight(
-	float3 lightPos,float3 lightDir, float lightPower, float lightInner,float lightOutter,
+	float3 lightPos,float3 lightDir, float lightInner,float lightOutter,
 	Texture2D textureShadow, float4x4 matLightMVP,
 	SamplerState samplerBoarderZero,
 	float3 eyePos,
@@ -46,5 +46,5 @@ float pointLight(
 	//return isPixelLit(textureShadow, samplerBoarderZero,
 	//	matLightMVP,
 	//	position);
-	return lightPower* l_spotlight * shadow* dot(normalize(posToLight), normal) ;
+	return  l_spotlight * shadow* dot(normalize(posToLight), normal) ;
 }

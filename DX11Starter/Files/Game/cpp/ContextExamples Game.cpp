@@ -92,31 +92,31 @@ void NGame::LoadExample00(Context &context)
 
 
 	{
-		auto lightObj = context.m_scene->getSpotLight(3.14/2, Vector4(1,0,0,20),1);
+		auto lightObj = context.m_scene->getSpotLight(3.14/2, Vector3(20,0,0),1);
 		auto lightEntity = new Entity();
 		lightEntity->m_graphicObjects.push_back(lightObj);
 		lightEntity->setPos(-2.0, 0, 1.5);
-		lightObj->m_lightColor = Vector4(1,0,0,20);
+		lightObj->setLightColor(20,0,0);
 		lightObj->setScale(Vector3(15, 15, 15));
 		context.addEntity(std::shared_ptr<Entity>(lightEntity));
 
 	}
 	{
-		auto lightObj = context.m_scene->getSpotLight(3.14 / 2, Vector4(0, 1, 0, 20), 1);
+		auto lightObj = context.m_scene->getSpotLight(3.14 / 2, Vector3(0, 20, 0), 1);
 		auto lightEntity = new Entity();
 		lightEntity->m_graphicObjects.push_back(lightObj);
 		lightEntity->setPos(0, 3, 1.5);
-		lightObj->m_lightColor = Vector4(0, 1, 0,20);
+		lightObj->setLightColor(0, 20, 0);
 		lightObj->setScale(Vector3(15, 15, 15));
 		lightObj->setRotation(Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), 3.14 / 5));
 		context.addEntity(std::shared_ptr<Entity>(lightEntity));
 	}
 	{
-		auto lightObj = context.m_scene->getSpotLight(3.14 / 2, Vector4(0, 0, 1, 20), 1);
+		auto lightObj = context.m_scene->getSpotLight(3.14 / 2, Vector3(0, 0, 20), 1);
 		auto lightEntity = new Entity();
 		lightEntity->m_graphicObjects.push_back(lightObj);
 		lightEntity->setPos(2, 0, 1.5);
-		lightObj->m_lightColor = Vector4(0, 0, 1, 20);
+		lightObj->setLightColor(0, 0, 20);
 		lightObj->setScale(Vector3(15, 15, 15));
 		context.addEntity(std::shared_ptr<Entity>(lightEntity));
 	}

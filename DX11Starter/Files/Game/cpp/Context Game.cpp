@@ -47,11 +47,11 @@ void Context::init(NGraphic::NScene::Scene * scene)
 	//sphere00->setScale(Vector3(2.0f));
 
 
-	auto sphereLight = scene->getPointLight(Vector4(1, 1, 1, 1), 1);
+	auto sphereLight = scene->getPointLight(Vector3(1, 1, 1), 1);
 
 
 	//auto cone = scene->getObjSolid();
-	auto coneLight = scene->getSpotLight(3.14/2,Vector4(1,1,1,1),1);
+	auto coneLight = scene->getSpotLight(3.14/2,Vector3(1,1,1),1);
 	//cone->m_meshId = NGraphic::MESH_ID_CONE;
 	//cone->setScale(Vector3(2.0f));
 	//cone->setRotation(DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), -3.14 / 2));

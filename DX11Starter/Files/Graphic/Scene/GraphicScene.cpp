@@ -164,6 +164,11 @@ void Light::setLightColor(Vector3 color)
 
 void NGraphic::NScene::Light::setLightColor(float r, float g, float b)
 {
-	m_isLightDirty = ture;
+	m_isLightDirty = true;
 	m_lightColor = Vector3(r,g,b);
+}
+
+Vector3 NGraphic::NScene::Light::getLightColor()
+{
+	return m_lightColor;
 }

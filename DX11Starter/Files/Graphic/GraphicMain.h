@@ -56,9 +56,6 @@ namespace NGraphic {
 		
 		
 	protected:
-		ID3D11BlendState 
-			*m_blendStateNoBlack,
-			*m_blendStateTransparent;
 		//glm::mat4 matProjection, matView, matModel;
 		void processCamera(NScene::Camera cam);// = 0;
 		void beginRendering(ID3D11DeviceContext *context);// = 0;
@@ -122,14 +119,14 @@ namespace NGraphic {
 			RenderTexture& renderTexture, DepthTexture& depthTexture,
 			Asset& asset,
 			Vector3 eyePos,
-			Vector3 lightPos, Vector3 lightDir, Vector4 lightColor, float lightInner, float lightOutter,
+			Vector3 lightPos, Vector3 lightDir, Vector3 lightColor, float lightInner, float lightOutter,
 			std::shared_ptr<RenderTexture> lightShadow, DirectX::XMMATRIX lightMVP, float lightFOV);
 		void renderLightShaft(
 			ID3D11Device * device, ID3D11DeviceContext *context,
 			RenderTexture& renderTexture, DepthTexture& depthTexture,
 			Asset& asset,
 			Vector3 eyePos, Vector3 eyeLook,
-			Vector3 lightPos, Vector3 lightDir, Vector4 lightColor, float lightInner, float lightOutter,
+			Vector3 lightPos, Vector3 lightDir, Vector3 lightColor, float lightInner, float lightOutter,
 			std::shared_ptr<RenderTexture> frustumFront,
 			std::shared_ptr<RenderTexture> frustumBack,
 

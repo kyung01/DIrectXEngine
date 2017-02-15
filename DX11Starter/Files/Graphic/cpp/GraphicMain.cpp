@@ -103,27 +103,6 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 		!initTextures(device,context,width,height, textureIndirectLightWidth, textureIndirectLightHeight)
 		
 		) return false;
-	D3D11_BLEND_DESC noBlack = {};
-	noBlack.RenderTarget[0].BlendEnable = true;
-	noBlack.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	noBlack.RenderTarget[0].DestBlend = D3D11_BLEND_DEST_ALPHA;
-	noBlack.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	noBlack.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;//D3D11_BLEND_ZERO
-	noBlack.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;//D3D11_BLEND_ZERO
-	noBlack.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	noBlack.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-	device->CreateBlendState(&noBlack, &m_blendStateNoBlack);
-
-	D3D11_BLEND_DESC transparent = {};
-	transparent.RenderTarget[0].BlendEnable = true;
-	transparent.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	transparent.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-	transparent.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	transparent.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;//D3D11_BLEND_ZERO
-	transparent.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;//D3D11_BLEND_ZERO
-	transparent.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	transparent.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-	device->CreateBlendState(&transparent, &m_blendStateTransparent);
 
 	orthoView = DirectX::XMMatrixLookToLH(Vector3(0, 0, 1), Vector3(0, 0, -1), Vector3::Up);
 	orthoMVP = DirectX::XMMatrixMultiply( 
@@ -379,7 +358,7 @@ void NGraphic::GraphicMain::renderDirectLight(
 	RenderTexture& renderTexture, DepthTexture& depthTexture,
 	Asset& asset, 
 	Vector3 eyePos,
-	Vector3 lightPos,Vector3 lightDir, Vector4 lightColor,float lightInner, float lightOutter,
+	Vector3 lightPos,Vector3 lightDir, Vector3 lightColor,float lightInner, float lightOutter,
 	std::shared_ptr<RenderTexture> lightShadow, DirectX::XMMATRIX lightMVP, float lightFOV)
 {
 	beginRendering(context);
@@ -407,7 +386,6 @@ void NGraphic::GraphicMain::renderDirectLight(
 	shaderFrag.SetFloat3("lightDir", lightDir);
 	shaderFrag.SetFloat("lightInner", lightInner);
 	shaderFrag.SetFloat("lightOutter", lightOutter);
-	shaderFrag.SetFloat("lightPower", lightColor.w);
 	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(lightMVP)); // Transpose for HLSL!
 	shaderFrag.SetMatrix4x4("matLightMVP", matrixStore);
 	shaderVert.SetShader();
@@ -439,7 +417,7 @@ void NGraphic::GraphicMain::renderLightShaft(
 	RenderTexture& renderTexture, DepthTexture& depthTexture,
 	Asset & asset, 
 	Vector3 eyePos, Vector3 eyeLook, 
-	Vector3 lightPos, Vector3 lightDir, Vector4 lightColor, float lightInner, float lightOutter,
+	Vector3 lightPos, Vector3 lightDir, Vector3 lightColor, float lightInner, float lightOutter,
 	std::shared_ptr<RenderTexture> frustumFront, std::shared_ptr<RenderTexture> frustumBack, std::shared_ptr<RenderTexture> lightShadow, DirectX::XMMATRIX lightMVP, float lightFOV)
 {
 	beginRendering(context);
@@ -469,7 +447,6 @@ void NGraphic::GraphicMain::renderLightShaft(
 	shaderFrag.SetFloat3("lightPos", lightPos);
 	shaderFrag.SetFloat3("lightDir", lightDir);
 	shaderFrag.SetFloat3("lightColor", Vector3(lightColor));
-	shaderFrag.SetFloat("lightPower", lightColor.w);
 	shaderFrag.SetFloat("lightInner",  lightInner);
 	shaderFrag.SetFloat("lightOutter", lightOutter);
 	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(lightMVP)); // Transpose for HLSL!
@@ -544,7 +521,7 @@ void NGraphic::GraphicMain::renderDebug(
 			
 			(**it).getModelMatrix())); // Transpose for HLSL!
 		shaderVert.SetMatrix4x4("world", matStore);
-		shaderFrag.SetFloat3("color", Vector3((**it).m_lightColor));
+		shaderFrag.SetFloat3("color", Vector3((**it).getLightColor()));
 
 
 		shaderVert.CopyAllBufferData();
@@ -605,7 +582,7 @@ void NGraphic::GraphicMain::renderDebug(
 
 		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix())); // Transpose for HLSL!
 		shaderVert.SetMatrix4x4("world", matStore);
-		Vector3 color = (**it).m_lightColor;
+		Vector3 color = (**it).getLightColor();
 		shaderFrag.SetFloat4("color", Vector4(color.x, color.y, color.z,1));
 
 
@@ -697,7 +674,7 @@ void NGraphic::GraphicMain::renderDebug(
 
 		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix())); // Transpose for HLSL!
 		shaderVert.SetMatrix4x4("world", matStore);
-		shaderFrag.SetFloat3("color", Vector3((**it).m_lightColor));
+		shaderFrag.SetFloat3("color", Vector3((**it).getLightColor()));
 
 
 		shaderVert.CopyAllBufferData();
@@ -839,7 +816,7 @@ void NGraphic::GraphicMain::render(
 				//m_renderTextureDummy, m_depthTextureDummy, 
 				asset,
 				scene.m_camMain.m_pos,
-				light.m_pos, light.m_dirLook, light.m_lightColor, light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),
+				light.m_pos, light.m_dirLook, light.getLightColor(), light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),
 				m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());
 		}
 
@@ -855,7 +832,7 @@ void NGraphic::GraphicMain::render(
 				*m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL],
 				asset,
 				scene.m_camMain.m_pos, scene.m_camMain.m_dirLook,
-				light.m_pos, light.m_dirLook, light.m_lightColor, light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),
+				light.m_pos, light.m_dirLook, light.getLightColor(), light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),
 				m_renderTextures[TARGET_LIGHTSHAFT_FRONT],
 				m_renderTextures[TARGET_LIGHTSHAFT_BACK],
 				m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());

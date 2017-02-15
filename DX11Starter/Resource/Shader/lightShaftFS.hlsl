@@ -8,7 +8,6 @@ cbuffer global00 :register(b0)
 	float3 lightDir;
 	float3 lightColor;
 
-	float lightPower;
 	float lightInner;
 	float lightOutter;
 
@@ -100,7 +99,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 		//return float4(h, 0, 0, 1);
 		//break;
 		//float radiance = lightPower  * / (1 + lengthFast(distanceFromLight));
-		float radiance = lightPower* spotLight(lightPos, lightDir, lightInner, lightOutter, pos);
+		float radiance =  spotLight(lightPos, lightDir, lightInner, lightOutter, pos);
 
 		float rayAlong = dot(dirLightToPos, -dirEyeToPixel);
 		float h = henyeyGreenstein(density, rayAlong);
@@ -108,13 +107,6 @@ float4 main(VertexToPixel input) : SV_TARGET
 		color += radiance*sqrt(h) *isPixelLit(textureShadow, samplerBoarderZero, matLightMVP, pos) *(1/ MAX_SAMPLING);// *random(float2(pos.x - pos.z, pos.y + pos.z));
 		
 	}
-
-	//color *= 0.000001;
-	//for (float i = 1; i < 10; i++) {
-	//	float3 pos = front.xyz + dirEyeToPixel * (volumetricDistnace *i);
-	//	float3 distance = lightPos - pos;
-	//	color.x+= lightPower / (1 + lengthFast(distance) ) *  isPixelLit( textureShadow,  samplerBoarderZero, matLightMVP, pos);
-	//}
 	return float4(lightColor*color, 1);
 }
 /*
