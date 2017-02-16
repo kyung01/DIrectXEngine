@@ -61,6 +61,9 @@ bool GraphicMain::initTextures(ID3D11Device * device, ID3D11DeviceContext * cont
 	int width, int height,
 	int textureIndirectLightWidth, int textureIndirectLightHeight)
 {
+	int TEXTURE_LIGHT_ATLAS_UNIT = 256;
+	int TEXTURE_LIGHT_ATLAS_SIZE = 10;
+
 #define INIT_DEPTH_TEXTURE(key,defWidth, defHeight) \
 m_depthTextures[key] = std::shared_ptr<DepthTexture>(new DepthTexture());\
 m_depthTextures[key]->init(device, defWidth, defHeight);
@@ -75,12 +78,15 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 	INIT_RENDER_TEXTURE(TARGET_PROPERTY,		width, height);
 	INIT_RENDER_TEXTURE(TARGET_LIGHTSHAFT_FRONT,width, height);
 	INIT_RENDER_TEXTURE(TARGET_LIGHTSHAFT_BACK, width, height);
-	INIT_RENDER_TEXTURE(TARGET_FINAL,			width, height);
+	INIT_RENDER_TEXTURE(TARGET_FINAL, width, height);
+	INIT_RENDER_TEXTURE(TARGET_LIGHT_ATLAS, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE);
 
 	INIT_DEPTH_TEXTURE(DEPTH_WORLD, width, height);
 	INIT_DEPTH_TEXTURE(DEPTH_FINAL, width, height);
 	INIT_DEPTH_TEXTURE(TARGET_LIGHTSHAFT_FRONT, width, height);
 	INIT_DEPTH_TEXTURE(TARGET_LIGHTSHAFT_BACK, width, height);
+	INIT_DEPTH_TEXTURE(TARGET_LIGHT_ATLAS, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE);
+	m_atlasSlicer = std::make_shared<TextureAtlasSlicer>(TEXTURE_LIGHT_ATLAS_UNIT, TEXTURE_LIGHT_ATLAS_UNIT, TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_SIZE);
 	//m_depthTextures[TARGET_LIGHTSHAFT_BACK] = m_depthTextures[TARGET_LIGHTSHAFT_FRONT];
 
 	return true;
@@ -110,6 +116,20 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 		DirectX::XMMatrixOrthographicLH(1,1,0.1,100) );
 
 	return true;
+}
+
+void NGraphic::GraphicMain::updateLightAtlas()
+{
+	for (auto it = m_lightInfos.begin(); it != m_lightInfos.end(); it++) {
+		float offsetX, offsetY, roomSize;
+		
+		if (!m_atlasSlicer->getRoom(it->second.topLeftX, it->second.topLeftY, it->second.size, 1)) {
+			system("pause");
+		}
+		else {
+
+		}
+	}
 }
 
 void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene)

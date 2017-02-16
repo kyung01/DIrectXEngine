@@ -117,6 +117,9 @@
     <ClCompile Include="Files\Graphic\RenderInstruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Files\Graphic\cpp\TextureAtlasSlicer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\imgui\imconfig.h">
@@ -279,6 +282,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Graphic\RenderInstruction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\TextureAtlasSlicer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\LightInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

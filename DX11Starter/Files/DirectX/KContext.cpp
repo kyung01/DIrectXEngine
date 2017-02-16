@@ -62,17 +62,20 @@ void KContext::Init()
 
 	m_renderContexts.push_back({ "example00","Created for demo purpose.", NGame::Context(),GraphicMain(), Scene() });
 	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
+		if (!it->engine.init(this->device, this->context, 700,700, 256, 256)) {
+			std::cout << "GraphicMain failed to init" << std::endl;
+		}
 		it->gameContext.init(& it->scene);
 		NGame::LoadExample00(it->gameContext);
 
 		float ratio = 0.5f;
 
 		//if (!it->main.init(this->device, this->context, (int)round( ((float)this->width )*ratio), (int)round( ((float)this->height   )*ratio), 256, 256)) {
-		if (!it->engine.init(this->device, this->context, 700,700, 256, 256)) {
-			std::cout << "GraphicMain failed to init" << std::endl;
-		}
-		it->scene.loadExample00();
+		it->scene	.loadExample00();
+		it->engine.updateLightAtlas();
 	}
+
+
 	m_ui.init(hInstance, hWnd, device, context, swapChain, backBufferRTV);
 	m_ui.m_uiMain.init(&m_renderContexts.begin()->engine);//TODO delete this line
 	m_asset.init(device, context);

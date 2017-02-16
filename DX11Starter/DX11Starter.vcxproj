@@ -145,6 +145,7 @@
     <ClCompile Include="Files\Graphic\RenderInstruction.cpp" />
     <ClCompile Include="Files\Graphic\Scene\GraphicScene.cpp" />
     <ClCompile Include="Files\Graphic\Scene\Scene Graphic.cpp" />
+    <ClCompile Include="Files\Graphic\cpp\TextureAtlasSlicer.cpp" />
     <ClCompile Include="Files\imgui\cpp\Context_imgui.cpp" />
     <ClCompile Include="Files\imgui\cpp\UIMain_imgui.cpp" />
     <ClCompile Include="Files\imgui\cpp\dx11_imgui.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="Files\Graphic\DepthTexture.h" />
     <ClInclude Include="Files\Graphic\Enum.h" />
     <ClInclude Include="Files\Graphic\Asset\Mesh.h" />
+    <ClInclude Include="Files\Graphic\LightInfo.h" />
     <ClInclude Include="Files\Graphic\Mesh\IMesh.h" />
     <ClInclude Include="Files\Graphic\Mesh\MeshCube.h" />
     <ClInclude Include="Files\Graphic\Mesh\MeshLine.h" />
@@ -196,6 +198,7 @@
     <ClInclude Include="Files\Graphic\Scene\Object.h" />
     <ClInclude Include="Files\Graphic\Scene\Scene.h" />
     <ClInclude Include="Files\Graphic\Scene\SceneEnums.h" />
+    <ClInclude Include="Files\Graphic\TextureAtlasSlicer.h" />
     <ClInclude Include="Files\imgui\DirectX\Context.h" />
     <ClInclude Include="Files\imgui\DirectX\imgui_impl_dx11.h" />
     <ClInclude Include="Files\imgui\DirectX\KContext.h" />

@@ -331,8 +331,6 @@ void RenderInstruction::RENDER_DEBUG(
 
 	shaderFrag.SetShaderResourceView("textureEyeDepth", 0);
 
-
-
 }
 
 
