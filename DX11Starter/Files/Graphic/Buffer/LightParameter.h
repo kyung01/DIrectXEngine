@@ -13,7 +13,10 @@ namespace NGraphic {
 			DirectX::XMFLOAT3 axis;
 			float angle;
 			DirectX::XMFLOAT3 color;
-			DirectX::XMMATRIX mvp; //used to get depth information;
+			float topLeftX, topLeftY, viewPortWidth, viewPortHeight;
+			DirectX::XMMATRIX inverseViewProjX; //used to get depth information;
+			DirectX::XMMATRIX inverseViewProjY; //used to get depth information;
+			DirectX::XMMATRIX inverseViewProjZ; //used to get depth information;
 		};
 	}
 

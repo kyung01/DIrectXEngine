@@ -15,6 +15,8 @@
 
 #include <SimpleMath.h>
 #include <WICTextureLoader.h>
+#include <Graphic\Scene\Scene.h>
+#include <Graphic\LightInfo.h>
 #include <Graphic\Asset\Asset.h>
 #include <Graphic\Asset\Mesh.h>// TODO delete this
 #include <Graphic\Enum.h>
@@ -24,8 +26,6 @@
 #include <Graphic\Buffer\LightParameter.h>
 #include <Game\Context.h>
 
-#include <Graphic\Scene\Scene.h>
-#include <Graphic\LightInfo.h>
 
 namespace NGraphic {
 
@@ -39,7 +39,6 @@ namespace NGraphic {
 		DepthTexture		m_depthTextureDummy;
 		int					m_rsm_flux_eye_perspective_width, 
 							m_rsm_flux_eye_perspective_height;
-	
 		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::LightParameter>> m_lightBuffer;
 		
 
@@ -62,6 +61,7 @@ namespace NGraphic {
 		void beginRendering(ID3D11DeviceContext *context);// = 0;
 		void endRendering(ID3D11DeviceContext *context);// = 0;
 		void getScreenWidth(int &w, int &h);// = 0;
+		void updateBufferLightPrameter(ID3D11DeviceContext *context, std::list<std::shared_ptr<NScene::Light>> &lights);
 		void updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights);
 
 		

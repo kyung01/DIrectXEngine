@@ -28,7 +28,8 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 		{ RENDER_FRUSTUM_INSIDE,			L"Resource/Shader/frustumScreenSpaceVS.hlsl" },
 		{ RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectVS.hlsl" },
 		{ RENDER_ONE_COLOR,			L"Resource/Shader/OneColorVS.hlsl" },
-		{ RENDER_TRANSPARENT,			L"Resource/Shader/TransparentVS.hlsl" }
+		{ RENDER_TRANSPARENT,			L"Resource/Shader/TransparentVS.hlsl" },
+		{ RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightVS.hlsl" }
 	});
 	return lst;
 }
@@ -44,7 +45,8 @@ std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 		{ RENDER_FRUSTUM_INSIDE,			L"Resource/Shader/frustumScreenSpaceFS.hlsl" },
 		{ RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectFS.hlsl" },
 		{ RENDER_ONE_COLOR,			L"Resource/Shader/OneColorFS.hlsl" },
-		{ RENDER_TRANSPARENT,			L"Resource/Shader/TransparentFS.hlsl" }
+		{ RENDER_TRANSPARENT,			L"Resource/Shader/TransparentFS.hlsl" },
+		{ RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightFS.hlsl" }
 	});
 	return lst;
 }

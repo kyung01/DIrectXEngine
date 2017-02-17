@@ -19,6 +19,7 @@ namespace NGraphic {
 		protected:
 		public:
 			KDynamicBuffer(ID3D11Device * device, int maxLight) {
+				this->maxCount = maxLight;
 				lights = new T[maxLight];
 				D3D11_BUFFER_DESC vbd;
 				vbd.Usage = D3D11_USAGE_DYNAMIC;
@@ -41,11 +42,12 @@ namespace NGraphic {
 				D3D11_MAPPED_SUBRESOURCE mappedResource;
 				ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 				if (!DirectXUtility::HRESULT_CHECK(
-					context->Map(lights, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+					context->Map(buffer , 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
 					return false;
 				lights[at] = data;
 				memcpy(mappedResource.pData, lights, sizeof(T) * maxCount);
-				return DirectXUtility::HRESULT_CHECK(context->Unmap(vertexBuffer2.Get(), 0));
+				context->Unmap(buffer, 0);
+				return true;
 				
 			}
 		};

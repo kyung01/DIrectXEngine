@@ -33,6 +33,7 @@ void GraphicMain::getScreenWidth(int & w, int & h)
 }
 
 
+
 DirectX::XMMATRIX NGraphic::GraphicMain::getOrthogonalMatrixProj()
 {
 	return DirectX::XMMatrixOrthographicLH(1, 1, 0.0, 100);
@@ -94,6 +95,28 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 	//m_depthTextures[TARGET_LIGHTSHAFT_BACK] = m_depthTextures[TARGET_LIGHTSHAFT_FRONT];
 
 	return true;
+}
+void GraphicMain::updateBufferLightPrameter(ID3D11DeviceContext *context, std::list<std::shared_ptr<NScene::Light>>& lights)
+{
+	int index = 0;
+	NBuffer::LightParameter parameter;
+	for (auto it = lights.begin(); it != lights.end(); it++) {
+		auto &light = **it;
+		auto &info = m_lightInfos[it->get()->m_id];
+		parameter.angle = light.getFOV();
+		parameter.axis = light.m_dirLook;
+		parameter.color = light.getLightColor();
+		parameter.isSpotlight = light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT;
+		parameter.position = light.m_pos;
+		parameter.topLeftX = info.topLeftX;
+		parameter.topLeftY = info.topLeftY;
+		parameter.viewPortWidth = info.viewportWidth;
+		parameter.viewPortHeight = info.viewportHeight;
+		m_lightBuffer->setData(context, parameter, index++);
+
+		//parameter.inverseViewProjX
+	}
+	
 }
 
 void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights)
@@ -194,7 +217,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
 	m_rsm_flux_eye_perspective_height = textureIndirectLightHeight;
 	m_frustum.init(3.14 / 2, 1, 10, 10, 10, 10);
-	m_lightBuffer = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(device,256);
+	m_lightBuffer = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(device,10);
 
 	if (
 		!initTextures(device,context,width,height, textureIndirectLightWidth, textureIndirectLightHeight)
@@ -252,7 +275,7 @@ void NGraphic::GraphicMain::render(
 	}
 	if(newLightInfo)
 		updateLightAtlas(scene.objs_lights);
-
+	updateBufferLightPrameter(context,scene.objs_lights);
 
 	m_renderTextureDummy.setRenderTargetView(target, viewport);
 	m_depthTextureDummy.setDepthStencilView(targetDepth);

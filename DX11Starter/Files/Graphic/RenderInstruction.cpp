@@ -578,6 +578,61 @@ void RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 				0); \
 	}
 }
+void NGraphic::RenderInstruction::RENDER_LIGHT_ATLAS_TEST(
+
+	ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
+	RenderTexture & renderTexture, DepthTexture & depthTexture,
+	NScene::Scene& scene,
+	DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
+	ID3D11Buffer * lightParameter)
+{
+
+#define RENDER_OBJS for (auto it = scene.objs_solid.begin(); it != scene.objs_solid.end(); it++) {\
+		NGraphic::NScene::Object& light = **it; \
+		NGraphic::Mesh& mesh = *asset.m_meshes[light.m_meshId]; \
+		DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(light.getModelMatrix())); \
+		shaderVert.SetMatrix4x4("world", matrixStore); \
+		shaderVert.CopyAllBufferData(); \
+		shaderFrag.CopyAllBufferData(); \
+		context->VSSetConstantBuffers(0, 1, &lightParameter);\
+		UINT stride = sizeof(Vertex); \
+		UINT offset = 0; \
+		context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset); \
+		context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0); \
+		context->DrawIndexed(\
+			mesh.getBufferIndexCount(), \
+			0, \
+			0); \
+	}
+
+	DirectX::XMFLOAT4X4 matrixStore;
+	SimpleVertexShader&		shaderVert = *asset.m_shadersVert[KEnum::RENDER_WORLD];
+	SimpleFragmentShader&	shaderFrag = *asset.m_shadersFrag[KEnum::RENDER_WORLD];
+	//renderTexture.clear(context, 0, 0, 0, 99999);
+
+	context->RSSetState(asset.RASTR_STATE_CULL_BACK);
+	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
+	//depthTexture.clear(context);
+	//render the front face first
+
+
+
+	SET_MATRIX(&shaderVert, "view", viewMatrix);
+	SET_MATRIX(&shaderVert, "proj", projMatrix);
+
+
+	//DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(viewMatrix)); // Transpose for HLSL!
+	//shaderVert.SetMatrix4x4("view", matrixStore);
+	//DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(projMatrix)); // Transpose for HLSL!
+	//shaderVert.SetMatrix4x4("proj", matrixStore);
+	//shaderFrag.SetSamplerState("samplerWrap", asset.m_samplers[SAMPLER_ID_WRAP]);
+
+	shaderVert.SetShader();
+	shaderFrag.SetShader();
+	context->VSSetConstantBuffers(0, 1, &lightParameter); //delete?
+	RENDER_OBJS;
+
+}
 /*
 Render in order of +x -x +y -y  +z -z
 */

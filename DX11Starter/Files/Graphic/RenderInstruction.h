@@ -92,6 +92,14 @@ namespace NGraphic {
 			NScene::Scene &scene,
 			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
 			float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight);
+		static void RENDER_LIGHT_ATLAS_TEST(
+
+			ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
+			RenderTexture & renderTexture, DepthTexture & depthTexture,
+			NScene::Scene& scene,
+			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
+
+			ID3D11Buffer * lightParameter);
 		static void RENDER_LIGHT_ATLAS_POINT(
 
 			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
