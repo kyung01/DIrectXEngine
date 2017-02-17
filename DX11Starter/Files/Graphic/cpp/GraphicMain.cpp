@@ -154,16 +154,10 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		auto &light = **it;
 		auto &lightInfo = m_lightInfos[light.m_id];
-		
+		//What kinds of lights are there ?
 		//if (light.m_lightType != NScene::LIGHT_TYPE::SPOTLIGHT) continue;
 		
-		//m_renderTextures[TARGET_LIGHT_ATLAS]->setViewport(viewport);
-		//RenderInstruction::RENDER_WORLD(
-		//	device, context, asset,
-		//	*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
-		//	scene,
-		//	worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight())
-		//	);
+		//if(light.m_lightType == )
 		RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 			device, context, asset,
 			scene,

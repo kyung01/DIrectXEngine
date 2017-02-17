@@ -192,7 +192,7 @@ NGraphic::NScene::PointLight::PointLight()
 	m_lightType = LIGHT_TYPE::POINTLIGHT;
 }
 
-/*
+
 Matrix PointLight::getViewMatrix()
 {
 	if (m_isDirty_matView) {
@@ -201,7 +201,7 @@ Matrix PointLight::getViewMatrix()
 	}
 	return Light::getViewMatrix();
 }
-*/
+
 Matrix PointLight::getMatrixXPlus()
 {
 	if (m_isDirty_matView) {

@@ -15,7 +15,7 @@ namespace NGraphic {
 			void updatePointLightViewMatrixs();
 		public:
 			PointLight();
-			//Matrix getViewMatrix() override;
+			Matrix getViewMatrix() override;
 			Matrix getMatrixXPlus();
 			Matrix getMatrixYPlus();
 			Matrix getMatrixZPlus();
