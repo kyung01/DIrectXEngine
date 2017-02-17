@@ -103,18 +103,19 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 	beginRendering(context);
 	auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
 	m_renderTextures[TARGET_LIGHT_ATLAS]->clear(context,0,0,1,1);
+	//m_depthTextures[DEPTH_LIGHT_ATLAS]->clear(context);
 
 
+	viewportOriginal = m_renderTextures[TARGET_LIGHT_ATLAS]->getViewport();
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		auto &light = **it;
 		auto &lightInfo = m_lightInfos[light.m_id];
-		if (light.m_lightType != NScene::LIGHT_TYPE::SPOTLIGHT) continue;
-
-		viewportOriginal = m_renderTextures[TARGET_LIGHT_ATLAS]->getViewport();
-		viewport.TopLeftX	= (float)lightInfo.topLeftX;
-		viewport.TopLeftY	= (float)lightInfo.topLeftY;
-		viewport.Width		= (float)lightInfo.viewportWidth;
-		viewport.Height		= (float)lightInfo.viewportHeight;
+		//if (light.m_lightType != NScene::LIGHT_TYPE::SPOTLIGHT) continue;
+		
+		viewport.TopLeftX	= (int)lightInfo.topLeftX;
+		viewport.TopLeftY	= (int)lightInfo.topLeftY;
+		viewport.Width		= (int)lightInfo.viewportWidth;
+		viewport.Height		= (int)lightInfo.viewportHeight;
 		m_renderTextures[TARGET_LIGHT_ATLAS]->setViewport(viewport);
 		m_depthTextures[DEPTH_LIGHT_ATLAS]->clear(context);
 		RenderInstruction::RENDER_WORLD(
@@ -123,7 +124,6 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 			scene,
 			worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight())
 			);
-		m_renderTextures[TARGET_LIGHT_ATLAS]->setViewport(viewportOriginal);
 
 		//RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 		//	device, context, asset, scene,
@@ -131,6 +131,7 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 		//	light,
 		//	m_lightInfos[light.m_id].topLeftX, m_lightInfos[light.m_id].topLeftY, m_lightInfos[light.m_id].viewportWidth, m_lightInfos[light.m_id].viewportHeight);
 	}
+	m_renderTextures[TARGET_LIGHT_ATLAS]->setViewport(viewportOriginal);
 	endRendering(context);
 }
 
@@ -170,8 +171,8 @@ void GraphicMain::updateLightAtlas()
 			system("pause");
 		}
 		else {
-			std::cout << "GraphicMain::updateLightAtlas-> Received available space\n";
-			std::cout << it->second.topLeftX << " , " << it->second.topLeftY<< " , " << it->second.viewportWidth << " , " << it->second.viewportHeight<<"\n";
+			//std::cout << "GraphicMain::updateLightAtlas-> Received available space\n";
+			//std::cout << it->second.topLeftX << " , " << it->second.topLeftY<< " , " << it->second.viewportWidth << " , " << it->second.viewportHeight<<"\n";
 
 			//success
 

@@ -437,9 +437,9 @@ void NGraphic::RenderInstruction::RENDER_WORLD(
 	SimpleVertexShader&		shaderVert = *asset.m_shadersVert[KEnum::RENDER_WORLD];
 	SimpleFragmentShader&	shaderFrag = *asset.m_shadersFrag[KEnum::RENDER_WORLD];
 	//renderTexture.clear(context, 0, 0, 0, 99999);
+	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
 	//depthTexture.clear(context);
 	//render the front face first
-	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
 
 
 
