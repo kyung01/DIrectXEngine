@@ -10,6 +10,7 @@ namespace NGraphic {
 	struct LightInfo {
 		std::shared_ptr<RenderTexture>	position;
 		std::shared_ptr<DepthTexture>	depth;
+		int type;
 		float
 			topLeftX, topLeftY,
 			viewportWidth, viewportHeight;

@@ -48,7 +48,7 @@ namespace NGraphic {
 		void rendering(NScene::Scene scene);
 		void processObject(NScene::Object obj);
 
-		LightInfo getLightInfo(ID3D11Device *device);
+		LightInfo getLightInfo(ID3D11Device *device,  NScene::LIGHT_TYPE type);
 		bool initTextures		(ID3D11Device* device, ID3D11DeviceContext *context, int width, int height, int textureIndirectLightWidth, int textureIndirectLightHeight);
 		
 

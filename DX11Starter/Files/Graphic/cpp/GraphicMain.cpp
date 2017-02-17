@@ -50,11 +50,20 @@ void GraphicMain::rendering(NScene::Scene scene)
 
 	
 }
-LightInfo NGraphic::GraphicMain::getLightInfo(ID3D11Device *device)
+LightInfo NGraphic::GraphicMain::getLightInfo(ID3D11Device *device, NScene::LIGHT_TYPE type)
 {
 	LightInfo info{ std::shared_ptr<RenderTexture>(new RenderTexture()),std::shared_ptr<DepthTexture>(new DepthTexture) };
 	info.position->init(device, m_width, m_height);
 	info.depth->init(device, m_width, m_height);
+	switch (type) {
+	case NScene::LIGHT_TYPE::SPOTLIGHT:
+		info.type = 0;
+		break;
+	case NScene::LIGHT_TYPE::POINTLIGHT:
+		info.type = 1;
+		break;
+
+	}
 	
 	return info;
 }
@@ -95,6 +104,44 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 	return true;
 }
 
+void GraphicMain::updateLightAtlas()
+{
+	int size = 3;
+	m_atlasSlicer->clear();
+	for (auto it = m_lightInfos.begin(); it != m_lightInfos.end(); it++) {
+
+		//0 spotlight
+		//1 pointlight
+		if (it->second.type == 0) {
+
+			if (!m_atlasSlicer->getRoom(it->second.topLeftX, it->second.topLeftY, it->second.viewportWidth, it->second.viewportHeight, size, size)) {
+				std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
+				system("pause");
+			}
+			else {
+				//std::cout << "GraphicMain::updateLightAtlas-> Received available space\n";
+				//std::cout << it->second.topLeftX << " , " << it->second.topLeftY<< " , " << it->second.viewportWidth << " , " << it->second.viewportHeight<<"\n";
+
+				//success
+
+			}
+		}
+		else {
+			if (!m_atlasSlicer->getRoom(it->second.topLeftX, it->second.topLeftY, it->second.viewportWidth, it->second.viewportHeight, size * 6, size)) {
+				std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
+				system("pause");
+			}
+			else {
+				//std::cout << "GraphicMain::updateLightAtlas-> Received available space\n";
+				//std::cout << it->second.topLeftX << " , " << it->second.topLeftY<< " , " << it->second.viewportWidth << " , " << it->second.viewportHeight<<"\n";
+
+				//success
+
+			}
+
+		}
+	}
+}
 void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene)
 {
 	beginRendering(context);
@@ -107,6 +154,7 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		auto &light = **it;
 		auto &lightInfo = m_lightInfos[light.m_id];
+		
 		//if (light.m_lightType != NScene::LIGHT_TYPE::SPOTLIGHT) continue;
 		
 		//m_renderTextures[TARGET_LIGHT_ATLAS]->setViewport(viewport);
@@ -160,24 +208,6 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	return true;
 }
 
-void GraphicMain::updateLightAtlas()
-{
-	m_atlasSlicer->clear();
-	for (auto it = m_lightInfos.begin(); it != m_lightInfos.end(); it++) {
-		
-		if (!m_atlasSlicer->getRoom(it->second.topLeftX, it->second.topLeftY, it->second.viewportWidth,it->second.viewportHeight, 5,5)) {
-			std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
-			system("pause");
-		}
-		else {
-			//std::cout << "GraphicMain::updateLightAtlas-> Received available space\n";
-			//std::cout << it->second.topLeftX << " , " << it->second.topLeftY<< " , " << it->second.viewportWidth << " , " << it->second.viewportHeight<<"\n";
-
-			//success
-
-		}
-	}
-}
 
 void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene)
 {
@@ -216,7 +246,7 @@ void NGraphic::GraphicMain::render(
 	bool newLightInfo = false;
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		if (m_lightInfos.find(it->get()->m_id) != m_lightInfos.end()) continue;
-		m_lightInfos[it->get()->m_id] = getLightInfo(device);
+		m_lightInfos[it->get()->m_id] = getLightInfo(device, it->get()->m_lightType);
 		newLightInfo = true;
 	}
 	if(newLightInfo)
