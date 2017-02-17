@@ -99,9 +99,6 @@
     <ClCompile Include="Files\Game\cpp\Entities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Files\Graphic\Scene\GraphicScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Files\Graphic\Scene\Scene Graphic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -118,6 +115,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Files\Graphic\cpp\TextureAtlasSlicer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Graphic\Scene\_GraphicScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

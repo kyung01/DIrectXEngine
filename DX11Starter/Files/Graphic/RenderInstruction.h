@@ -23,12 +23,13 @@
 #include <Graphic\Buffer\LightParameter.h>
 #include <Game\Context.h>
 #include <Graphic\Scene\Scene.h>
-
+#include <string>
 
 namespace NGraphic {
 	class RenderInstruction {
-
-		static DirectX::XMFLOAT4X4 matWorld, matView, matProj;
+		static D3D11_VIEWPORT VIEWPORT,VIEWPORT_TEMP;
+		static DirectX::XMFLOAT4X4 MAT_TEMP, matWorld, matView, matProj;
+		static void SET_MATRIX(ISimpleShader *shader, std::string name,  XMMATRIX matrix);
 		static void RENDER_LIGHTS(ID3D11DeviceContext * context, SimpleVertexShader& shaderVertSimpleColor, SimpleFragmentShader& DshaderFrag, Mesh& mesh, XMMATRIX& worldMatrix);
 	public:
 		
@@ -79,6 +80,23 @@ namespace NGraphic {
 			Vector3 eyePos, Vector3 lightPos, Vector3 lightDir, Vector3 lightColor, float lightInner, float lightOutter,
 			std::shared_ptr<RenderTexture> lightShadow, DirectX::XMMATRIX lightMVP, float lightFOV,
 			RenderTexture &textureWorld, RenderTexture &textureNormal, RenderTexture &textureDiffuse);
+		static void RENDER_LIGHT_ATLAS_SPOT(
+
+			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
+			NScene::Scene &scene,
+			RenderTexture & renderTexture, DepthTexture & depthTexture,
+			NScene::Light light, float topLeftX, float topLeftY, float viewPortSize);
+		static void RENDER_LIGHT_ATLAS_POINT(
+
+			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
+			NScene::Scene &scene,
+			RenderTexture & renderTexture, DepthTexture & depthTexture,
+			NScene::Light light, float topLeftX, float topLeftY, float viewPortSize);
+		static void RENDER_LIGHT_ATLAS(
+			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
+			NScene::Scene &scene,
+			RenderTexture & renderTexture, DepthTexture & depthTexture,
+			NScene::Light light, float topLeftX, float topLeftY, float viewPortSize);
 
 	};
 }

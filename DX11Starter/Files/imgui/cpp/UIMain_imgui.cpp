@@ -65,14 +65,24 @@ void NImGui::UIMain::render(std::map<int, NGraphic::LightInfo> lightInfos) {
 void NImGui::UIMain::render()
 {
 	if (!graphicMain) return; // I don't have a pointer to the instance needed to initate drawing cycle
-
-	ImGui::Begin("RenderTextures Demo", 0, ImGuiWindowFlags_ShowBorders);
-	ImTextureID tex_id = graphicMain->m_renderTextures[TARGET_FINAL]->getShaderResourceView();
-	//ImTextureID tex_id = ImGui::GetIO().Fonts->TexID;
-	//ImGui::Text("%.0fx%.0f", 500, 500);
-	ImGui::Image(tex_id, ImVec2(800, 800), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
-	ImGui::End();
-	//ImGui::ShowTestWindow();
+	{
+		ImGui::Begin("RenderTextures Demo", 0, ImGuiWindowFlags_ShowBorders);
+		ImTextureID tex_id = graphicMain->m_renderTextures[TARGET_FINAL]->getShaderResourceView();
+		ImGui::Image(tex_id, ImVec2(800, 800), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+		ImGui::End();
+	}
+	{
+		ImGui::Begin("LightAtlas", 0, ImGuiWindowFlags_ShowBorders);
+		ImTextureID tex_id = graphicMain->m_renderTextures[TARGET_LIGHT_ATLAS]->getShaderResourceView();
+		ImGui::Image(tex_id, ImVec2(800, 800), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+		ImGui::End();
+	}
+	{
+		ImGui::Begin("LightAtlas Depth", 0, ImGuiWindowFlags_ShowBorders);
+		ImTextureID tex_id = graphicMain->m_depthTextures[TARGET_LIGHT_ATLAS]->getShaderResourceView();
+		ImGui::Image(tex_id, ImVec2(800, 800), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+		ImGui::End();
+	}
 
 	ImGui::BeginMainMenuBar();
 	if (ImGui::BeginMenu("File"))

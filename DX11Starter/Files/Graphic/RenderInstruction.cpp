@@ -1,9 +1,17 @@
 #include "RenderInstruction.h"
 using namespace NGraphic;
 
+D3D11_VIEWPORT RenderInstruction::VIEWPORT;
+D3D11_VIEWPORT RenderInstruction::VIEWPORT_TEMP;
+DirectX::XMFLOAT4X4 RenderInstruction::MAT_TEMP;
 DirectX::XMFLOAT4X4 RenderInstruction::matWorld;
 DirectX::XMFLOAT4X4 RenderInstruction::matView;
 DirectX::XMFLOAT4X4 RenderInstruction::matProj;
+void RenderInstruction::SET_MATRIX(ISimpleShader * shader, std::string name, XMMATRIX matrix)
+{
+	DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(matrix));
+	shader->SetMatrix4x4(name, MAT_TEMP);
+}
 void RenderInstruction::RENDER_LIGHTS(ID3D11DeviceContext * context, SimpleVertexShader& shaderVertSimpleColor, SimpleFragmentShader& DshaderFrag, Mesh& mesh, XMMATRIX& worldMatrix) {
 	//NGraphic::Mesh& mesh = *asset.m_meshes[MESH_POINTLIGHT];
 	DirectX::XMFLOAT4X4 matWorld;
@@ -147,7 +155,7 @@ void RenderInstruction::RENDER_DEBUG(
 	NGraphic::MeshLine&	line = *asset.m_meshLine;
 	NGraphic::MeshCube&	cube = *asset.m_meshCube;
 	auto r = renderTexture.getRenderTargetView();
-	auto &view = renderTexture.getViewPort();
+	auto &view = renderTexture.getViewport();
 	//atuo d = depthTexture.getDepthStencilView();
 	context->OMSetRenderTargets(1, &r, NULL);
 	context->RSSetViewports(1, &view);
@@ -362,7 +370,7 @@ void RenderInstruction::RENDER_WORLD_NORMAL_DIFFUSE(
 		targetProperty.getRenderTargetView()
 	};
 	context->OMSetRenderTargets(4, renderTargets, depthWorld.getDepthStencilView());
-	context->RSSetViewports(1, &targetWorld.getViewPort());
+	context->RSSetViewports(1, &targetWorld.getViewport());
 
 	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(scene.m_camMain.getViewMatrix())); // Transpose for HLSL!
 	shaderVert.SetMatrix4x4("view", matrixStore);
@@ -498,5 +506,49 @@ void NGraphic::RenderInstruction::RENDER_DIRECT_LIGHT(
 	shaderFrag.SetShaderResourceView("textureNormal", 0);
 	shaderFrag.SetShaderResourceView("textureDiffuse", 0);
 	shaderFrag.SetShaderResourceView("textureShadow", 0);
+
+}
+void RenderInstruction::RENDER_LIGHT_ATLAS(
+	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
+	NScene::Scene &scene,
+	RenderTexture & renderTexture, DepthTexture & depthTexture,
+	NScene::Light light, float topLeftX, float topLeftY, float viewPortSize)
+{
+	VIEWPORT.MinDepth = 0;
+	VIEWPORT.MaxDepth = 1.0;
+	VIEWPORT.TopLeftX = topLeftX;
+	VIEWPORT.TopLeftY = topLeftY;
+	VIEWPORT.Width = viewPortSize;
+	VIEWPORT.Height = viewPortSize;
+
+}
+void RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
+	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
+	NScene::Scene &scene,
+	RenderTexture & renderTexture, DepthTexture & depthTexture, 
+	NScene::Light light, float topLeftX, float topLeftY, float viewPortSize)
+{
+	VIEWPORT.MinDepth = 0;
+	VIEWPORT.MaxDepth = 1.0;
+	VIEWPORT.TopLeftX = topLeftX;
+	VIEWPORT.TopLeftY = topLeftY;
+	VIEWPORT.Width = viewPortSize;
+	VIEWPORT.Height = viewPortSize;
+
+	VIEWPORT_TEMP = renderTexture.getViewport();
+	renderTexture.setViewport(VIEWPORT);
+
+	auto & shaderFrag = *asset.m_shadersFrag[KEnum::RENDER_WORLD];
+	auto & shaderVert = *asset.m_shadersVert[KEnum::RENDER_WORLD];
+
+	SET_MATRIX(&shaderVert, "world", XMMATRIX());
+	SET_MATRIX(&shaderVert, "view", light.getViewMatrix());
+	SET_MATRIX(&shaderVert, "proj", light.getProjectionMatrix());
+
+	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
+	renderTexture.setViewport(VIEWPORT_TEMP);
+
+
+	
 
 }

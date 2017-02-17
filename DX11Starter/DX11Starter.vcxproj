@@ -143,7 +143,7 @@
     <ClCompile Include="Files\Graphic\cpp\RenderStateStack.cpp" />
     <ClCompile Include="Files\Graphic\Mesh\Meshes.cpp" />
     <ClCompile Include="Files\Graphic\RenderInstruction.cpp" />
-    <ClCompile Include="Files\Graphic\Scene\GraphicScene.cpp" />
+    <ClCompile Include="Files\Graphic\Scene\_GraphicScene.cpp" />
     <ClCompile Include="Files\Graphic\Scene\Scene Graphic.cpp" />
     <ClCompile Include="Files\Graphic\cpp\TextureAtlasSlicer.cpp" />
     <ClCompile Include="Files\imgui\cpp\Context_imgui.cpp" />

@@ -4,15 +4,6 @@
 
 using namespace NGraphic;
 
-void NGraphic::RenderTexture::setViewport(int textureWidth, int textureHeight)
-{
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.Width = (float)textureWidth;
-	viewport.Height = (float)textureHeight;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-}
 
 RenderTexture::RenderTexture()
 {
@@ -40,7 +31,13 @@ bool NGraphic::RenderTexture::init(ID3D11Device *device, IDXGISwapChain * swapCh
 	m_isInitialized = true;
 	HRESULT result;
 	ID3D11Texture2D* m_renderTargetTexture;
-	setViewport(textureWidth, textureHeight);
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = textureWidth;
+	viewport.Height = textureHeight;
+	viewport.MinDepth = 0;
+	viewport.MaxDepth = 1.0f;
+
 
 	result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&m_renderTargetTexture));
 	if (FAILED(result))
@@ -88,7 +85,12 @@ bool RenderTexture::init(ID3D11Device* device, int textureWidth, int textureHeig
 	HRESULT result;
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
 	ID3D11Texture2D* m_renderTargetTexture;
-	setViewport(textureWidth, textureHeight);
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = textureWidth;
+	viewport.Height = textureHeight;
+	viewport.MinDepth = 0;
+	viewport.MaxDepth = 1.0f;
 
 
 	// Initialize the render target texture description.
@@ -211,13 +213,18 @@ int NGraphic::RenderTexture::getHeight()
 	return m_height;
 }
 
+void RenderTexture::setViewport(D3D11_VIEWPORT viewport)
+{
+	this->viewport = viewport;
+}
+
 void NGraphic::RenderTexture::setRenderTargetView(ID3D11RenderTargetView * view, D3D11_VIEWPORT &viewport)
 {
 	m_renderTargetView = view;
 	this->viewport = viewport;
 }
 
-D3D11_VIEWPORT NGraphic::RenderTexture::getViewPort()
+D3D11_VIEWPORT NGraphic::RenderTexture::getViewport()
 {
 	return viewport;
 }
