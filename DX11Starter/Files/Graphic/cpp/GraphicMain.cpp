@@ -55,6 +55,7 @@ LightInfo NGraphic::GraphicMain::getLightInfo(ID3D11Device *device)
 	LightInfo info{ std::shared_ptr<RenderTexture>(new RenderTexture()),std::shared_ptr<DepthTexture>(new DepthTexture) };
 	info.position->init(device, m_width, m_height);
 	info.depth->init(device, m_width, m_height);
+	
 	return info;
 }
 bool GraphicMain::initTextures(ID3D11Device * device, ID3D11DeviceContext * context,
@@ -85,11 +86,52 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 	INIT_DEPTH_TEXTURE(DEPTH_FINAL, width, height);
 	INIT_DEPTH_TEXTURE(TARGET_LIGHTSHAFT_FRONT, width, height);
 	INIT_DEPTH_TEXTURE(TARGET_LIGHTSHAFT_BACK, width, height);
-	INIT_DEPTH_TEXTURE(TARGET_LIGHT_ATLAS, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE);
-	m_atlasSlicer = std::make_shared<TextureAtlasSlicer>(TEXTURE_LIGHT_ATLAS_UNIT, TEXTURE_LIGHT_ATLAS_UNIT, TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_SIZE);
+	INIT_DEPTH_TEXTURE(DEPTH_LIGHT_ATLAS, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE);
+	m_atlasSlicer = std::make_shared<TextureAtlasSlicer>(
+		TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE,
+		TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_SIZE);
 	//m_depthTextures[TARGET_LIGHTSHAFT_BACK] = m_depthTextures[TARGET_LIGHTSHAFT_FRONT];
 
 	return true;
+}
+
+void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene)
+{
+	D3D11_VIEWPORT viewport,viewportOriginal;
+	viewport.MinDepth = 0.0;
+	viewport.MaxDepth = 1.0;
+	beginRendering(context);
+	auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
+	m_renderTextures[TARGET_LIGHT_ATLAS]->clear(context,0,0,1,1);
+
+
+	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+		auto &light = **it;
+		auto &lightInfo = m_lightInfos[light.m_id];
+		if (light.m_lightType != NScene::LIGHT_TYPE::SPOTLIGHT) continue;
+
+		viewportOriginal = m_renderTextures[TARGET_LIGHT_ATLAS]->getViewport();
+		viewport.TopLeftX	= (float)lightInfo.topLeftX;
+		viewport.TopLeftY	= (float)lightInfo.topLeftY;
+		viewport.Width		= (float)lightInfo.viewportWidth;
+		viewport.Height		= (float)lightInfo.viewportHeight;
+		m_renderTextures[TARGET_LIGHT_ATLAS]->setViewport(viewport);
+		m_depthTextures[DEPTH_LIGHT_ATLAS]->clear(context);
+		RenderInstruction::RENDER_WORLD(
+			device, context, asset,
+			*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
+			scene,
+			worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight())
+			);
+		m_renderTextures[TARGET_LIGHT_ATLAS]->setViewport(viewportOriginal);
+
+		//RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
+		//	device, context, asset, scene,
+		//	*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
+		//	light,
+		//	m_lightInfos[light.m_id].topLeftX, m_lightInfos[light.m_id].topLeftY, m_lightInfos[light.m_id].viewportWidth, m_lightInfos[light.m_id].viewportHeight);
+	}
+	endRendering(context);
 }
 
 GraphicMain::GraphicMain()
@@ -118,15 +160,20 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	return true;
 }
 
-void NGraphic::GraphicMain::updateLightAtlas()
+void GraphicMain::updateLightAtlas()
 {
+	m_atlasSlicer->clear();
 	for (auto it = m_lightInfos.begin(); it != m_lightInfos.end(); it++) {
-		float offsetX, offsetY, roomSize;
 		
-		if (!m_atlasSlicer->getRoom(it->second.topLeftX, it->second.topLeftY, it->second.size, 1)) {
+		if (!m_atlasSlicer->getRoom(it->second.topLeftX, it->second.topLeftY, it->second.viewportWidth,it->second.viewportHeight, 1,1)) {
+			std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
 			system("pause");
 		}
 		else {
+			std::cout << "GraphicMain::updateLightAtlas-> Received available space\n";
+			std::cout << it->second.topLeftX << " , " << it->second.topLeftY<< " , " << it->second.viewportWidth << " , " << it->second.viewportHeight<<"\n";
+
+			//success
 
 		}
 	}
@@ -165,10 +212,15 @@ void NGraphic::GraphicMain::render(
 	)
 {
 	NScene::Scene & scene = *game.m_scene;
+
+	bool newLightInfo = false;
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
-		NScene::Light& light = **it;
-		//light.setRotation(light.m_rotation * Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), 0.000051f));
+		if (m_lightInfos.find(it->get()->m_id) != m_lightInfos.end()) continue;
+		m_lightInfos[it->get()->m_id] = getLightInfo(device);
+		newLightInfo = true;
 	}
+	if(newLightInfo)
+		updateLightAtlas();
 
 
 	m_renderTextureDummy.setRenderTargetView(target, viewport);
@@ -228,10 +280,7 @@ void NGraphic::GraphicMain::render(
 		endRendering(context);
 	}
 
-	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
-		if (m_lightInfos.find(it->get()->m_id) != m_lightInfos.end()) continue;
-		m_lightInfos[it->get()->m_id] = getLightInfo(device);
-	}
+	renderLightAtlas(device, context, asset, *game.m_scene);
 	auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
 	auto worldMatrixFrustum = DirectX::SimpleMath::Matrix::CreateRotationX(3.14 / 2);
 	auto viewMatirx = scene.m_camMain.getViewMatrix();
@@ -267,10 +316,17 @@ void NGraphic::GraphicMain::render(
 
 		NScene::Light& light = **it;
 		LightInfo& lightInfo = m_lightInfos[it->get()->m_id];
-		//renderWorld(device, context, asset, scene, worldMatrix, lightInfo.position, lightInfo.depth);
-		RenderInstruction::RENDER_WORLD(device, context, asset, scene,
-			worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight()),
-			*lightInfo.position, *lightInfo.depth);
+
+		lightInfo.position->clear(context, 0, 0, 0, 1);
+		lightInfo.depth->clear(context);
+
+		//Here we are feeding light buffer information we need to render the scene
+		RenderInstruction::RENDER_WORLD(
+			device, context, asset,
+			*lightInfo.position, *lightInfo.depth,
+			scene,
+			worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight())
+			);
 		auto lightWorldMatirx = DirectX::XMMatrixMultiply(worldMatrixFrustum, it->get()->getModelMatrix());
 
 

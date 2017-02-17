@@ -68,9 +68,9 @@ namespace NGraphic {
 			DirectX::SimpleMath::Matrix worldMatrix);
 		static void RENDER_WORLD(
 			ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
+			RenderTexture & renderTexture, DepthTexture & depthTexture,
 			NScene::Scene& scene,
-			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
-			RenderTexture &renderTexture, DepthTexture& depthTexture);//rendering the normal scene
+			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix);//rendering the normal scene
 
 
 		static void RENDER_DIRECT_LIGHT(
@@ -85,18 +85,18 @@ namespace NGraphic {
 			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
 			NScene::Scene &scene,
 			RenderTexture & renderTexture, DepthTexture & depthTexture,
-			NScene::Light light, float topLeftX, float topLeftY, float viewPortSize);
+			NScene::Light &light, float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight);
 		static void RENDER_LIGHT_ATLAS_POINT(
 
 			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
 			NScene::Scene &scene,
 			RenderTexture & renderTexture, DepthTexture & depthTexture,
-			NScene::Light light, float topLeftX, float topLeftY, float viewPortSize);
+			NScene::Light &light, float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight);
 		static void RENDER_LIGHT_ATLAS(
 			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
 			NScene::Scene &scene,
 			RenderTexture & renderTexture, DepthTexture & depthTexture,
-			NScene::Light light, float topLeftX, float topLeftY, float viewPortSize);
+			NScene::Light &light, float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight);
 
 	};
 }

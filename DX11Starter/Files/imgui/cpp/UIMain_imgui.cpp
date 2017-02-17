@@ -79,7 +79,7 @@ void NImGui::UIMain::render()
 	}
 	{
 		ImGui::Begin("LightAtlas Depth", 0, ImGuiWindowFlags_ShowBorders);
-		ImTextureID tex_id = graphicMain->m_depthTextures[TARGET_LIGHT_ATLAS]->getShaderResourceView();
+		ImTextureID tex_id = graphicMain->m_depthTextures[DEPTH_LIGHT_ATLAS]->getShaderResourceView();
 		ImGui::Image(tex_id, ImVec2(800, 800), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
 		ImGui::End();
 	}
@@ -102,7 +102,7 @@ void NImGui::UIMain::render()
 
 	//render(graphicMain->m_renderTextures);
 	//render(graphicMain->m_depthTextures);
-	//render(graphicMain->m_lightInfos);
+	render(graphicMain->m_lightInfos);
 	//render(graphicMain->m_lightDepthTextures);
 	//render(graphicMain->m_RSM);
 	/*

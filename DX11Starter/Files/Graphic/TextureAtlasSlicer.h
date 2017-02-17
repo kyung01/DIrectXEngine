@@ -34,11 +34,13 @@ namespace NGraphic {
 		std::vector<bool> m_check;
 
 		bool isAvailable(int x, int y);
-		bool isAvailable(int x, int y, int size);
+		bool isAvailable(int i, int j, int sizeX, int sizeY);
+		void setCheck(int i, int j, int sizeX, int sizeY, bool value);
 
 	public:
 		TextureAtlasSlicer(float pixelWidth, float pixelHeight, float countWidth, float countHeight);
-		bool getRoom(float &offsetX, float &offsetY, float &roomSize, int size);
+		void clear();
+		bool getRoom(float &offsetX, float &offsetY, float & viewportWidth, float&viewportHeight, int sizeX, int sizeY);
 
 	};
 }

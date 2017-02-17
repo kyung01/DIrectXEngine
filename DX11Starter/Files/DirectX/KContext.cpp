@@ -72,7 +72,6 @@ void KContext::Init()
 
 		//if (!it->main.init(this->device, this->context, (int)round( ((float)this->width )*ratio), (int)round( ((float)this->height   )*ratio), 256, 256)) {
 		it->scene	.loadExample00();
-		it->engine.updateLightAtlas();
 	}
 
 

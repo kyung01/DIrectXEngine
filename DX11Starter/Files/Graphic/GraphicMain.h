@@ -51,6 +51,10 @@ namespace NGraphic {
 		LightInfo getLightInfo(ID3D11Device *device);
 		bool initTextures		(ID3D11Device* device, ID3D11DeviceContext *context, int width, int height, int textureIndirectLightWidth, int textureIndirectLightHeight);
 		
+
+
+		void renderLightAtlas(
+			ID3D11Device * device, ID3D11DeviceContext * context, Asset& asset, NScene::Scene &scene);
 		
 	protected:
 		//glm::mat4 matProjection, matView, matModel;
@@ -76,7 +80,6 @@ namespace NGraphic {
 		void update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene);
 		
 
-		
 
 		void render(
 			ID3D11Device * device, ID3D11DeviceContext * context,

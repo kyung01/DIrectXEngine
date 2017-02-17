@@ -31,6 +31,8 @@ bool NGraphic::RenderTexture::init(ID3D11Device *device, IDXGISwapChain * swapCh
 	m_isInitialized = true;
 	HRESULT result;
 	ID3D11Texture2D* m_renderTargetTexture;
+	m_width = textureWidth;
+	m_height = textureHeight;
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
 	viewport.Width = textureWidth;

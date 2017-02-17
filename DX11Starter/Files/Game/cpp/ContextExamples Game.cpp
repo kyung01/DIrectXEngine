@@ -6,7 +6,7 @@ using namespace NGame;
 void NGame::LoadExample00(Context &context)
 {
 	
-	if(false)for (int i = 0; i < 10; i++) for (int j = 0; j < 5; j++)
+	if(true)for (int i = 0; i < 10; i++) for (int j = 0; j < 5; j++)
 	{
 		auto obj = context.m_scene->getObjSolid();
 		obj.get()->m_meshId = NGraphic::MESH_ID_TORUS;
@@ -21,7 +21,7 @@ void NGame::LoadExample00(Context &context)
 		e->setPos(-5.0f + i, -2.5 + j, 6);
 		e->setRotation(Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), rand() * 100) *Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), rand() * 100)*Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), rand() * 100));
 	}
-	if (false)for (int i = 0; i < 10; i++) for (int j = 0; j < 5; j++)
+	if (true)for (int i = 0; i < 10; i++) for (int j = 0; j < 5; j++)
 	{
 		auto obj = context.m_scene->getObjSolid();
 		obj.get()->m_meshId = NGraphic::MESH_ID_TORUS;

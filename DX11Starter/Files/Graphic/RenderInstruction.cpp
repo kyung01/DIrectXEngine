@@ -309,7 +309,7 @@ void RenderInstruction::RENDER_DEBUG(
 
 
 
-	context->RSSetState(asset.RASTR_WIREFRAME);
+	//context->RSSetState(asset.RASTR_WIREFRAME);
 
 	if (false)for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		bufferVertices = line.getBufferVertices();
@@ -411,8 +411,9 @@ void RenderInstruction::RENDER_WORLD_NORMAL_DIFFUSE(
 
 void NGraphic::RenderInstruction::RENDER_WORLD(
 	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, 
+	RenderTexture & renderTexture, DepthTexture & depthTexture,
 	NScene::Scene & scene, 
-	DirectX::SimpleMath::Matrix & worldMatrix, DirectX::SimpleMath::Matrix & viewMatrix, DirectX::SimpleMath::Matrix & projMatrix, RenderTexture & renderTexture, DepthTexture & depthTexture)
+	DirectX::SimpleMath::Matrix & worldMatrix, DirectX::SimpleMath::Matrix & viewMatrix, DirectX::SimpleMath::Matrix & projMatrix)
 {
 
 #define RENDER_OBJS for (auto it = scene.objs_solid.begin(); it != scene.objs_solid.end(); it++) {\
@@ -435,14 +436,21 @@ void NGraphic::RenderInstruction::RENDER_WORLD(
 	DirectX::XMFLOAT4X4 matrixStore;
 	SimpleVertexShader&		shaderVert = *asset.m_shadersVert[KEnum::RENDER_WORLD];
 	SimpleFragmentShader&	shaderFrag = *asset.m_shadersFrag[KEnum::RENDER_WORLD];
-	renderTexture.clear(context, 0, 0, 0, 99999);
-	depthTexture.clear(context);
+	//renderTexture.clear(context, 0, 0, 0, 99999);
+	//depthTexture.clear(context);
 	//render the front face first
 	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
-	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(viewMatrix)); // Transpose for HLSL!
-	shaderVert.SetMatrix4x4("view", matrixStore);
-	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(projMatrix)); // Transpose for HLSL!
-	shaderVert.SetMatrix4x4("proj", matrixStore);
+
+
+
+	SET_MATRIX(&shaderVert, "view", viewMatrix);
+	SET_MATRIX(&shaderVert, "proj", projMatrix);
+
+
+	//DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(viewMatrix)); // Transpose for HLSL!
+	//shaderVert.SetMatrix4x4("view", matrixStore);
+	//DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(projMatrix)); // Transpose for HLSL!
+	//shaderVert.SetMatrix4x4("proj", matrixStore);
 	//shaderFrag.SetSamplerState("samplerWrap", asset.m_samplers[SAMPLER_ID_WRAP]);
 
 	shaderVert.SetShader();
@@ -512,43 +520,58 @@ void RenderInstruction::RENDER_LIGHT_ATLAS(
 	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
 	NScene::Scene &scene,
 	RenderTexture & renderTexture, DepthTexture & depthTexture,
-	NScene::Light light, float topLeftX, float topLeftY, float viewPortSize)
+	NScene::Light &light, float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight)
 {
-	VIEWPORT.MinDepth = 0;
-	VIEWPORT.MaxDepth = 1.0;
-	VIEWPORT.TopLeftX = topLeftX;
-	VIEWPORT.TopLeftY = topLeftY;
-	VIEWPORT.Width = viewPortSize;
-	VIEWPORT.Height = viewPortSize;
+	
 
 }
 void RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
 	NScene::Scene &scene,
-	RenderTexture & renderTexture, DepthTexture & depthTexture, 
-	NScene::Light light, float topLeftX, float topLeftY, float viewPortSize)
+	RenderTexture &renderTexture, DepthTexture & depthTexture, 
+	NScene::Light &light, float topLeftX, float topLeftY, float viewportWidth,float ViewportHeight)
 {
 	VIEWPORT.MinDepth = 0;
 	VIEWPORT.MaxDepth = 1.0;
 	VIEWPORT.TopLeftX = topLeftX;
 	VIEWPORT.TopLeftY = topLeftY;
-	VIEWPORT.Width = viewPortSize;
-	VIEWPORT.Height = viewPortSize;
+	VIEWPORT.Width = viewportWidth;
+	VIEWPORT.Height = ViewportHeight;
 
-	VIEWPORT_TEMP = renderTexture.getViewport();
-	renderTexture.setViewport(VIEWPORT);
 
 	auto & shaderFrag = *asset.m_shadersFrag[KEnum::RENDER_WORLD];
 	auto & shaderVert = *asset.m_shadersVert[KEnum::RENDER_WORLD];
 
-	SET_MATRIX(&shaderVert, "world", XMMATRIX());
+	SET_MATRIX(&shaderVert, "world", Matrix::Identity);
 	SET_MATRIX(&shaderVert, "view", light.getViewMatrix());
 	SET_MATRIX(&shaderVert, "proj", light.getProjectionMatrix());
 
+	VIEWPORT_TEMP = renderTexture.getViewport();
+	//renderTexture.setViewport(VIEWPORT);
 	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
-	renderTexture.setViewport(VIEWPORT_TEMP);
+	//renderTexture.setViewport(VIEWPORT_TEMP);
 
+	shaderVert.SetShader();
+	shaderFrag.SetShader();
+	shaderVert.CopyAllBufferData();
+	shaderFrag.CopyAllBufferData();
 
+	for (auto it = scene.objs_solid.begin(); it != scene.objs_solid.end(); it++) {
+		\
+			NGraphic::NScene::Object& light = **it; \
+			NGraphic::Mesh& mesh = *asset.m_meshes[light.m_meshId]; \
+			SET_MATRIX(&shaderVert, "world", Matrix::Identity);
+			shaderVert.CopyAllBufferData(); \
+			shaderFrag.CopyAllBufferData(); \
+			UINT stride = sizeof(Vertex); \
+			UINT offset = 0; \
+			context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset); \
+			context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0); \
+			context->DrawIndexed(\
+				mesh.getBufferIndexCount(), \
+				0, \
+				0); \
+	}
 	
 
 }

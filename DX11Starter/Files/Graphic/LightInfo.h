@@ -12,6 +12,6 @@ namespace NGraphic {
 		std::shared_ptr<DepthTexture>	depth;
 		float
 			topLeftX, topLeftY,
-			size;
+			viewportWidth, viewportHeight;
 	};
 }
