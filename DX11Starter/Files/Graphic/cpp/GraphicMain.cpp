@@ -62,8 +62,8 @@ bool GraphicMain::initTextures(ID3D11Device * device, ID3D11DeviceContext * cont
 	int width, int height,
 	int textureIndirectLightWidth, int textureIndirectLightHeight)
 {
-	int TEXTURE_LIGHT_ATLAS_UNIT = 256;
-	int TEXTURE_LIGHT_ATLAS_SIZE = 10;
+	int TEXTURE_LIGHT_ATLAS_UNIT = 64;
+	int TEXTURE_LIGHT_ATLAS_SIZE = 20;
 
 #define INIT_DEPTH_TEXTURE(key,defWidth, defHeight) \
 m_depthTextures[key] = std::shared_ptr<DepthTexture>(new DepthTexture());\
@@ -166,7 +166,7 @@ void GraphicMain::updateLightAtlas()
 	m_atlasSlicer->clear();
 	for (auto it = m_lightInfos.begin(); it != m_lightInfos.end(); it++) {
 		
-		if (!m_atlasSlicer->getRoom(it->second.topLeftX, it->second.topLeftY, it->second.viewportWidth,it->second.viewportHeight, 1,1)) {
+		if (!m_atlasSlicer->getRoom(it->second.topLeftX, it->second.topLeftY, it->second.viewportWidth,it->second.viewportHeight, 5,5)) {
 			std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
 			system("pause");
 		}

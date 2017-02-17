@@ -178,63 +178,83 @@ Vector3 Light::getLightColor()
 void PointLight::updatePointLightViewMatrixs()
 {
 	Light::getViewMatrix();
+	m_matLookXPlus = Matrix::CreateLookAt(m_pos, m_pos + Vector3(1, 0, 0), Vector3(0, 1, 0));
+	m_matLookXMinus = Matrix::CreateLookAt(m_pos, m_pos + Vector3(-1, 0, 0), Vector3(0, 1, 0));
+	m_matLookYPlus = Matrix::CreateLookAt(m_pos, m_pos + Vector3(0, 1, 0), Vector3(0, 1, 0));
+	m_matLookYMinus = Matrix::CreateLookAt(m_pos, m_pos + Vector3(0, -1, 0), Vector3(0, 1, 0));
+	m_matLookZPlus = Matrix::CreateLookAt(m_pos, m_pos + Vector3(0, 0, 1), Vector3(0, 1, 0));
+	m_matLookZMinus = Matrix::CreateLookAt(m_pos, m_pos + Vector3(0, 0, -1), Vector3(0, 1, 0));
 }
 
+NGraphic::NScene::PointLight::PointLight()
+{
+	Light();
+	m_lightType = LIGHT_TYPE::POINTLIGHT;
+}
+
+/*
 Matrix PointLight::getViewMatrix()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
 		//update my other matrix as well
 	}
-	return m_matView;
+	return Light::getViewMatrix();
 }
+*/
 Matrix PointLight::getMatrixXPlus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
+		m_isDirty_matView = false;
 		//update my other matrix as well
 	}
-	return m_lookXPlus;
+	return m_matLookXPlus;
 }
 Matrix PointLight::getMatrixXMinus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
+		m_isDirty_matView = false;
 		//update my other matrix as well
 	}
-	return m_lookXPlus;
+	return m_matLookXMinus;
 }
 
 Matrix PointLight::getMatrixYPlus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
+		m_isDirty_matView = false;
 		//update my other matrix as well
 	}
-	return m_lookXPlus;
+	return m_matLookYPlus;
 }
 Matrix PointLight::getMatrixYMinus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
+		m_isDirty_matView = false;
 		//update my other matrix as well
 	}
-	return m_lookXPlus;
+	return m_matLookYMinus;
 }
 
 Matrix PointLight::getMatrixZPlus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
+		m_isDirty_matView = false;
 		//update my other matrix as well
 	}
-	return m_lookXPlus;
+	return m_matLookZPlus;
 }
 Matrix PointLight::getMatrixZMinus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
+		m_isDirty_matView = false;
 		//update my other matrix as well
 	}
-	return m_lookXPlus;
+	return m_matLookZMinus;
 }

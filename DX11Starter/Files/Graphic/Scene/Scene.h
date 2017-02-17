@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include <Graphic\Scene\Object.h>
 #include <Graphic\Scene\Light.h>
+#include <Graphic\Scene\PointLight.h>
 namespace NGraphic {
 	namespace NScene {
 		class Scene {
@@ -21,7 +22,7 @@ namespace NGraphic {
 
 			std::shared_ptr<Object> getObjSolid();
 			std::shared_ptr<Object> getObjUI();
-			std::shared_ptr<Light> getPointLight(Vector3 lightColor, float lightDistance);
+			std::shared_ptr<PointLight> getPointLight(Vector3 lightColor, float lightDistance);
 			std::shared_ptr<Light> getSpotLight(float angle, Vector3 lightColor, float lightDistance);
 		};
 	}

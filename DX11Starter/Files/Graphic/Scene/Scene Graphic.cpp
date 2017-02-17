@@ -33,10 +33,10 @@ std::shared_ptr<Object> NGraphic::NScene::Scene::getObjUI()
 	return obj;
 }
 
-std::shared_ptr<Light> NGraphic::NScene::Scene::getPointLight(Vector3 lightColor, float lightDistance)
+std::shared_ptr<PointLight> NGraphic::NScene::Scene::getPointLight(Vector3 lightColor, float lightDistance)
 {
-	std::shared_ptr<Light> light = std::make_shared<Light>();
-	light->m_lightType = LIGHT_TYPE::POINTLIGHT;
+	std::shared_ptr<PointLight> light = std::make_shared<PointLight>();
+	//light->m_lightType = LIGHT_TYPE::POINTLIGHT;
 	light->setLightColor( lightColor);
 	light->m_lightDistance = lightDistance;
 	objs_lights.push_back(light);

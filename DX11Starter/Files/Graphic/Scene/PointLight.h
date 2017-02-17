@@ -9,12 +9,13 @@ namespace NGraphic {
 		class PointLight : public Light {
 
 			Matrix 
-				m_lookXPlus, m_lookXMinus,
-				m_lookYPlus, m_lookYMinus,
-				m_lookZPlus, m_lookZMinus;
+				m_matLookXPlus, m_matLookXMinus,
+				m_matLookYPlus, m_matLookYMinus,
+				m_matLookZPlus, m_matLookZMinus;
 			void updatePointLightViewMatrixs();
 		public:
-			Matrix getViewMatrix() override;
+			PointLight();
+			//Matrix getViewMatrix() override;
 			Matrix getMatrixXPlus();
 			Matrix getMatrixYPlus();
 			Matrix getMatrixZPlus();
