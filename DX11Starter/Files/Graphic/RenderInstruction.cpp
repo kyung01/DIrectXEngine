@@ -518,20 +518,23 @@ void NGraphic::RenderInstruction::RENDER_DIRECT_LIGHT(
 	shaderFrag.SetShaderResourceView("textureShadow", 0);
 
 }
+/*
 void RenderInstruction::RENDER_LIGHT_ATLAS(
 	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
 	NScene::Scene &scene,
 	RenderTexture & renderTexture, DepthTexture & depthTexture,
 	NScene::Light &light, float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight)
 {
+}
+*/
 	
 
-}
 void RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
 	NScene::Scene &scene,
-	RenderTexture &renderTexture, DepthTexture & depthTexture, 
-	NScene::Light &light, float topLeftX, float topLeftY, float viewportWidth,float ViewportHeight)
+	RenderTexture & renderTexture, DepthTexture & depthTexture,
+	DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
+	float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight)
 {
 	VIEWPORT.MinDepth = 0;
 	VIEWPORT.MaxDepth = 1.0;
@@ -544,14 +547,14 @@ void RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 	auto & shaderFrag = *asset.m_shadersFrag[KEnum::RENDER_WORLD];
 	auto & shaderVert = *asset.m_shadersVert[KEnum::RENDER_WORLD];
 
-	SET_MATRIX(&shaderVert, "world", Matrix::Identity);
-	SET_MATRIX(&shaderVert, "view", light.getViewMatrix());
-	SET_MATRIX(&shaderVert, "proj", light.getProjectionMatrix());
+	SET_MATRIX(&shaderVert, "world", worldMatrix);
+	SET_MATRIX(&shaderVert, "view", viewMatrix);
+	SET_MATRIX(&shaderVert, "proj", projMatrix);
 
 	VIEWPORT_TEMP = renderTexture.getViewport();
-	//renderTexture.setViewport(VIEWPORT);
+	renderTexture.setViewport(VIEWPORT);
 	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
-	//renderTexture.setViewport(VIEWPORT_TEMP);
+	renderTexture.setViewport(VIEWPORT_TEMP);
 
 	shaderVert.SetShader();
 	shaderFrag.SetShader();
@@ -560,9 +563,9 @@ void RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 
 	for (auto it = scene.objs_solid.begin(); it != scene.objs_solid.end(); it++) {
 		\
-			NGraphic::NScene::Object& light = **it; \
-			NGraphic::Mesh& mesh = *asset.m_meshes[light.m_meshId]; \
-			SET_MATRIX(&shaderVert, "world", Matrix::Identity);
+			NGraphic::NScene::Object& obj = **it; \
+			NGraphic::Mesh& mesh = *asset.m_meshes[obj.m_meshId]; \
+			SET_MATRIX(&shaderVert, "world", obj.getModelMatrix()*worldMatrix);
 			shaderVert.CopyAllBufferData(); \
 			shaderFrag.CopyAllBufferData(); \
 			UINT stride = sizeof(Vertex); \

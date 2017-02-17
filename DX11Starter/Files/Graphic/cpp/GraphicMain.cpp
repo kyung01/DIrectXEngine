@@ -97,41 +97,40 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 
 void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene)
 {
-	D3D11_VIEWPORT viewport,viewportOriginal;
-	viewport.MinDepth = 0.0;
-	viewport.MaxDepth = 1.0;
 	beginRendering(context);
 	auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
-	m_renderTextures[TARGET_LIGHT_ATLAS]->clear(context,0,0,1,1);
+	m_renderTextures[TARGET_LIGHT_ATLAS]->clear(context,0,0,0,1);
 	//m_depthTextures[DEPTH_LIGHT_ATLAS]->clear(context);
 
 
-	viewportOriginal = m_renderTextures[TARGET_LIGHT_ATLAS]->getViewport();
 	m_depthTextures[DEPTH_LIGHT_ATLAS]->clear(context);
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		auto &light = **it;
 		auto &lightInfo = m_lightInfos[light.m_id];
 		//if (light.m_lightType != NScene::LIGHT_TYPE::SPOTLIGHT) continue;
 		
-		viewport.TopLeftX	= (int)lightInfo.topLeftX;
-		viewport.TopLeftY	= (int)lightInfo.topLeftY;
-		viewport.Width		= (int)lightInfo.viewportWidth;
-		viewport.Height		= (int)lightInfo.viewportHeight;
-		m_renderTextures[TARGET_LIGHT_ATLAS]->setViewport(viewport);
-		RenderInstruction::RENDER_WORLD(
+		//m_renderTextures[TARGET_LIGHT_ATLAS]->setViewport(viewport);
+		//RenderInstruction::RENDER_WORLD(
+		//	device, context, asset,
+		//	*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
+		//	scene,
+		//	worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight())
+		//	);
+		RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 			device, context, asset,
-			*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
 			scene,
-			worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight())
-			);
+			*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
 
+			worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix(lightInfo.viewportWidth, lightInfo.viewportHeight ), 
+			lightInfo.topLeftX, lightInfo.topLeftY, lightInfo.viewportWidth, lightInfo.viewportHeight);
+
+		
 		//RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 		//	device, context, asset, scene,
 		//	*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
 		//	light,
 		//	m_lightInfos[light.m_id].topLeftX, m_lightInfos[light.m_id].topLeftY, m_lightInfos[light.m_id].viewportWidth, m_lightInfos[light.m_id].viewportHeight);
 	}
-	m_renderTextures[TARGET_LIGHT_ATLAS]->setViewport(viewportOriginal);
 	endRendering(context);
 }
 
