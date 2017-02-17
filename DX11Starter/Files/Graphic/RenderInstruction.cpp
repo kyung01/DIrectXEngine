@@ -572,6 +572,14 @@ void RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 				0, \
 				0); \
 	}
-	
-
+}
+/*
+Render in order of +x -x +y -y  +z -z
+*/
+void RenderInstruction::RENDER_LIGHT_ATLAS_POINT(
+	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
+	NScene::Scene &scene,
+	RenderTexture &renderTexture, DepthTexture & depthTexture,
+	NScene::Light &light, float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight)
+{
 }

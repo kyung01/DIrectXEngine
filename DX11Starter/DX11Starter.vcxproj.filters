@@ -290,6 +290,9 @@
     <ClInclude Include="Files\Graphic\LightInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Files\Graphic\Scene\PointLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

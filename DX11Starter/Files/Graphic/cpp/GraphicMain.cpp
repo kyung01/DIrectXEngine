@@ -107,6 +107,7 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 
 
 	viewportOriginal = m_renderTextures[TARGET_LIGHT_ATLAS]->getViewport();
+	m_depthTextures[DEPTH_LIGHT_ATLAS]->clear(context);
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		auto &light = **it;
 		auto &lightInfo = m_lightInfos[light.m_id];
@@ -117,7 +118,6 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 		viewport.Width		= (int)lightInfo.viewportWidth;
 		viewport.Height		= (int)lightInfo.viewportHeight;
 		m_renderTextures[TARGET_LIGHT_ATLAS]->setViewport(viewport);
-		m_depthTextures[DEPTH_LIGHT_ATLAS]->clear(context);
 		RenderInstruction::RENDER_WORLD(
 			device, context, asset,
 			*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],

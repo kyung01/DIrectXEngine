@@ -1,5 +1,6 @@
 #include <Graphic\Scene\Object.h>
 #include <Graphic\Scene\Light.h>
+#include <Graphic\Scene\PointLight.h>
 #include <Graphic\Scene\Camera.h>
 using namespace NGraphic;
 using namespace NGraphic::NScene;
@@ -162,13 +163,78 @@ void Light::setLightColor(Vector3 color)
 	m_lightColor = color;
 }
 
-void NGraphic::NScene::Light::setLightColor(float r, float g, float b)
+void Light::setLightColor(float r, float g, float b)
 {
 	m_isLightDirty = true;
 	m_lightColor = Vector3(r,g,b);
 }
 
-Vector3 NGraphic::NScene::Light::getLightColor()
+Vector3 Light::getLightColor()
 {
 	return m_lightColor;
+}
+
+
+void PointLight::updatePointLightViewMatrixs()
+{
+	Light::getViewMatrix();
+}
+
+Matrix PointLight::getViewMatrix()
+{
+	if (m_isDirty_matView) {
+		updatePointLightViewMatrixs();
+		//update my other matrix as well
+	}
+	return m_matView;
+}
+Matrix PointLight::getMatrixXPlus()
+{
+	if (m_isDirty_matView) {
+		updatePointLightViewMatrixs();
+		//update my other matrix as well
+	}
+	return m_lookXPlus;
+}
+Matrix PointLight::getMatrixXMinus()
+{
+	if (m_isDirty_matView) {
+		updatePointLightViewMatrixs();
+		//update my other matrix as well
+	}
+	return m_lookXPlus;
+}
+
+Matrix PointLight::getMatrixYPlus()
+{
+	if (m_isDirty_matView) {
+		updatePointLightViewMatrixs();
+		//update my other matrix as well
+	}
+	return m_lookXPlus;
+}
+Matrix PointLight::getMatrixYMinus()
+{
+	if (m_isDirty_matView) {
+		updatePointLightViewMatrixs();
+		//update my other matrix as well
+	}
+	return m_lookXPlus;
+}
+
+Matrix PointLight::getMatrixZPlus()
+{
+	if (m_isDirty_matView) {
+		updatePointLightViewMatrixs();
+		//update my other matrix as well
+	}
+	return m_lookXPlus;
+}
+Matrix PointLight::getMatrixZMinus()
+{
+	if (m_isDirty_matView) {
+		updatePointLightViewMatrixs();
+		//update my other matrix as well
+	}
+	return m_lookXPlus;
 }
