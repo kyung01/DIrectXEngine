@@ -88,16 +88,22 @@ namespace NGraphic {
 		static void RENDER_LIGHT_ATLAS_SPOT(
 
 			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
-			NScene::Scene &scene,
 			RenderTexture & renderTexture, DepthTexture & depthTexture,
+			NScene::Scene &scene,
 			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
 			float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight);
 		static void RENDER_LIGHT_ATLAS_POINT(
 
 			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
-			NScene::Scene &scene,
 			RenderTexture & renderTexture, DepthTexture & depthTexture,
-			NScene::Light &light, float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight);
+			NScene::Scene &scene,
+			DirectX::SimpleMath::Matrix& worldMatrix,
+			DirectX::SimpleMath::Matrix& viewMatrixXPositive, DirectX::SimpleMath::Matrix& viewMatrixXNegative,
+			DirectX::SimpleMath::Matrix& viewMatrixYPositive, DirectX::SimpleMath::Matrix& viewMatrixYNegative,
+			DirectX::SimpleMath::Matrix& viewMatrixZPositive, DirectX::SimpleMath::Matrix& viewMatrixZNegative,
+			DirectX::SimpleMath::Matrix& projMatrix,
+			float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight);
+
 		static void RENDER_LIGHT_ATLAS(
 			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
 			NScene::Scene &scene,

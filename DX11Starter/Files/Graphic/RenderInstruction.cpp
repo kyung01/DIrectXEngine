@@ -531,8 +531,8 @@ void RenderInstruction::RENDER_LIGHT_ATLAS(
 
 void RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
-	NScene::Scene &scene,
 	RenderTexture & renderTexture, DepthTexture & depthTexture,
+	NScene::Scene &scene,
 	DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
 	float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight)
 {
@@ -582,9 +582,39 @@ void RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 Render in order of +x -x +y -y  +z -z
 */
 void RenderInstruction::RENDER_LIGHT_ATLAS_POINT(
-	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
-	NScene::Scene &scene,
-	RenderTexture &renderTexture, DepthTexture & depthTexture,
-	NScene::Light &light, float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight)
+	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, 
+	RenderTexture & renderTexture, DepthTexture & depthTexture, 
+	NScene::Scene & scene, 
+	DirectX::SimpleMath::Matrix & worldMatrix, DirectX::SimpleMath::Matrix & viewMatrixXPositive, DirectX::SimpleMath::Matrix & viewMatrixXNegative, DirectX::SimpleMath::Matrix & viewMatrixYPositive, DirectX::SimpleMath::Matrix & viewMatrixYNegative, DirectX::SimpleMath::Matrix & viewMatrixZPositive, DirectX::SimpleMath::Matrix & viewMatrixZNegative, DirectX::SimpleMath::Matrix & projMatrix, float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight)
 {
+	RENDER_LIGHT_ATLAS_SPOT(
+		device, context, asset, renderTexture, depthTexture,
+		scene,
+		worldMatrix, viewMatrixXPositive, projMatrix,
+		topLeftX, topLeftY, viewportWidth/6, ViewportHeight);
+	RENDER_LIGHT_ATLAS_SPOT(
+		device, context, asset, renderTexture, depthTexture,
+		scene,
+		worldMatrix, viewMatrixXNegative, projMatrix,
+		topLeftX + viewportWidth / 6, topLeftY, viewportWidth / 6, ViewportHeight);
+	RENDER_LIGHT_ATLAS_SPOT(
+		device, context, asset, renderTexture, depthTexture,
+		scene,
+		worldMatrix, viewMatrixYPositive, projMatrix,
+		topLeftX + viewportWidth *(2.0 / 6.0), topLeftY, viewportWidth / 6.0, ViewportHeight);
+	RENDER_LIGHT_ATLAS_SPOT(
+		device, context, asset, renderTexture, depthTexture,
+		scene,
+		worldMatrix, viewMatrixYNegative, projMatrix,
+		topLeftX + viewportWidth *(3.0 / 6.0), topLeftY, viewportWidth / 6.0, ViewportHeight);
+	RENDER_LIGHT_ATLAS_SPOT(
+		device, context, asset, renderTexture, depthTexture,
+		scene,
+		worldMatrix, viewMatrixZPositive, projMatrix,
+		topLeftX + viewportWidth *(4.0 / 6.0), topLeftY, viewportWidth / 6.0, ViewportHeight);
+	RENDER_LIGHT_ATLAS_SPOT(
+		device, context, asset, renderTexture, depthTexture,
+		scene,
+		worldMatrix, viewMatrixZNegative, projMatrix,
+		topLeftX + viewportWidth *(5.0 / 6.0), topLeftY, viewportWidth / 6.0, ViewportHeight);
 }

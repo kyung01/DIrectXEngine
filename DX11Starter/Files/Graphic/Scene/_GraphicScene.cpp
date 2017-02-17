@@ -180,8 +180,8 @@ void PointLight::updatePointLightViewMatrixs()
 	Light::getViewMatrix();
 	m_matLookXPlus = Matrix::CreateLookAt(m_pos, m_pos + Vector3(1, 0, 0), Vector3(0, 1, 0));
 	m_matLookXMinus = Matrix::CreateLookAt(m_pos, m_pos + Vector3(-1, 0, 0), Vector3(0, 1, 0));
-	m_matLookYPlus = Matrix::CreateLookAt(m_pos, m_pos + Vector3(0, 1, 0), Vector3(0, 1, 0));
-	m_matLookYMinus = Matrix::CreateLookAt(m_pos, m_pos + Vector3(0, -1, 0), Vector3(0, 1, 0));
+	m_matLookYPlus = Matrix::CreateLookAt(m_pos, m_pos + Vector3(0, 1, 0), Vector3(0, 0, -1));
+	m_matLookYMinus = Matrix::CreateLookAt(m_pos, m_pos + Vector3(0, -1, 0), Vector3(0, 0,1));
 	m_matLookZPlus = Matrix::CreateLookAt(m_pos, m_pos + Vector3(0, 0, 1), Vector3(0, 1, 0));
 	m_matLookZMinus = Matrix::CreateLookAt(m_pos, m_pos + Vector3(0, 0, -1), Vector3(0, 1, 0));
 }

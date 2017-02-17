@@ -50,20 +50,12 @@ void GraphicMain::rendering(NScene::Scene scene)
 
 	
 }
-LightInfo NGraphic::GraphicMain::getLightInfo(ID3D11Device *device, NScene::LIGHT_TYPE type)
+LightInfo NGraphic::GraphicMain::getLightInfo(ID3D11Device *device)
 {
 	LightInfo info{ std::shared_ptr<RenderTexture>(new RenderTexture()),std::shared_ptr<DepthTexture>(new DepthTexture) };
 	info.position->init(device, m_width, m_height);
 	info.depth->init(device, m_width, m_height);
-	switch (type) {
-	case NScene::LIGHT_TYPE::SPOTLIGHT:
-		info.type = 0;
-		break;
-	case NScene::LIGHT_TYPE::POINTLIGHT:
-		info.type = 1;
-		break;
-
-	}
+	
 	
 	return info;
 }
@@ -104,17 +96,18 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 	return true;
 }
 
-void GraphicMain::updateLightAtlas()
+void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights)
 {
 	int size = 3;
 	m_atlasSlicer->clear();
-	for (auto it = m_lightInfos.begin(); it != m_lightInfos.end(); it++) {
-
+	for (auto it = lights.begin(); it != lights.end(); it++) {
+		auto &light = **it;
+		auto &info =  m_lightInfos[light.m_id];
 		//0 spotlight
 		//1 pointlight
-		if (it->second.type == 0) {
+		if (light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT) {
 
-			if (!m_atlasSlicer->getRoom(it->second.topLeftX, it->second.topLeftY, it->second.viewportWidth, it->second.viewportHeight, size, size)) {
+			if (!m_atlasSlicer->getRoom(info.topLeftX, info.topLeftY, info.viewportWidth, info.viewportHeight, size, size)) {
 				std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
 				system("pause");
 			}
@@ -127,7 +120,7 @@ void GraphicMain::updateLightAtlas()
 			}
 		}
 		else {
-			if (!m_atlasSlicer->getRoom(it->second.topLeftX, it->second.topLeftY, it->second.viewportWidth, it->second.viewportHeight, size * 6, size)) {
+			if (!m_atlasSlicer->getRoom(info.topLeftX, info.topLeftY, info.viewportWidth, info.viewportHeight, size * 6, size)) {
 				std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
 				system("pause");
 			}
@@ -157,14 +150,28 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 		//What kinds of lights are there ?
 		//if (light.m_lightType != NScene::LIGHT_TYPE::SPOTLIGHT) continue;
 		
-		//if(light.m_lightType == )
-		RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
+		if(light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT)
+			RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 			device, context, asset,
-			scene,
 			*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
+			scene,
 
 			worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix(lightInfo.viewportWidth, lightInfo.viewportHeight ), 
 			lightInfo.topLeftX, lightInfo.topLeftY, lightInfo.viewportWidth, lightInfo.viewportHeight);
+		else {
+			auto pointLight = static_cast<NScene::PointLight*>(&light);
+			RenderInstruction::RENDER_LIGHT_ATLAS_POINT(
+				device, context, asset,
+				*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
+				scene,
+
+				worldMatrix, 
+				pointLight->getMatrixXPlus(), pointLight->getMatrixXMinus(),
+				pointLight->getMatrixYPlus(), pointLight->getMatrixYMinus(), 
+				pointLight->getMatrixZPlus(), pointLight->getMatrixZMinus(), 
+				(**it).getProjectionMatrix(lightInfo.viewportWidth/6, lightInfo.viewportHeight),
+				lightInfo.topLeftX, lightInfo.topLeftY, lightInfo.viewportWidth, lightInfo.viewportHeight);
+		}
 
 		
 		//RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
@@ -240,11 +247,11 @@ void NGraphic::GraphicMain::render(
 	bool newLightInfo = false;
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		if (m_lightInfos.find(it->get()->m_id) != m_lightInfos.end()) continue;
-		m_lightInfos[it->get()->m_id] = getLightInfo(device, it->get()->m_lightType);
+		m_lightInfos[it->get()->m_id] = getLightInfo(device);
 		newLightInfo = true;
 	}
 	if(newLightInfo)
-		updateLightAtlas();
+		updateLightAtlas(scene.objs_lights);
 
 
 	m_renderTextureDummy.setRenderTargetView(target, viewport);

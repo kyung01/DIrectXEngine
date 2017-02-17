@@ -48,20 +48,21 @@ namespace NGraphic {
 		void rendering(NScene::Scene scene);
 		void processObject(NScene::Object obj);
 
-		LightInfo getLightInfo(ID3D11Device *device,  NScene::LIGHT_TYPE type);
-		bool initTextures		(ID3D11Device* device, ID3D11DeviceContext *context, int width, int height, int textureIndirectLightWidth, int textureIndirectLightHeight);
-		
-
-
 		void renderLightAtlas(
 			ID3D11Device * device, ID3D11DeviceContext * context, Asset& asset, NScene::Scene &scene);
 		
 	protected:
+		LightInfo getLightInfo(ID3D11Device *device);
+		bool initTextures(ID3D11Device* device, ID3D11DeviceContext *context, int width, int height, int textureIndirectLightWidth, int textureIndirectLightHeight);
+
+
+
 		//glm::mat4 matProjection, matView, matModel;
 		void processCamera(NScene::Camera cam);// = 0;
 		void beginRendering(ID3D11DeviceContext *context);// = 0;
 		void endRendering(ID3D11DeviceContext *context);// = 0;
 		void getScreenWidth(int &w, int &h);// = 0;
+		void updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights);
 
 		
 	public:
@@ -76,7 +77,6 @@ namespace NGraphic {
 		// Width and hieght is for the resolution in wihich this graphic main will adjust to render things onto
 		GraphicMain();
 		bool init(ID3D11Device *device, ID3D11DeviceContext *context, int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight);
-		void updateLightAtlas();
 		void update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene);
 		
 
