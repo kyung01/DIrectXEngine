@@ -281,7 +281,6 @@ void NGraphic::GraphicMain::render(
 		endRendering(context);
 	}
 
-	renderLightAtlas(device, context, asset, *game.m_scene);
 	auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
 	auto worldMatrixFrustum = DirectX::SimpleMath::Matrix::CreateRotationX(3.14 / 2);
 	auto viewMatirx = scene.m_camMain.getViewMatrix();
@@ -303,17 +302,10 @@ void NGraphic::GraphicMain::render(
 	m_renderTextures[TARGET_FINAL]->clear(context, 0, 0, 0, 1);
 	
 
-	if (true) {
-		m_depthTextures[DEPTH_FINAL]->clear(context);
-		RenderInstruction::RENDER_DEBUG(
-			device, context, asset,
-			*m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL],
-			  game, scene,m_frustum,
-			*m_depthTextures[DEPTH_WORLD]);
-
-	}
+	
+	renderLightAtlas(device, context, asset, *game.m_scene);
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
-		
+	
 
 		NScene::Light& light = **it;
 		LightInfo& lightInfo = m_lightInfos[it->get()->m_id];
@@ -387,6 +379,15 @@ void NGraphic::GraphicMain::render(
 			//	asset.m_texturesCubeMap[TEXTURE_ID_SKYBOX_SUNNY], m_renderTextures[TARGET_WORLD]->getShaderResourceView(), m_renderTextures[TARGET_NORMAL]->getShaderResourceView());
 
 		}
+
+	}
+	if (true) {
+		m_depthTextures[DEPTH_FINAL]->clear(context);
+		RenderInstruction::RENDER_DEBUG(
+			device, context, asset,
+			*m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL],
+			game, scene, m_frustum,
+			*m_depthTextures[DEPTH_WORLD]);
 
 	}
 
