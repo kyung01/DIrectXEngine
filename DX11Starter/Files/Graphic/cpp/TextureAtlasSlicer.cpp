@@ -9,7 +9,7 @@ TextureAtlasSlicer::TextureAtlasSlicer(float pixelWidth, float pixelHeight, floa
 	this->m_countHeight = countHeight;
 	this->m_check.resize((int)(countWidth*countHeight) );
 	clear();
-}
+}	
 
 void TextureAtlasSlicer::clear()
 {

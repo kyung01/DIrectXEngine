@@ -128,72 +128,14 @@ bool ISimpleShader::LoadShaderFile(ID3DBlob *blob)
 		}
 	}
 
-	// Loop through all constant buffers
-	for (unsigned int b = 0; b < constantBufferCount; b++)
-	{
-		// Get this buffer
-		ID3D11ShaderReflectionConstantBuffer* cb =
-			refl->GetConstantBufferByIndex(b);
-
-		// Get the description of this buffer
-		D3D11_SHADER_BUFFER_DESC bufferDesc;
-		cb->GetDesc(&bufferDesc);
-
-		// Get the description of the resource binding, so
-		// we know exactly how it's bound in the shader
-		D3D11_SHADER_INPUT_BIND_DESC bindDesc;
-		refl->GetResourceBindingDescByName(bufferDesc.Name, &bindDesc);
-
-		// Set up the buffer and put its pointer in the table
-		constantBuffers[b].BindIndex = bindDesc.BindPoint;
-		constantBuffers[b].Name = bufferDesc.Name;
-		cbTable.insert(std::pair<std::string, SimpleConstantBuffer*>(bufferDesc.Name, &constantBuffers[b]));
-
-		// Create this constant buffer
-		D3D11_BUFFER_DESC newBuffDesc;
-		newBuffDesc.Usage = D3D11_USAGE_DEFAULT;
-		newBuffDesc.ByteWidth = bufferDesc.Size;
-		newBuffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		newBuffDesc.CPUAccessFlags = 0;
-		newBuffDesc.MiscFlags = 0;
-		newBuffDesc.StructureByteStride = 0;
-		device->CreateBuffer(&newBuffDesc, 0, &constantBuffers[b].ConstantBuffer);
-
-		// Set up the data buffer for this constant buffer
-		constantBuffers[b].Size = bufferDesc.Size;
-		constantBuffers[b].LocalDataBuffer = new unsigned char[bufferDesc.Size];
-		ZeroMemory(constantBuffers[b].LocalDataBuffer, bufferDesc.Size);
-
-		// Loop through all variables in this buffer
-		for (unsigned int v = 0; v < bufferDesc.Variables; v++)
-		{
-			// Get this variable
-			ID3D11ShaderReflectionVariable* var =
-				cb->GetVariableByIndex(v);
-
-			// Get the description of the variable and its type
-			D3D11_SHADER_VARIABLE_DESC varDesc;
-			var->GetDesc(&varDesc);
-
-			// Create the variable struct
-			SimpleShaderVariable varStruct;
-			varStruct.ConstantBufferIndex = b;
-			varStruct.ByteOffset = varDesc.StartOffset;
-			varStruct.Size = varDesc.Size;
-
-			// Get a string version
-			std::string varName(varDesc.Name);
-
-			// Add this variable to the table and the constant buffer
-			varTable.insert(std::pair<std::string, SimpleShaderVariable>(varName, varStruct));
-			constantBuffers[b].Variables.push_back(varStruct);
-		}
-	}
+	initConstantBuffer(refl, constantBuffers, constantBufferCount);
+	
 
 	// All set
 	refl->Release();
 	return true;
 }
+
 // --------------------------------------------------------
 // Loads the specified shader and builds the variable table using shader
 // reflection.  This must be a separate step from the constructor since
@@ -290,68 +232,101 @@ bool ISimpleShader::LoadShaderFileHLSL(LPCWSTR shaderFile, LPCSTR target)
 		}
 	}
 
-	// Loop through all constant buffers
-	for (unsigned int b = 0; b < constantBufferCount; b++)
+
+	initConstantBuffer(refl, constantBuffers, constantBufferCount);
+	// All set
+	refl->Release();
+	return true;
+}
+bool NGraphic::ISimpleShader::LoadShaderFileHLSLCustomConstantBuffer(LPCWSTR shaderFile, LPCSTR target, int n_args, ...)
+{
+	ID3DBlob *error = nullptr;
+	HRESULT hr =
+		D3DCompileFromFile(
+			shaderFile, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+			"main", target,
+			//"main", "vs_5_0",
+			//D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG, 0,
+			D3DCOMPILE_ENABLE_STRICTNESS, 0,
+			&shaderBlob, &error);
+
+	if (hr != S_OK)
 	{
-		// Get this buffer
-		ID3D11ShaderReflectionConstantBuffer* cb =
-			refl->GetConstantBufferByIndex(b);
+		std::cout << "\n" << "NOT OK" << DirectX::DirectXUtility::HRESULT_TO_STRING(hr) << "\n";
+		if (error) {
+			std::cout << "ERROR BUFFER IS NOT EMPTY " << error->GetBufferSize() << "\n";
+			OutputDebugString((LPCTSTR)error->GetBufferPointer());
+			error->Release();
+		}
+		else std::cout << "ERROR BUFFER IS EMPTY" << "\n";
+		return false;
+	}
+	return LoadShaderFile(shaderBlob);
 
-		// Get the description of this buffer
-		D3D11_SHADER_BUFFER_DESC bufferDesc;
-		cb->GetDesc(&bufferDesc);
+	// Create the shader - Calls an overloaded version of this abstract
+	// method in the appropriate child class
+	shaderValid = CreateShader(shaderBlob);
+	if (!shaderValid)
+	{
+		return false;
+	}
 
-		// Get the description of the resource binding, so
-		// we know exactly how it's bound in the shader
-		D3D11_SHADER_INPUT_BIND_DESC bindDesc;
-		refl->GetResourceBindingDescByName(bufferDesc.Name, &bindDesc);
+	// Set up shader reflection to get information about
+	// this shader and its variables,  buffers, etc.
+	ID3D11ShaderReflection* refl;
+	D3DReflect(
+		shaderBlob->GetBufferPointer(),
+		shaderBlob->GetBufferSize(),
+		IID_ID3D11ShaderReflection,
+		(void**)&refl);
 
-		// Set up the buffer and put its pointer in the table
-		constantBuffers[b].BindIndex = bindDesc.BindPoint;
-		constantBuffers[b].Name = bufferDesc.Name;
-		cbTable.insert(std::pair<std::string, SimpleConstantBuffer*>(bufferDesc.Name, &constantBuffers[b]));
+	// Get the description of the shader
+	D3D11_SHADER_DESC shaderDesc;
+	refl->GetDesc(&shaderDesc);
 
-		// Create this constant buffer
-		D3D11_BUFFER_DESC newBuffDesc;
-		newBuffDesc.Usage = D3D11_USAGE_DEFAULT;
-		newBuffDesc.ByteWidth = bufferDesc.Size;
-		newBuffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		newBuffDesc.CPUAccessFlags = 0;
-		newBuffDesc.MiscFlags = 0;
-		newBuffDesc.StructureByteStride = 0;
-		device->CreateBuffer(&newBuffDesc, 0, &constantBuffers[b].ConstantBuffer);
+	// Create resource arrays
+	constantBufferCount = shaderDesc.ConstantBuffers;
+	constantBuffers = new SimpleConstantBuffer[constantBufferCount];
 
-		// Set up the data buffer for this constant buffer
-		constantBuffers[b].Size = bufferDesc.Size;
-		constantBuffers[b].LocalDataBuffer = new unsigned char[bufferDesc.Size];
-		ZeroMemory(constantBuffers[b].LocalDataBuffer, bufferDesc.Size);
+	// Handle bound resources (like shaders and samplers)
+	unsigned int resourceCount = shaderDesc.BoundResources;
+	for (unsigned int r = 0; r < resourceCount; r++)
+	{
+		// Get this resource's description
+		D3D11_SHADER_INPUT_BIND_DESC resourceDesc;
+		refl->GetResourceBindingDesc(r, &resourceDesc);
 
-		// Loop through all variables in this buffer
-		for (unsigned int v = 0; v < bufferDesc.Variables; v++)
+		// Check the type
+		switch (resourceDesc.Type)
 		{
-			// Get this variable
-			ID3D11ShaderReflectionVariable* var =
-				cb->GetVariableByIndex(v);
+		case D3D_SIT_TEXTURE: // A texture resource
+		{
+			// Create the SRV wrapper
+			SimpleSRV* srv = new SimpleSRV();
+			srv->BindIndex = resourceDesc.BindPoint;	// Shader bind point
+			srv->Index = shaderResourceViews.size();	// Raw index
 
-			// Get the description of the variable and its type
-			D3D11_SHADER_VARIABLE_DESC varDesc;
-			var->GetDesc(&varDesc);
+			textureTable.insert(std::pair<std::string, SimpleSRV*>(resourceDesc.Name, srv));
+			shaderResourceViews.push_back(srv);
+		}
+		break;
 
-			// Create the variable struct
-			SimpleShaderVariable varStruct;
-			varStruct.ConstantBufferIndex = b;
-			varStruct.ByteOffset = varDesc.StartOffset;
-			varStruct.Size = varDesc.Size;
+		case D3D_SIT_SAMPLER: // A sampler resource
+		{
+			// Create the sampler wrapper
+			SimpleSampler* samp = new SimpleSampler();
+			samp->BindIndex = resourceDesc.BindPoint;	// Shader bind point
+			samp->Index = samplerStates.size();			// Raw index
 
-			// Get a string version
-			std::string varName(varDesc.Name);
-
-			// Add this variable to the table and the constant buffer
-			varTable.insert(std::pair<std::string, SimpleShaderVariable>(varName, varStruct));
-			constantBuffers[b].Variables.push_back(varStruct);
+			samplerTable.insert(std::pair<std::string, SimpleSampler*>(resourceDesc.Name, samp));
+			samplerStates.push_back(samp);
+		}
+		break;
 		}
 	}
 
+
+	initConstantBufferArgs(refl, constantBuffers, constantBufferCount, n_args);
 	// All set
 	refl->Release();
 	return true;
@@ -427,9 +402,21 @@ bool ISimpleShader::LoadShaderFile(LPCWSTR shaderFile)
 		}
 	}
 
+
+
+	initConstantBuffer(refl, constantBuffers, constantBufferCount);
+
+	// All set
+	refl->Release();
+	return true;
+}
+
+void NGraphic::ISimpleShader::initConstantBuffer(ID3D11ShaderReflection * refl, SimpleConstantBuffer * constantBuffers, int constantBufferCount)
+{
 	// Loop through all constant buffers
 	for (unsigned int b = 0; b < constantBufferCount; b++)
 	{
+		constantBuffers[b].isManual = false;
 		// Get this buffer
 		ID3D11ShaderReflectionConstantBuffer* cb =
 			refl->GetConstantBufferByIndex(b);
@@ -488,10 +475,81 @@ bool ISimpleShader::LoadShaderFile(LPCWSTR shaderFile)
 			constantBuffers[b].Variables.push_back(varStruct);
 		}
 	}
+}
 
-	// All set
-	refl->Release();
-	return true;
+void NGraphic::ISimpleShader::initConstantBufferArgs(ID3D11ShaderReflection * refl, SimpleConstantBuffer * constantBuffers, int constantBufferCount, int n_args, ...)
+{
+	int index = 0;
+	va_list args;
+	va_start(args, n_args);
+	int a = va_arg(args, int);
+	// Loop through all constant buffers
+	for (unsigned int b = 0; b < constantBufferCount; b++)
+	{
+
+		constantBuffers[b].isManual = (bool)(va_arg(args, int));
+		auto flagUsage = (D3D11_USAGE)(int)(va_arg(args, int));
+		auto flagBind = (D3D11_BIND_FLAG)(int)(va_arg(args, int));
+		auto flagCpuAccess = (D3D11_CPU_ACCESS_FLAG)(int)(va_arg(args, int));
+		// Get this buffer
+		ID3D11ShaderReflectionConstantBuffer* cb =
+			refl->GetConstantBufferByIndex(b);
+
+		// Get the description of this buffer
+		D3D11_SHADER_BUFFER_DESC bufferDesc;
+		cb->GetDesc(&bufferDesc);
+
+		// Get the description of the resource binding, so
+		// we know exactly how it's bound in the shader
+		D3D11_SHADER_INPUT_BIND_DESC bindDesc;
+		refl->GetResourceBindingDescByName(bufferDesc.Name, &bindDesc);
+
+		// Set up the buffer and put its pointer in the table
+		constantBuffers[b].BindIndex = bindDesc.BindPoint;
+		constantBuffers[b].Name = bufferDesc.Name;
+		cbTable.insert(std::pair<std::string, SimpleConstantBuffer*>(bufferDesc.Name, &constantBuffers[b]));
+		//D3D11_USAGE_DEFAULT D3D11_BIND_CONSTANT_BUFFER
+		// Create this constant buffer
+		D3D11_BUFFER_DESC newBuffDesc;
+		newBuffDesc.Usage = flagUsage;
+		newBuffDesc.ByteWidth = bufferDesc.Size;
+		newBuffDesc.BindFlags = flagBind;
+		newBuffDesc.CPUAccessFlags = flagCpuAccess;
+		newBuffDesc.MiscFlags = 0;
+		newBuffDesc.StructureByteStride = 0;
+		device->CreateBuffer(&newBuffDesc, 0, &constantBuffers[b].ConstantBuffer);
+
+		// Set up the data buffer for this constant buffer
+		constantBuffers[b].Size = bufferDesc.Size;
+		constantBuffers[b].LocalDataBuffer = new unsigned char[bufferDesc.Size];
+		ZeroMemory(constantBuffers[b].LocalDataBuffer, bufferDesc.Size);
+
+		// Loop through all variables in this buffer
+		for (unsigned int v = 0; v < bufferDesc.Variables; v++)
+		{
+			// Get this variable
+			ID3D11ShaderReflectionVariable* var =
+				cb->GetVariableByIndex(v);
+
+			// Get the description of the variable and its type
+			D3D11_SHADER_VARIABLE_DESC varDesc;
+			var->GetDesc(&varDesc);
+
+			// Create the variable struct
+			SimpleShaderVariable varStruct;
+			varStruct.ConstantBufferIndex = b;
+			varStruct.ByteOffset = varDesc.StartOffset;
+			varStruct.Size = varDesc.Size;
+
+			// Get a string version
+			std::string varName(varDesc.Name);
+
+			// Add this variable to the table and the constant buffer
+			varTable.insert(std::pair<std::string, SimpleShaderVariable>(varName, varStruct));
+			constantBuffers[b].Variables.push_back(varStruct);
+		}
+	}
+	va_end(args);
 }
 
 
@@ -568,6 +626,7 @@ void ISimpleShader::CopyAllBufferData()
 	// Loop through the constant buffers and copy all data
 	for (unsigned int i = 0; i < constantBufferCount; i++)
 	{
+		if (constantBuffers[i].isManual) continue;
 		// Copy the entire local data buffer
 		deviceContext->UpdateSubresource(
 			constantBuffers[i].ConstantBuffer, 0, 0,

@@ -20,16 +20,16 @@ std::list<LoadInfoMesh> Asset::getLoadListMesh()
 std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 {
 	std::list<LoadInfoShader> lst({
-		{ RENDER_SKYBOX,							L"Resource/Shader/SkyVS.hlsl" },
-		{ RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY,			L"Resource/Shader/defferedVS.hlsl" },
-		{ RENDER_WORLD,			L"Resource/Shader/worldSpaceVS.hlsl" },
-		{ RENDER_DIRECT_LIGHT,			L"Resource/Shader/directLightVS.hlsl" },
-		{ RENDER_LIGHT_SHAFT,			L"Resource/Shader/lightShaftVS.hlsl" },
-		{ RENDER_FRUSTUM_INSIDE,			L"Resource/Shader/frustumScreenSpaceVS.hlsl" },
-		{ RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectVS.hlsl" },
-		{ RENDER_ONE_COLOR,			L"Resource/Shader/OneColorVS.hlsl" },
-		{ RENDER_TRANSPARENT,			L"Resource/Shader/TransparentVS.hlsl" },
-		{ RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightVS.hlsl" }
+		LoadInfoShader( RENDER_SKYBOX,							L"Resource/Shader/SkyVS.hlsl" ),
+		LoadInfoShader( RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY,			L"Resource/Shader/defferedVS.hlsl" ),
+		LoadInfoShader( RENDER_WORLD,			L"Resource/Shader/worldSpaceVS.hlsl" ),
+		LoadInfoShader( RENDER_DIRECT_LIGHT,			L"Resource/Shader/directLightVS.hlsl" ),
+		LoadInfoShader( RENDER_LIGHT_SHAFT,			L"Resource/Shader/lightShaftVS.hlsl" ),
+		LoadInfoShader( RENDER_FRUSTUM_INSIDE,			L"Resource/Shader/frustumScreenSpaceVS.hlsl" ),
+		LoadInfoShader( RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectVS.hlsl" ),
+		LoadInfoShader( RENDER_ONE_COLOR,			L"Resource/Shader/OneColorVS.hlsl" ),
+		LoadInfoShader( RENDER_TRANSPARENT,			L"Resource/Shader/TransparentVS.hlsl" ),
+		LoadInfoShader( RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightVS.hlsl" )
 	});
 	return lst;
 }
@@ -37,16 +37,16 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 {
 	std::list<LoadInfoShader> lst({
-		{ RENDER_SKYBOX,						L"Resource/Shader/SkyFS.hlsl" },
-		{ RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY,			L"Resource/Shader/defferedFS.hlsl" },
-		{ RENDER_WORLD,			L"Resource/Shader/worldSpaceFS.hlsl" },
-		{ RENDER_DIRECT_LIGHT,			L"Resource/Shader/directLightFS.hlsl" },
-		{ RENDER_LIGHT_SHAFT,			L"Resource/Shader/lightShaftFS.hlsl" },
-		{ RENDER_FRUSTUM_INSIDE,			L"Resource/Shader/frustumScreenSpaceFS.hlsl" },
-		{ RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectFS.hlsl" },
-		{ RENDER_ONE_COLOR,			L"Resource/Shader/OneColorFS.hlsl" },
-		{ RENDER_TRANSPARENT,			L"Resource/Shader/TransparentFS.hlsl" },
-		{ RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightFS.hlsl" }
+		LoadInfoShader( RENDER_SKYBOX,						L"Resource/Shader/SkyFS.hlsl" ),
+		LoadInfoShader( RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY,			L"Resource/Shader/defferedFS.hlsl" ),
+		LoadInfoShader( RENDER_WORLD,			L"Resource/Shader/worldSpaceFS.hlsl" ),
+		LoadInfoShader( RENDER_DIRECT_LIGHT,			L"Resource/Shader/directLightFS.hlsl" ),
+		LoadInfoShader( RENDER_LIGHT_SHAFT,			L"Resource/Shader/lightShaftFS.hlsl" ),
+		LoadInfoShader( RENDER_FRUSTUM_INSIDE,			L"Resource/Shader/frustumScreenSpaceFS.hlsl" ),
+		LoadInfoShader( RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectFS.hlsl" ),
+		LoadInfoShader( RENDER_ONE_COLOR,			L"Resource/Shader/OneColorFS.hlsl"),
+		LoadInfoShader( RENDER_TRANSPARENT,			L"Resource/Shader/TransparentFS.hlsl"),
+		LoadInfoShader( RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightFS.hlsl" )
 	});
 	return lst;
 }

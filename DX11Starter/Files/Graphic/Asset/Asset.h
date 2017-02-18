@@ -14,6 +14,7 @@
 #include <VertexTypes.h>
 #include <Effects.h>
 #include <Graphic\Frustum.h>
+#include <list>
 
 namespace NGraphic {
 	struct LoadInfoMesh {
@@ -23,6 +24,25 @@ namespace NGraphic {
 	struct LoadInfoShader {
 		KEnum type;
 		LPCWSTR path;
+		bool isCustomConstantBuffer;
+		std::list<int> customConstantBufferArguments;
+		LoadInfoShader(KEnum type, LPCWSTR path) {
+			this->type = type;
+			this->path = path;
+			isCustomConstantBuffer = false;
+		}
+		LoadInfoShader(KEnum type, LPCWSTR path , int n_args, ...) {
+			this->type = type;
+			this->path = path;
+			isCustomConstantBuffer = true;
+			va_list ap;
+			va_start(ap, n_args);
+			for (int i = 2; i <= n_args; i++) {
+				int a = va_arg(ap, int);
+				customConstantBufferArguments.push_back(a);
+			}
+			va_end(ap);
+		}
 	};
 	struct LoadInfoTexture {
 		KEnum id;

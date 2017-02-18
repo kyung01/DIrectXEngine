@@ -122,6 +122,7 @@ void GraphicMain::updateBufferLightPrameter(ID3D11DeviceContext *context, std::l
 void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights)
 {
 	float size = 3;
+	
 	m_atlasSlicer->clear();
 	for (auto it = lights.begin(); it != lights.end(); it++) {
 		auto &light = **it;

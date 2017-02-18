@@ -29,6 +29,7 @@ namespace NGraphic {
 	// --------------------------------------------------------
 	struct SimpleConstantBuffer
 	{
+		bool isManual;
 		std::string Name;
 		unsigned int Size;
 		unsigned int BindIndex;
@@ -60,6 +61,15 @@ namespace NGraphic {
 	// --------------------------------------------------------
 	class ISimpleShader
 	{
+		void initConstantBuffer(ID3D11ShaderReflection* refl, SimpleConstantBuffer* constantBuffers, int constantBufferCount);
+
+		/*
+		0 isManual
+		1  usage
+		2 bind
+		3 cpuAccess
+		*/
+		void initConstantBufferArgs(ID3D11ShaderReflection * refl, SimpleConstantBuffer * constantBuffers, int constantBufferCount, int n_args, ...);
 	public:
 		ISimpleShader(ID3D11Device* device, ID3D11DeviceContext* context);
 		virtual ~ISimpleShader();
@@ -68,7 +78,11 @@ namespace NGraphic {
 		// overrides in the base class constructor)
 		bool LoadShaderFile(LPCWSTR shaderFile);
 		bool LoadShaderFileHLSL(LPCWSTR shaderFile, LPCSTR target);
+
+		//	0 isManual		1 usage		2 bind		3 cpuAccess	
+		bool LoadShaderFileHLSLCustomConstantBuffer(LPCWSTR shaderFile, LPCSTR target, int n_args, ...);
 		bool LoadShaderFile(ID3DBlob *blob);
+
 
 		// Simple helpers
 		bool IsShaderValid() { return shaderValid; }
