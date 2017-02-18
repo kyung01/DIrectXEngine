@@ -49,7 +49,7 @@ void NGraphic::TextureAtlasSlicer::setCheck(int i, int j, int sizeX, int sizeY, 
 bool TextureAtlasSlicer::getRoom(float & offsetX, float & offsetY, float & viewportWidth,float&viewportHeight, int sizeX,int sizeY)
 {
 	float unit = (m_width / m_countWidth);
-	for (int j = 0; j < m_countHeight; j++)for (int i = 0; i < m_countWidth; i += sizeX ) {
+	for (int j = 0; j < m_countHeight; j++)for (int i = 0; i < m_countWidth; i += 1 ) {
 		bool isRoomAvailable = true;
 		if (isAvailable(i, j, sizeX, sizeY)) {
 			offsetX = i * unit;
@@ -57,7 +57,7 @@ bool TextureAtlasSlicer::getRoom(float & offsetX, float & offsetY, float & viewp
 			viewportWidth = unit * sizeX;
 			viewportHeight = unit * sizeY;
 			setCheck(i, j, sizeX, sizeY,false);
-			//std::cout << i << " and " << j <<  " plus " << sizeX << " , " << sizeY << "\n";
+			std::cout << i << " and " << j <<  " plus " << sizeX << " , " << sizeY << "\n";
 			return true;
 		}
 		

@@ -121,7 +121,7 @@ void GraphicMain::updateBufferLightPrameter(ID3D11DeviceContext *context, std::l
 
 void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights)
 {
-	int size = 3;
+	float size = 3;
 	m_atlasSlicer->clear();
 	for (auto it = lights.begin(); it != lights.end(); it++) {
 		auto &light = **it;
@@ -130,11 +130,12 @@ void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &li
 		//1 pointlight
 		if (light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT) {
 
-			if (!m_atlasSlicer->getRoom(info.topLeftX, info.topLeftY, info.viewportWidth, info.viewportHeight, size, size)) {
+			if (!m_atlasSlicer->getRoom(info.topLeftX, info.topLeftY, info.viewportWidth, info.viewportHeight, (int)size, (int)size)) {
 				std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
 				system("pause");
 			}
 			else {
+				size += 1.9f;
 				//std::cout << "GraphicMain::updateLightAtlas-> Received available space\n";
 				//std::cout << it->second.topLeftX << " , " << it->second.topLeftY<< " , " << it->second.viewportWidth << " , " << it->second.viewportHeight<<"\n";
 
@@ -143,7 +144,7 @@ void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &li
 			}
 		}
 		else {
-			if (!m_atlasSlicer->getRoom(info.topLeftX, info.topLeftY, info.viewportWidth, info.viewportHeight, size * 6, size)) {
+			if (!m_atlasSlicer->getRoom(info.topLeftX, info.topLeftY, info.viewportWidth, info.viewportHeight, 3 * 6, 3)) {
 				std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
 				system("pause");
 			}
