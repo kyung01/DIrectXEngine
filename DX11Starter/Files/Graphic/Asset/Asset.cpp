@@ -47,8 +47,8 @@ std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 		LoadInfoShader( RENDER_ONE_COLOR,			L"Resource/Shader/OneColorFS.hlsl"),
 		LoadInfoShader( RENDER_TRANSPARENT,			L"Resource/Shader/TransparentFS.hlsl"),
 		LoadInfoShader( RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightFS.hlsl" 
-		,true, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE
-		,false, D3D11_USAGE_DEFAULT, D3D11_CPU_ACCESS_WRITE)
+		,{(int)true, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE
+		,(int)false, D3D11_USAGE_DEFAULT, D3D11_CPU_ACCESS_WRITE})
 	});
 	return lst;
 }

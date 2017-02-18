@@ -498,7 +498,6 @@ void RenderInstruction::RENDER_TEST(ID3D11Device * device, ID3D11DeviceContext *
 	SET_MATRIX(&shaderVert, "view", viewMatrix);
 	SET_MATRIX(&shaderVert, "proj", projMatrix);
 
-	context->VSSetConstantBuffers(0, 1, &lightParameters);
 	//DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(viewMatrix)); // Transpose for HLSL!
 	//shaderVert.SetMatrix4x4("view", matrixStore);
 	//DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(projMatrix)); // Transpose for HLSL!
@@ -507,8 +506,24 @@ void RenderInstruction::RENDER_TEST(ID3D11Device * device, ID3D11DeviceContext *
 
 	shaderVert.SetShader();
 	shaderFrag.SetShader();
-	RENDER_OBJS;
-
+	for (auto it = scene.objs_solid.begin(); it != scene.objs_solid.end(); it++) {
+		\
+			NGraphic::NScene::Object& light = **it; \
+			NGraphic::Mesh& mesh = *asset.m_meshes[light.m_meshId]; \
+			DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(light.getModelMatrix())); \
+			shaderVert.SetMatrix4x4("world", matrixStore); \
+			shaderVert.CopyAllBufferData(); \
+			shaderFrag.CopyAllBufferData(); \
+			//context->VSSetConstantBuffers(0, 1, &lightParameters);
+			UINT stride = sizeof(Vertex); \
+			UINT offset = 0; \
+			context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset); \
+			context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0); \
+			context->DrawIndexed(\
+				mesh.getBufferIndexCount(), \
+				0, \
+				0); \
+	}
 }
 
 void NGraphic::RenderInstruction::RENDER_DIRECT_LIGHT(

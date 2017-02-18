@@ -124,10 +124,12 @@ namespace NGraphic {
 		unsigned int GetSamplerCount() { return samplerTable.size(); }
 
 		// Get data about constant buffers
+		ID3D11Buffer* GetBuffer(int n);
 		unsigned int GetBufferCount();
 		unsigned int GetBufferSize(unsigned int index);
 		const SimpleConstantBuffer* GetBufferInfo(std::string name);
 		const SimpleConstantBuffer* GetBufferInfo(unsigned int index);
+
 
 		// Misc getters
 		ID3DBlob* GetShaderBlob() { return shaderBlob; }

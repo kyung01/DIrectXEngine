@@ -84,6 +84,13 @@ void NImGui::UIMain::render()
 		ImGui::End();
 	}
 
+	{
+		ImGui::Begin("Test Screen", 0, ImGuiWindowFlags_ShowBorders);
+		ImTextureID tex_id = graphicMain->m_renderTextures[TARGET_TEST]->getShaderResourceView();
+		ImGui::Image(tex_id, ImVec2(800, 800), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+		ImGui::End();
+	}
+
 	ImGui::BeginMainMenuBar();
 	if (ImGui::BeginMenu("File"))
 	{

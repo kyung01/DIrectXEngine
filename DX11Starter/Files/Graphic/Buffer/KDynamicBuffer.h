@@ -15,30 +15,29 @@ namespace NGraphic {
 		private:
 			int maxCount;
 			T* lights;
-			ID3D11Buffer *m_buffer;
+			//ID3D11Buffer *m_buffer;
 		protected:
 		public:
-			KDynamicBuffer(ID3D11Device * device, int maxLight) {
+			KDynamicBuffer( int maxLight) {
 				this->maxCount = maxLight;
 				lights = new T[maxLight];
-				D3D11_BUFFER_DESC vbd;
-				vbd.Usage = D3D11_USAGE_DYNAMIC;
-				vbd.ByteWidth = sizeof(T) * maxLight;       // 3 = number of vertices in the buffer
-				vbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // Tells DirectX this is a vertex buffer
-				vbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-				vbd.MiscFlags = 0;
-				vbd.StructureByteStride = 0;
+				//D3D11_BUFFER_DESC vbd;
+				//vbd.Usage = D3D11_USAGE_DYNAMIC;
+				//vbd.ByteWidth = sizeof(T) * maxLight;       // 3 = number of vertices in the buffer
+				//vbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // Tells DirectX this is a vertex buffer
+				//vbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+				//vbd.MiscFlags = 0;
+				//vbd.StructureByteStride = 0;
 
-				D3D11_SUBRESOURCE_DATA initialVertexData;
-				initialVertexData.pSysMem = lights;
-				DirectXUtility::HRESULT_CHECK(device->CreateBuffer(&vbd, &initialVertexData, &m_buffer));
+				//D3D11_SUBRESOURCE_DATA initialVertexData;
+				//initialVertexData.pSysMem = lights;
+				//DirectXUtility::HRESULT_CHECK(device->CreateBuffer(&vbd, &initialVertexData, &m_buffer));
 				
 			};
 			~KDynamicBuffer() {
-				m_buffer->Release();
 				delete lights;
 			};
-			bool setData(ID3D11DeviceContext *context, T data, int at) {
+			bool setData(ID3D11DeviceContext *context, ID3D11Buffer *m_buffer, T data, int at) {
 				D3D11_MAPPED_SUBRESOURCE mappedResource;
 				ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 				if (!DirectXUtility::HRESULT_CHECK(
@@ -49,14 +48,8 @@ namespace NGraphic {
 				context->Unmap(m_buffer, 0);
 				return true;
 				
-			}
-			ID3D11Buffer* getBuffer();
+			};
 		};
-		template<typename T>
-		inline ID3D11Buffer * KDynamicBuffer<T>::getBuffer()
-		{
-			return m_buffer;
-		}
 	}
 
 }

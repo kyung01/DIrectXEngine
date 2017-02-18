@@ -801,6 +801,11 @@ const SimpleSampler* ISimpleShader::GetSamplerInfo(unsigned int index)
 }
 
 
+ID3D11Buffer * NGraphic::ISimpleShader::GetBuffer(int n)
+{
+	return constantBuffers[n].ConstantBuffer;
+}
+
 // --------------------------------------------------------
 // Gets the number of constant buffers in this shader
 // --------------------------------------------------------
