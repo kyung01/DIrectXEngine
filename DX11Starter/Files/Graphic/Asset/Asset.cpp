@@ -29,7 +29,7 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 		LoadInfoShader( RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectVS.hlsl" ),
 		LoadInfoShader( RENDER_ONE_COLOR,			L"Resource/Shader/OneColorVS.hlsl" ),
 		LoadInfoShader( RENDER_TRANSPARENT,			L"Resource/Shader/TransparentVS.hlsl" ),
-		LoadInfoShader( RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightVS.hlsl" )
+		LoadInfoShader( RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightVS.hlsl")
 	});
 	return lst;
 }
@@ -46,7 +46,9 @@ std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 		LoadInfoShader( RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectFS.hlsl" ),
 		LoadInfoShader( RENDER_ONE_COLOR,			L"Resource/Shader/OneColorFS.hlsl"),
 		LoadInfoShader( RENDER_TRANSPARENT,			L"Resource/Shader/TransparentFS.hlsl"),
-		LoadInfoShader( RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightFS.hlsl" )
+		LoadInfoShader( RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightFS.hlsl" 
+		,true, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE
+		,false, D3D11_USAGE_DEFAULT, D3D11_CPU_ACCESS_WRITE)
 	});
 	return lst;
 }
@@ -84,13 +86,30 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	auto dataTexture = getLoadListTexture();
 	auto dataTextureCubeMap = getLoadListTextureCubeMap();
 
-	for (auto it = dataFrag.begin(); it != dataFrag.end(); it++) {
-		m_shadersFrag[it->type] = std::shared_ptr<SimpleFragmentShader>(new SimpleFragmentShader(device, context));
-		if (!m_shadersFrag[it->type]->LoadShaderFileHLSL(it->path, "ps_5_0")) return false;
-	}
 	for (auto it = dataVert.begin(); it != dataVert.end(); it++) {
 		m_shadersVert[it->type] = std::shared_ptr<SimpleVertexShader>(new SimpleVertexShader(device, context));
-		if (!m_shadersVert[it->type]->LoadShaderFileHLSL(it->path, "vs_5_0")) return false;
+		if (!it->isCustomConstantBuffer)
+		{
+			if (!m_shadersVert[it->type]->LoadShaderFileHLSL(it->path, "vs_5_0")) return false;
+		}
+		else {
+			if (!m_shadersVert[it->type]->LoadShaderFileHLSLCustomConstantBuffer(it->path, "vs_5_0", it->customConstantBufferArguments))
+				return false;
+		}
+
+		
+	}
+	for (auto it = dataFrag.begin(); it != dataFrag.end(); it++) {
+		m_shadersFrag[it->type] = std::shared_ptr<SimpleFragmentShader>(new SimpleFragmentShader(device, context));
+		if (!it->isCustomConstantBuffer) {
+
+			if( !m_shadersFrag[it->type]->LoadShaderFileHLSL(it->path, "ps_5_0")) return false;
+		}
+		else {
+			if (!m_shadersFrag[it->type]->LoadShaderFileHLSLCustomConstantBuffer(it->path, "ps_5_0", it->customConstantBufferArguments))
+				return false;
+
+		}
 	}
 	for (auto it = dataMesh.begin(); it != dataMesh.end(); it++) {
 		auto mesh = new Mesh(device, it->path);

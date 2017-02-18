@@ -82,12 +82,14 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 	INIT_RENDER_TEXTURE(TARGET_LIGHTSHAFT_FRONT,width, height);
 	INIT_RENDER_TEXTURE(TARGET_LIGHTSHAFT_BACK, width, height);
 	INIT_RENDER_TEXTURE(TARGET_FINAL, width, height);
+	INIT_RENDER_TEXTURE(TARGET_TEST, width, height);
 	INIT_RENDER_TEXTURE(TARGET_LIGHT_ATLAS, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE);
 
 	INIT_DEPTH_TEXTURE(DEPTH_WORLD, width, height);
 	INIT_DEPTH_TEXTURE(DEPTH_FINAL, width, height);
-	INIT_DEPTH_TEXTURE(TARGET_LIGHTSHAFT_FRONT, width, height);
-	INIT_DEPTH_TEXTURE(TARGET_LIGHTSHAFT_BACK, width, height);
+	INIT_DEPTH_TEXTURE(DEPTH_LIGHTSHAFT_FRONT, width, height);
+	INIT_DEPTH_TEXTURE(DEPTH_LIGHTSHAFT_BACK, width, height);
+	INIT_DEPTH_TEXTURE(DEPTH_TEST, width, height);
 	INIT_DEPTH_TEXTURE(DEPTH_LIGHT_ATLAS, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE);
 	m_atlasSlicer = std::make_shared<TextureAtlasSlicer>(
 		TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE,
@@ -351,6 +353,7 @@ void NGraphic::GraphicMain::render(
 		*m_renderTextures[TARGET_PROPERTY],
 		*m_depthTextures[DEPTH_WORLD],
 		worldMatrix);
+	RenderInstruction::RENDER_TEST(device, context, asset, scene, *m_renderTextures[TARGET_TEST], *m_depthTextures[DEPTH_TEST], worldMatrix, viewMatirx, projMatrix, m_lightBuffer->getBuffer());
 	//now start rendering real stuff
 	
 
@@ -404,8 +407,8 @@ void NGraphic::GraphicMain::render(
 				device, context, asset,
 				scene.m_camMain.m_pos,
 				lightWorldMatirx, viewMatirx, projMatrix,
-				*m_renderTextures[TARGET_LIGHTSHAFT_FRONT], *m_depthTextures[TARGET_LIGHTSHAFT_FRONT],
-				*m_renderTextures[TARGET_LIGHTSHAFT_BACK], *m_depthTextures[TARGET_LIGHTSHAFT_BACK]
+				*m_renderTextures[TARGET_LIGHTSHAFT_FRONT], *m_depthTextures[DEPTH_LIGHTSHAFT_FRONT],
+				*m_renderTextures[TARGET_LIGHTSHAFT_BACK], *m_depthTextures[DEPTH_LIGHTSHAFT_BACK]
 			);
 			endRendering(context);
 

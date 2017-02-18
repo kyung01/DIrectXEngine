@@ -63,6 +63,8 @@ void ISimpleShader::CleanUp()
 	textureTable.clear();
 }
 
+
+
 bool ISimpleShader::LoadShaderFile(ID3DBlob *blob)
 {
 	shaderBlob = blob;
@@ -129,47 +131,18 @@ bool ISimpleShader::LoadShaderFile(ID3DBlob *blob)
 	}
 
 	initConstantBuffer(refl, constantBuffers, constantBufferCount);
-	
+
 
 	// All set
 	refl->Release();
 	return true;
 }
 
-// --------------------------------------------------------
-// Loads the specified shader and builds the variable table using shader
-// reflection.  This must be a separate step from the constructor since
-// we can't invoke derived class overrides in the base class constructor.
-//
-// shaderFile - A "wide string" specifying the compiled shader to load
-// 
-// Returns true if shader is loaded properly, false otherwise
-// --------------------------------------------------------
-bool ISimpleShader::LoadShaderFileHLSL(LPCWSTR shaderFile, LPCSTR target)
-{
-	ID3DBlob *error = nullptr;
-	HRESULT hr =
-		D3DCompileFromFile(
-			shaderFile, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE,
-			"main", target,
-			//"main", "vs_5_0",
-			//D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG, 0,
-			D3DCOMPILE_ENABLE_STRICTNESS , 0,
-			&shaderBlob, &error);
 
-	if (hr != S_OK)
-	{
-		std::cout << "\n" << "NOT OK" << DirectX::DirectXUtility::HRESULT_TO_STRING(hr) << "\n";
-		if (error) {
-		    std::cout << "ERROR BUFFER IS NOT EMPTY "<<error->GetBufferSize() << "\n";
-			OutputDebugString((LPCTSTR)error->GetBufferPointer());
-			error->Release();
-		}
-		else std::cout << "ERROR BUFFER IS EMPTY" << "\n";
-		return false;
-	}
-	return LoadShaderFile(shaderBlob);
-	
+
+bool ISimpleShader::LoadShaderFileUnique(ID3DBlob *blob, std::list<int> arguments)
+{
+	shaderBlob = blob;
 	// Create the shader - Calls an overloaded version of this abstract
 	// method in the appropriate child class
 	shaderValid = CreateShader(shaderBlob);
@@ -232,13 +205,37 @@ bool ISimpleShader::LoadShaderFileHLSL(LPCWSTR shaderFile, LPCSTR target)
 		}
 	}
 
+	initConstantBufferUnique(refl, constantBuffers, constantBufferCount,arguments);
 
-	initConstantBuffer(refl, constantBuffers, constantBufferCount);
+
 	// All set
 	refl->Release();
 	return true;
 }
-bool NGraphic::ISimpleShader::LoadShaderFileHLSLCustomConstantBuffer(LPCWSTR shaderFile, LPCSTR target, int n_args, ...)
+
+// --------------------------------------------------------
+// Loads the specified shader and builds the variable table using shader
+// reflection.  This must be a separate step from the constructor since
+// we can't invoke derived class overrides in the base class constructor.
+//
+// shaderFile - A "wide string" specifying the compiled shader to load
+// 
+// Returns true if shader is loaded properly, false otherwise
+// --------------------------------------------------------
+bool ISimpleShader::LoadShaderFileHLSL(LPCWSTR shaderFile, LPCSTR target)
+{
+	if (!loadShaderBlob(shaderFile, target))
+		return false;
+	return LoadShaderFile(shaderBlob);
+}
+bool ISimpleShader::LoadShaderFileHLSLCustomConstantBuffer(LPCWSTR shaderFile, LPCSTR target, std::list<int> arguments)
+{
+	if (!loadShaderBlob(shaderFile, target))
+		return false;
+	return LoadShaderFileUnique(shaderBlob, arguments);
+}
+
+bool ISimpleShader::loadShaderBlob(LPCWSTR shaderFile, LPCSTR target)
 {
 	ID3DBlob *error = nullptr;
 	HRESULT hr =
@@ -261,76 +258,9 @@ bool NGraphic::ISimpleShader::LoadShaderFileHLSLCustomConstantBuffer(LPCWSTR sha
 		else std::cout << "ERROR BUFFER IS EMPTY" << "\n";
 		return false;
 	}
-	return LoadShaderFile(shaderBlob);
-
-	// Create the shader - Calls an overloaded version of this abstract
-	// method in the appropriate child class
-	shaderValid = CreateShader(shaderBlob);
-	if (!shaderValid)
-	{
-		return false;
-	}
-
-	// Set up shader reflection to get information about
-	// this shader and its variables,  buffers, etc.
-	ID3D11ShaderReflection* refl;
-	D3DReflect(
-		shaderBlob->GetBufferPointer(),
-		shaderBlob->GetBufferSize(),
-		IID_ID3D11ShaderReflection,
-		(void**)&refl);
-
-	// Get the description of the shader
-	D3D11_SHADER_DESC shaderDesc;
-	refl->GetDesc(&shaderDesc);
-
-	// Create resource arrays
-	constantBufferCount = shaderDesc.ConstantBuffers;
-	constantBuffers = new SimpleConstantBuffer[constantBufferCount];
-
-	// Handle bound resources (like shaders and samplers)
-	unsigned int resourceCount = shaderDesc.BoundResources;
-	for (unsigned int r = 0; r < resourceCount; r++)
-	{
-		// Get this resource's description
-		D3D11_SHADER_INPUT_BIND_DESC resourceDesc;
-		refl->GetResourceBindingDesc(r, &resourceDesc);
-
-		// Check the type
-		switch (resourceDesc.Type)
-		{
-		case D3D_SIT_TEXTURE: // A texture resource
-		{
-			// Create the SRV wrapper
-			SimpleSRV* srv = new SimpleSRV();
-			srv->BindIndex = resourceDesc.BindPoint;	// Shader bind point
-			srv->Index = shaderResourceViews.size();	// Raw index
-
-			textureTable.insert(std::pair<std::string, SimpleSRV*>(resourceDesc.Name, srv));
-			shaderResourceViews.push_back(srv);
-		}
-		break;
-
-		case D3D_SIT_SAMPLER: // A sampler resource
-		{
-			// Create the sampler wrapper
-			SimpleSampler* samp = new SimpleSampler();
-			samp->BindIndex = resourceDesc.BindPoint;	// Shader bind point
-			samp->Index = samplerStates.size();			// Raw index
-
-			samplerTable.insert(std::pair<std::string, SimpleSampler*>(resourceDesc.Name, samp));
-			samplerStates.push_back(samp);
-		}
-		break;
-		}
-	}
-
-
-	initConstantBufferArgs(refl, constantBuffers, constantBufferCount, n_args);
-	// All set
-	refl->Release();
 	return true;
 }
+
 bool ISimpleShader::LoadShaderFile(LPCWSTR shaderFile)
 {
 	// Load the shader to a blob and ensure it worked
@@ -477,20 +407,17 @@ void NGraphic::ISimpleShader::initConstantBuffer(ID3D11ShaderReflection * refl, 
 	}
 }
 
-void NGraphic::ISimpleShader::initConstantBufferArgs(ID3D11ShaderReflection * refl, SimpleConstantBuffer * constantBuffers, int constantBufferCount, int n_args, ...)
+void NGraphic::ISimpleShader::initConstantBufferUnique(ID3D11ShaderReflection * refl, SimpleConstantBuffer * constantBuffers, int constantBufferCount, std::list<int> arguments)
 {
-	int index = 0;
-	va_list args;
-	va_start(args, n_args);
-	int a = va_arg(args, int);
+	auto it = arguments.begin();
 	// Loop through all constant buffers
 	for (unsigned int b = 0; b < constantBufferCount; b++)
 	{
 
-		constantBuffers[b].isManual = (bool)(va_arg(args, int));
-		auto flagUsage = (D3D11_USAGE)(int)(va_arg(args, int));
-		auto flagBind = (D3D11_BIND_FLAG)(int)(va_arg(args, int));
-		auto flagCpuAccess = (D3D11_CPU_ACCESS_FLAG)(int)(va_arg(args, int));
+		constantBuffers[b].isManual = (bool) *it++;// (bool)(va_arg(args, int));
+		auto flagUsage = (D3D11_USAGE)*it++;;
+		//auto flagBind = (D3D11_BIND_FLAG)(int)(va_arg(args, int));
+		auto flagCpuAccess = (D3D11_CPU_ACCESS_FLAG)*it++;;
 		// Get this buffer
 		ID3D11ShaderReflectionConstantBuffer* cb =
 			refl->GetConstantBufferByIndex(b);
@@ -513,7 +440,7 @@ void NGraphic::ISimpleShader::initConstantBufferArgs(ID3D11ShaderReflection * re
 		D3D11_BUFFER_DESC newBuffDesc;
 		newBuffDesc.Usage = flagUsage;
 		newBuffDesc.ByteWidth = bufferDesc.Size;
-		newBuffDesc.BindFlags = flagBind;
+		newBuffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		newBuffDesc.CPUAccessFlags = flagCpuAccess;
 		newBuffDesc.MiscFlags = 0;
 		newBuffDesc.StructureByteStride = 0;
@@ -549,7 +476,6 @@ void NGraphic::ISimpleShader::initConstantBufferArgs(ID3D11ShaderReflection * re
 			constantBuffers[b].Variables.push_back(varStruct);
 		}
 	}
-	va_end(args);
 }
 
 

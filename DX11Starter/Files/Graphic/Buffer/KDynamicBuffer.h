@@ -15,7 +15,7 @@ namespace NGraphic {
 		private:
 			int maxCount;
 			T* lights;
-			ID3D11Buffer *buffer;
+			ID3D11Buffer *m_buffer;
 		protected:
 		public:
 			KDynamicBuffer(ID3D11Device * device, int maxLight) {
@@ -31,26 +31,32 @@ namespace NGraphic {
 
 				D3D11_SUBRESOURCE_DATA initialVertexData;
 				initialVertexData.pSysMem = lights;
-				DirectXUtility::HRESULT_CHECK(device->CreateBuffer(&vbd, &initialVertexData, &buffer));
+				DirectXUtility::HRESULT_CHECK(device->CreateBuffer(&vbd, &initialVertexData, &m_buffer));
 				
 			};
 			~KDynamicBuffer() {
-				buffer->Release();
+				m_buffer->Release();
 				delete lights;
 			};
 			bool setData(ID3D11DeviceContext *context, T data, int at) {
 				D3D11_MAPPED_SUBRESOURCE mappedResource;
 				ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 				if (!DirectXUtility::HRESULT_CHECK(
-					context->Map(buffer , 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+					context->Map(m_buffer , 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
 					return false;
 				lights[at] = data;
 				memcpy(mappedResource.pData, lights, sizeof(T) * maxCount);
-				context->Unmap(buffer, 0);
+				context->Unmap(m_buffer, 0);
 				return true;
 				
 			}
+			ID3D11Buffer* getBuffer();
 		};
+		template<typename T>
+		inline ID3D11Buffer * KDynamicBuffer<T>::getBuffer()
+		{
+			return m_buffer;
+		}
 	}
 
 }

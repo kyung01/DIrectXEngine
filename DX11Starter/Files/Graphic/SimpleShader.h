@@ -62,14 +62,14 @@ namespace NGraphic {
 	class ISimpleShader
 	{
 		void initConstantBuffer(ID3D11ShaderReflection* refl, SimpleConstantBuffer* constantBuffers, int constantBufferCount);
-
+		bool loadShaderBlob(LPCWSTR shaderFile, LPCSTR target);
 		/*
 		0 isManual
 		1  usage
 		2 bind
 		3 cpuAccess
 		*/
-		void initConstantBufferArgs(ID3D11ShaderReflection * refl, SimpleConstantBuffer * constantBuffers, int constantBufferCount, int n_args, ...);
+		void initConstantBufferUnique(ID3D11ShaderReflection * refl, SimpleConstantBuffer * constantBuffers, int constantBufferCount, std::list<int> arguments);
 	public:
 		ISimpleShader(ID3D11Device* device, ID3D11DeviceContext* context);
 		virtual ~ISimpleShader();
@@ -79,9 +79,10 @@ namespace NGraphic {
 		bool LoadShaderFile(LPCWSTR shaderFile);
 		bool LoadShaderFileHLSL(LPCWSTR shaderFile, LPCSTR target);
 
-		//	0 isManual		1 usage		2 bind		3 cpuAccess	
-		bool LoadShaderFileHLSLCustomConstantBuffer(LPCWSTR shaderFile, LPCSTR target, int n_args, ...);
+		//	0 isManual		1 usage		2 cpuAccess	
+		bool LoadShaderFileHLSLCustomConstantBuffer(LPCWSTR shaderFile, LPCSTR target, std::list<int> arguments);
 		bool LoadShaderFile(ID3DBlob *blob);
+		bool LoadShaderFileUnique(ID3DBlob *blob, std::list<int> arguments);
 
 
 		// Simple helpers

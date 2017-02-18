@@ -77,6 +77,16 @@ namespace NGraphic {
 			NScene::Scene& scene,
 			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix);//rendering the normal scene
 
+		//test atals light map
+		static void RENDER_TEST(
+			ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
+			NScene::Scene& scene,
+			RenderTexture & renderTexture, DepthTexture & depthTexture,
+			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix, 
+			
+			ID3D11Buffer *lightParameters
+		);//rendering the normal scene
+
 
 		static void RENDER_DIRECT_LIGHT(
 			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,
