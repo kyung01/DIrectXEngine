@@ -51,6 +51,12 @@ namespace NGraphic {
 				context->Unmap(m_buffer, 0);
 				return true;
 			}
+			T* getData() {
+				return lights;
+			}
+			int getSize() {
+				return maxCount;
+			}
 			
 		};
 	}

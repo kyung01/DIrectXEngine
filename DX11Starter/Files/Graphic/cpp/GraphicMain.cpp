@@ -115,11 +115,11 @@ void GraphicMain::updateBufferLightPrameter(
 		parameter.topLeftY = info.topLeftY;
 		parameter.viewPortWidth = info.viewportWidth;
 		parameter.viewPortHeight = info.viewportHeight;
-		m_lightBuffer->setData(parameter, index++);
+		m_bufferLight->setData(parameter, index++);
 
 		//parameter.inverseViewProjX
 	}
-	m_lightBuffer->setData(context, buffer);
+	m_bufferLight->setData(context, buffer);
 	
 }
 
@@ -223,7 +223,12 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
 	m_rsm_flux_eye_perspective_height = textureIndirectLightHeight;
 	m_frustum.init(3.14 / 2, 1, 10, 10, 10, 10);
-	m_lightBuffer = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(10);
+	m_bufferClusterIndex = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::ClusterIndex>>(10 * 10 * 10);
+	m_bufferClusterItems = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::ClusterItem>>(10 * 10 * 10);
+
+	m_bufferLight = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(256);
+	m_bufferDecal = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::DecalParameter>>(256);
+	m_bufferProbe = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::ProbeParameter>>(256);
 
 	if (
 		!initTextures(device,context,width,height, textureIndirectLightWidth, textureIndirectLightHeight)
@@ -253,7 +258,17 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 			break;
 		}
 	}
-	m_frustum.testReconstruction();
+	{
+		//int ARR_MAX_CLUSTER_INDEX = m_frustum.m_size.x*m_frustum.m_size.y*m_frustum.m_size.z;
+		//int ARR_MAX_CLUSTER_ITEM = ARR_MAX_CLUSTER_INDEX;
+		//NBuffer::ClusterIndex * arrClusterIndexs	= new NBuffer::ClusterIndex[ARR_MAX_CLUSTER_INDEX];
+		//NBuffer::ClusterItem * arrClusterItems		= new NBuffer::ClusterItem[ARR_MAX_CLUSTER_ITEM];
+
+		m_frustum.testReconstruction(m_bufferClusterIndex->getData(), m_bufferClusterItems->getData(), m_bufferClusterItems->getSize());
+
+		//delete arrClusterIndexs;
+		//delete arrClusterItems;
+	}
 }
 
 

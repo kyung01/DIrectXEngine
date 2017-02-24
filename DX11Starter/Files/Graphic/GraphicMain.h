@@ -24,6 +24,8 @@
 #include <Graphic\TextureAtlasSlicer.h>
 #include <Graphic\Buffer\KDynamicBuffer.h>
 #include <Graphic\Buffer\LightParameter.h>
+#include <Graphic\Buffer\DecalParameter.h>
+#include <Graphic\Buffer\ProbeParameter.h>
 #include <Game\Context.h>
 
 
@@ -39,7 +41,11 @@ namespace NGraphic {
 		DepthTexture		m_depthTextureDummy;
 		int					m_rsm_flux_eye_perspective_width, 
 							m_rsm_flux_eye_perspective_height;
-		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::LightParameter>> m_lightBuffer;
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::ClusterIndex>> m_bufferClusterIndex;
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::ClusterItem>> m_bufferClusterItems;
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::LightParameter>> m_bufferLight;
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::DecalParameter>> m_bufferDecal;
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::ProbeParameter>> m_bufferProbe;
 		
 
 		DirectX::XMMATRIX getOrthogonalMatrixProj();

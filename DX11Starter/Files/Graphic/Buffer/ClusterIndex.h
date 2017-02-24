@@ -10,14 +10,16 @@ namespace NGraphic {
 	namespace NBuffer {
 		struct ClusterIndex {
 			//32 bits
-			unsigned int offeset;				 
+			unsigned int offeset;	
+			unsigned int lightDecalProbeCountPacked;
 			//8 bits
-			byte lightCount;
-			//8 bits
-			byte decalCount;
-			//8 bits
-			byte reflectionCount;
-			
+			//byte lightCount;
+			////8 bits
+			//byte decalCount;
+			////8 bits
+			//byte reflectionCount;
+			////8 buts, to match up with GPU constant buffer
+			//byte dummy;
 
 
 		};

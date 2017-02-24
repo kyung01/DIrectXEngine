@@ -12,9 +12,8 @@ namespace NGraphic {
 			byte light;
 			byte decal;
 			byte probe;
-
-
-
+			//8 buts, to match up with GPU constant buffer
+			byte dummy;
 		};
 	}
 

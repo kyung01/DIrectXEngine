@@ -76,7 +76,7 @@ bool ISimpleShader::LoadShaderFile(ID3DBlob *blob)
 		return false;
 	}
 
-	// Set up shader reflection to get information about
+	// Set up shader probe to get information about
 	// this shader and its variables,  buffers, etc.
 	ID3D11ShaderReflection* refl;
 	D3DReflect(
@@ -151,7 +151,7 @@ bool ISimpleShader::LoadShaderFileUnique(ID3DBlob *blob, std::list<int> argument
 		return false;
 	}
 
-	// Set up shader reflection to get information about
+	// Set up shader probe to get information about
 	// this shader and its variables,  buffers, etc.
 	ID3D11ShaderReflection* refl;
 	D3DReflect(
@@ -215,7 +215,7 @@ bool ISimpleShader::LoadShaderFileUnique(ID3DBlob *blob, std::list<int> argument
 
 // --------------------------------------------------------
 // Loads the specified shader and builds the variable table using shader
-// reflection.  This must be a separate step from the constructor since
+// probe.  This must be a separate step from the constructor since
 // we can't invoke derived class overrides in the base class constructor.
 //
 // shaderFile - A "wide string" specifying the compiled shader to load
@@ -278,7 +278,7 @@ bool ISimpleShader::LoadShaderFile(LPCWSTR shaderFile)
 		return false;
 	}
 
-	// Set up shader reflection to get information about
+	// Set up shader probe to get information about
 	// this shader and its variables,  buffers, etc.
 	ID3D11ShaderReflection* refl;
 	D3DReflect(
@@ -874,7 +874,7 @@ SimpleVertexShader::SimpleVertexShader(ID3D11Device* device, ID3D11DeviceContext
 // Constructor overload which takes a custom input layout
 //
 // Passing in a valid input layout will stop LoadShader()
-// from creating an input layout from shader reflection
+// from creating an input layout from shader probe
 // --------------------------------------------------------
 SimpleVertexShader::SimpleVertexShader(ID3D11Device * device, ID3D11DeviceContext * context, ID3D11InputLayout * inputLayout, bool perInstanceCompatible)
 	: ISimpleShader(device, context)
@@ -937,7 +937,7 @@ bool SimpleVertexShader::CreateShader(ID3DBlob* shaderBlob)
 	// Vertex shader was created successfully, so we now use the
 	// shader code to re-reflect and create an input layout that 
 	// matches what the vertex shader expects.  Code adapted from:
-	// https://takinginitiative.wordpress.com/2011/12/11/directx-1011-basic-shader-reflection-automatic-input-layout-creation/
+	// https://takinginitiative.wordpress.com/2011/12/11/directx-1011-basic-shader-probe-automatic-input-layout-creation/
 
 	// Reflect shader info
 	ID3D11ShaderReflection* refl;
@@ -1780,7 +1780,7 @@ bool SimpleComputeShader::CreateShader(ID3DBlob* shaderBlob)
 	if (result != S_OK)
 		return false;
 
-	// Set up shader reflection to get information about UAV's
+	// Set up shader probe to get information about UAV's
 	ID3D11ShaderReflection* refl;
 	D3DReflect(
 		shaderBlob->GetBufferPointer(),

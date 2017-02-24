@@ -5,11 +5,16 @@
 #include <vector>
 #include <map>
 #include <list>
+#include <Graphic\Buffer\ClusterIndex.h>
+#include <Graphic\Buffer\ClusterItem.h>
 using namespace DirectX::SimpleMath;
 namespace NGraphic {
 	
 	struct Cluster {
 		std::list<int> light, decal, reflection;
+		bool isEmpty(){
+			return !light.size() || !decal.size() || !reflection.size();
+		}
 	};
 	
 	struct ClusterAABB {
@@ -40,6 +45,6 @@ namespace NGraphic {
 		void testSpotlight(Vector3 vertex, Vector3	axis, float H, float alpha);
 		bool testPointlight(std::pair<int, int> &result, std::vector<Plane> planes, DirectX::SimpleMath::Vector3 center, float radius);
 		bool testSpotlight(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 vertex, Vector3 axis, float H, float alpha);
-		void testReconstruction();
+		void testReconstruction(NBuffer::ClusterIndex* clusterIndexs,NBuffer::ClusterItem *clusterItems, const int MAX_CLUSTER_ITEM);
 	};
 }

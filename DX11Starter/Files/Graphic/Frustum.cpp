@@ -243,22 +243,48 @@ bool Frustum::testPointlight(std::pair<int, int> &result, std::vector<Plane> pla
 	return true;
 }
 
-void NGraphic::Frustum::testReconstruction()
+void NGraphic::Frustum::testReconstruction(NBuffer::ClusterIndex* clusterIndexs, NBuffer::ClusterItem *clusterItems, const int MAX_CLUSTER_ITEM)
 {
+	int indexCluster = 0;
+	int indexClusterItem = 0;
+	for (auto it = m_clusters.begin(); it != m_clusters.end(); it++, indexCluster++) {
+		if (it->isEmpty()) continue;
+		unsigned int indexPacked = 0;
+		indexPacked |= it->reflection.size();
+		indexPacked <<= 8;
+		indexPacked |= it->decal.size();
+		indexPacked <<= 8;
+		indexPacked |= it->light.size();
+		clusterIndexs[indexCluster].offeset = indexClusterItem;
+		clusterIndexs[indexCluster].lightDecalProbeCountPacked = indexCluster;
+
+		int indexLight(indexClusterItem), indexDecal(indexClusterItem), indexProbe(indexClusterItem);
+		for (auto itLight = it->light.begin(); itLight != it->light.end() && indexLight < MAX_CLUSTER_ITEM; it++, indexLight++) {
+			clusterItems[indexLight].light = *itLight;
+		}
+		for (auto itDecal = it->decal.begin(); itDecal != it->decal.end() && indexDecal < MAX_CLUSTER_ITEM; it++, indexDecal++) {
+			clusterItems[indexDecal].decal = *itDecal;
+		}
+		for (auto itProbe = it->reflection.begin(); itProbe != it->reflection.end() && indexProbe < MAX_CLUSTER_ITEM; it++, indexProbe++) {
+			clusterItems[indexProbe].probe = *itProbe;
+		}
+
+		indexClusterItem += max( max(it->light.size(),it->decal.size()) , it->reflection.size() );
+	}
 	int lightCount = 1, decalCount = 22, probeCount = 33;
 	unsigned int myCount = 0;
-	myCount |= lightCount;
+	myCount |= probeCount;
 	myCount <<= 8;
 	myCount |= decalCount;
 	myCount <<= 8;
-	myCount |= probeCount;
-	myCount <<= 8;
-	myCount |= 0;
+	myCount |= lightCount;
+	//myCount <<= 8;
+	//myCount |= 0;
 	byte *myCounts = new byte[4];
-	myCounts[0] = myCount >> 24;
-	myCounts[1] = myCount >> 16;
-	myCounts[2] = myCount >> 8;
-	myCounts[3] = myCount >> 0;
+	myCounts[0] = myCount >> 0; // 1
+	myCounts[1] = myCount >> 8; //22
+	myCounts[2] = myCount >> 16; //33
+	myCounts[3] = myCount >> 24; //0
 
 	for (int i = 0; i < 4; i++) {
 		std::cout << "NUM "<<i <<" : " << (int)myCounts[i] << "\n";
