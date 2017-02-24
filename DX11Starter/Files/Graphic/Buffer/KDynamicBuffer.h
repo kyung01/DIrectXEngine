@@ -37,18 +37,21 @@ namespace NGraphic {
 			~KDynamicBuffer() {
 				delete lights;
 			};
-			bool setData(ID3D11DeviceContext *context, ID3D11Buffer *m_buffer, T data, int at) {
+			void setData(T data, int at) {
+				lights[at] = data;
+
+			};
+			bool setData(ID3D11DeviceContext *context, ID3D11Buffer *m_buffer) {
 				D3D11_MAPPED_SUBRESOURCE mappedResource;
 				ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 				if (!DirectXUtility::HRESULT_CHECK(
-					context->Map(m_buffer , 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+					context->Map(m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
 					return false;
-				lights[at] = data;
 				memcpy(mappedResource.pData, lights, sizeof(T) * maxCount);
 				context->Unmap(m_buffer, 0);
 				return true;
-				
-			};
+			}
+			
 		};
 	}
 

@@ -40,5 +40,6 @@ namespace NGraphic {
 		void testSpotlight(Vector3 vertex, Vector3	axis, float H, float alpha);
 		bool testPointlight(std::pair<int, int> &result, std::vector<Plane> planes, DirectX::SimpleMath::Vector3 center, float radius);
 		bool testSpotlight(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 vertex, Vector3 axis, float H, float alpha);
+		void testReconstruction();
 	};
 }

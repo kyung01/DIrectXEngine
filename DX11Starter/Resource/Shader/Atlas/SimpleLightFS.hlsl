@@ -1,14 +1,32 @@
-#include "LightParameter.hlsl"
+#include "ClusterStructs.hlsl"
 #include "..\light.hlsl"
 SamplerState sampler_default	: register(s0);
 
 Texture2D textureLightAtlas		: register(t0);
 
-cbuffer LightParameters : register(b0)
+cbuffer ClusterList : register(b0)
 {
-	LightParameter lightParameter[10];
+	ClusterIndex clusterIndexs[1000]; //10*10*10
 };
-cbuffer global : register(b1)
+
+cbuffer ClusterItems : register(b1)
+{
+	ClusterItem clusterItems[256];
+};
+cbuffer LightParameters : register(b2)
+{
+	LightParameter lightParameter[256];
+};
+cbuffer DecalParameter : register(b3)
+{
+	DecalParameter decals[256];
+};
+cbuffer ProbeParameter : register(b4)
+{
+	ProbeParameter probes[256];
+};
+
+cbuffer global : register(b5)
 {
 	//LightParameter lightParameter[10];
 };

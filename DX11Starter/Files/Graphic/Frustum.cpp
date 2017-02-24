@@ -214,20 +214,21 @@ bool Frustum::testSpotlight(std::pair<int, int> &result, std::vector<Plane> plan
 	result.second = x1;
 	return true;
 }
+
 bool Frustum::testPointlight(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 center, float radius) {
 
 
-	if(willDebug)std::cout<<"TEST POINT LIGHT\n";
+	if (willDebug)std::cout << "TEST POINT LIGHT\n";
 	int x0 = -1, x1 = -1;
 	for (int i = 0; i < planes.size(); i++) {
-		if (willDebug)std::cout << "FIRST CYCLE "<< i<< " " <<planes[i].DotCoordinate(center)<< " NORMAL " << planes[i].Normal().x << ","<< planes[i].Normal().y<< ","<< planes[i].Normal().z << " RESULT " << (planes[i].DotCoordinate(center) < radius) <<"\n";
+		if (willDebug)std::cout << "FIRST CYCLE " << i << " " << planes[i].DotCoordinate(center) << " NORMAL " << planes[i].Normal().x << "," << planes[i].Normal().y << "," << planes[i].Normal().z << " RESULT " << (planes[i].DotCoordinate(center) < radius) << "\n";
 		if (planes[i].DotCoordinate(center) < radius) {
 			x0 = max(0, i - 1);
 			break;
 		}
 	}
 	for (int i = planes.size() - 1; i >= x0; i--) {
-		if (willDebug)std::cout << "SECOND CYCLE " <<i << " " << planes[i].DotCoordinate(center) << " NORMAL " << planes[i].Normal().x << "," << planes[i].Normal().y << "," << planes[i].Normal().z << " RESULT " << (-planes[i].DotCoordinate(center) < radius) << "\n";
+		if (willDebug)std::cout << "SECOND CYCLE " << i << " " << planes[i].DotCoordinate(center) << " NORMAL " << planes[i].Normal().x << "," << planes[i].Normal().y << "," << planes[i].Normal().z << " RESULT " << (-planes[i].DotCoordinate(center) < radius) << "\n";
 		if (-planes[i].DotCoordinate(center) < radius) {
 			x1 = min(i + 1, planes.size() - 1);
 			break;
@@ -240,6 +241,29 @@ bool Frustum::testPointlight(std::pair<int, int> &result, std::vector<Plane> pla
 	result.first = x0;
 	result.second = x1;
 	return true;
+}
+
+void NGraphic::Frustum::testReconstruction()
+{
+	int lightCount = 1, decalCount = 22, probeCount = 33;
+	unsigned int myCount = 0;
+	myCount |= lightCount;
+	myCount <<= 8;
+	myCount |= decalCount;
+	myCount <<= 8;
+	myCount |= probeCount;
+	myCount <<= 8;
+	myCount |= 0;
+	byte *myCounts = new byte[4];
+	myCounts[0] = myCount >> 24;
+	myCounts[1] = myCount >> 16;
+	myCounts[2] = myCount >> 8;
+	myCounts[3] = myCount >> 0;
+
+	for (int i = 0; i < 4; i++) {
+		std::cout << "NUM "<<i <<" : " << (int)myCounts[i] << "\n";
+	}
+	delete myCounts;
 }
 /*
 

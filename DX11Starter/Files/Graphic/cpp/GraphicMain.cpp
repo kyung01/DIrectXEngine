@@ -98,7 +98,8 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 
 	return true;
 }
-void GraphicMain::updateBufferLightPrameter(ID3D11DeviceContext *context, ID3D11Buffer* buffer, std::list<std::shared_ptr<NScene::Light>>& lights)
+void GraphicMain::updateBufferLightPrameter(
+	ID3D11DeviceContext *context, ID3D11Buffer* buffer, std::list<std::shared_ptr<NScene::Light>>& lights)
 {
 	int index = 0;
 	NBuffer::LightParameter parameter;
@@ -114,10 +115,11 @@ void GraphicMain::updateBufferLightPrameter(ID3D11DeviceContext *context, ID3D11
 		parameter.topLeftY = info.topLeftY;
 		parameter.viewPortWidth = info.viewportWidth;
 		parameter.viewPortHeight = info.viewportHeight;
-		m_lightBuffer->setData(context, buffer, parameter, index++);
+		m_lightBuffer->setData(parameter, index++);
 
 		//parameter.inverseViewProjX
 	}
+	m_lightBuffer->setData(context, buffer);
 	
 }
 
@@ -251,7 +253,7 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 			break;
 		}
 	}
-	
+	m_frustum.testReconstruction();
 }
 
 
