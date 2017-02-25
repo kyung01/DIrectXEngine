@@ -30,7 +30,7 @@ void RenderInstruction::RENDER_LIGHTS(ID3D11DeviceContext * context, SimpleVerte
 	0);
 }
 /*
-Require : world position shader, render frustum shader.
+Require : world position shader, render meshPointlight shader.
 */
 void RenderInstruction::RENDER_FRUSTUM(ID3D11Device * device, 
 	ID3D11DeviceContext * context, Asset & asset, Vector3 eyePosition, DirectX::XMMATRIX & worldMatrix, DirectX::SimpleMath::Matrix & viewMatrix, DirectX::SimpleMath::Matrix & projMatrix, 
@@ -152,6 +152,7 @@ void RenderInstruction::RENDER_DEBUG(
 	auto &shaderVert = *asset.m_shadersVert[RENDER_TRANSPARENT];
 	auto &shaderFrag = *asset.m_shadersFrag[RENDER_TRANSPARENT];
 	NGraphic::Mesh&		sphere = *asset.m_meshes[MESH_ID_SPHERE];
+	NGraphic::Mesh&		meshPointlight = *asset.m_meshes[MESH_POINTLIGHT];
 	NGraphic::Mesh&		box = *asset.m_meshes[MESH_ID_CUBE];
 	NGraphic::MeshLine&	line = *asset.m_meshLine;
 	NGraphic::MeshCube&	cube = *asset.m_meshCube;
@@ -182,14 +183,12 @@ void RenderInstruction::RENDER_DEBUG(
 
 		Vector3 lightScale = it->get()->m_scale;
 		it->get()->setScale(Vector3(it->get()->m_lightDistance * 2));
-
-		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(
-
-
-
-			(**it).getModelMatrix())); // Transpose for HLSL!
-		shaderVert.SetMatrix4x4("world", matStore);
-		shaderFrag.SetFloat3("color", Vector3((**it).getLightColor()));
+		
+		auto modelRotated = DirectX::XMMatrixMultiply(XMMatrixRotationX(3.14f / 2.0f), (*it)->getModelMatrix());
+		SET_MATRIX(&shaderVert, "world", modelRotated);
+		//SET_MATRIX(&shaderVert, "world", (*it)->getModelMatrix());
+		Vector3 color = it->get()->getLightColor();
+		shaderFrag.SetFloat4("color", Vector4(color.x,color.y,color.z, 1));
 
 
 		shaderVert.CopyAllBufferData();
@@ -198,12 +197,25 @@ void RenderInstruction::RENDER_DEBUG(
 
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
+		if (it->get()->m_lightType == NScene::LIGHT_TYPE::POINTLIGHT) {
+
 		context->IASetVertexBuffers(0, 1, &sphere.getBufferVertexRef(), &stride, &offset);
 		context->IASetIndexBuffer(sphere.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
 		context->DrawIndexed(
 			sphere.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
 			0,     // Offset to the first index we want to use
 			0);    // Offset to add to each index when looking up vertices
+
+		}
+		else {
+
+			context->IASetVertexBuffers(0, 1, &meshPointlight.getBufferVertexRef(), &stride, &offset);
+			context->IASetIndexBuffer(meshPointlight.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+			context->DrawIndexed(
+				meshPointlight.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
+				0,     // Offset to the first index we want to use
+				0);    // Offset to add to each index when looking up vertices
+		}
 		it->get()->setScale(lightScale);
 	}
 	float red = 0;
@@ -279,7 +291,7 @@ void RenderInstruction::RENDER_DEBUG(
 
 	float randomSeed = 0;
 
-	//SET_MATRIX(&shaderVert, "view", Matrix::Identity);
+	SET_MATRIX(&shaderVert, "view",  Matrix::Identity);
 	for (auto it = m_frustum.m_clusters.begin(); it != m_frustum.m_clusters.end() ; it++, index++) {
 		randomSeed++;
 		if (it->light.size()) {

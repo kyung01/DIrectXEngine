@@ -222,7 +222,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	this->m_height = textureHeight;
 	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
 	m_rsm_flux_eye_perspective_height = textureIndirectLightHeight;
-	m_frustum.init(mainCameraFov,0.02, 10, 10, 10, 10);
+	m_frustum.init(mainCameraFov,1.0, 10, 10, 10, 10);
 	m_bufferClusterIndex = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::ClusterIndex>>(10 * 10 * 10);
 	m_bufferClusterItems = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::ClusterItem>>(10 * 10 * 10);
 
@@ -247,18 +247,19 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene)
 {
 	m_frustum.testBegin();
-	//auto viewMatrix = scene.m_camMain.getViewMatrix();
-	auto viewMatrix = Matrix::Identity;
-	
+	auto viewMatrix = scene.m_camMain.getViewMatrix();
+	//auto viewMatrix = Matrix::Identity;
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		auto &light = **it;
+		Vector3 lightPos = XMVector3Transform(light.m_pos, viewMatrix);
+		Vector3 lightPosLook = XMVector3Transform(light.m_pos + light.m_dirLook, viewMatrix);
+		Vector3 lightLookDir = lightPosLook-lightPos;
 		switch (light.m_lightType) {
 		case NScene::POINTLIGHT:
-			m_frustum.testPointlight(XMVector3Transform(light.m_pos,viewMatrix), light.m_lightDistance);
+			m_frustum.testPointlight(lightPos, light.m_lightDistance);
 			break;
 		case NScene::SPOTLIGHT:
-			m_frustum.testSpotlight(
-				XMVector3Transform(light.m_pos,viewMatrix), XMVector3Transform(light.m_dirLook,viewMatrix), 
+			m_frustum.testSpotlight(lightPos, lightLookDir, 
 				light.m_lightDistance,light.getFOV());
 			break;
 		}
