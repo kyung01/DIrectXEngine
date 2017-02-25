@@ -99,7 +99,7 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 	return true;
 }
 void GraphicMain::updateBufferLightPrameter(
-	ID3D11DeviceContext *context, ID3D11Buffer* buffer, std::list<std::shared_ptr<NScene::Light>>& lights)
+	ID3D11DeviceContext *context,  std::list<std::shared_ptr<NScene::Light>>& lights)
 {
 	int index = 0;
 	NBuffer::LightParameter parameter;
@@ -119,7 +119,6 @@ void GraphicMain::updateBufferLightPrameter(
 
 		//parameter.inverseViewProjX
 	}
-	m_bufferLight->setData(context, buffer);
 	
 }
 
@@ -264,8 +263,6 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 		//NBuffer::ClusterIndex * arrClusterIndexs	= new NBuffer::ClusterIndex[ARR_MAX_CLUSTER_INDEX];
 		//NBuffer::ClusterItem * arrClusterItems		= new NBuffer::ClusterItem[ARR_MAX_CLUSTER_ITEM];
 
-		m_frustum.testReconstruction(m_bufferClusterIndex->getData(), m_bufferClusterItems->getData(), m_bufferClusterItems->getSize());
-
 		//delete arrClusterIndexs;
 		//delete arrClusterItems;
 	}
@@ -280,6 +277,31 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 
 
 
+void NGraphic::GraphicMain::renderUpdate(ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NGame::Context & game)
+{
+	NScene::Scene & scene = *game.m_scene;
+	bool newLightInfo = false;
+	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+		if (m_lightInfos.find(it->get()->m_id) != m_lightInfos.end()) continue;
+		m_lightInfos[it->get()->m_id] = getLightInfo(device);
+		newLightInfo = true;
+	}
+	if (newLightInfo)
+		updateLightAtlas(scene.objs_lights);
+	updateBufferLightPrameter(context, scene.objs_lights);
+
+
+	m_bufferClusterIndex->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0));
+	m_bufferClusterItems->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1));
+	m_bufferLight->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2));
+	m_bufferDecal->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(3));
+	m_bufferProbe->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(4));
+
+	m_bufferLight->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0));
+	m_frustum.testReconstruction(m_bufferClusterIndex->getData(), m_bufferClusterItems->getData(), m_bufferClusterItems->getSize());
+
+}
+
 void NGraphic::GraphicMain::render(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
 	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
@@ -287,17 +309,8 @@ void NGraphic::GraphicMain::render(
 	)
 {
 	NScene::Scene & scene = *game.m_scene;
-
-	bool newLightInfo = false;
-	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
-		if (m_lightInfos.find(it->get()->m_id) != m_lightInfos.end()) continue;
-		m_lightInfos[it->get()->m_id] = getLightInfo(device);
-		newLightInfo = true;
-	}
-	if(newLightInfo)
-		updateLightAtlas(scene.objs_lights);
-	updateBufferLightPrameter(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0)   ,scene.objs_lights);
-
+	renderUpdate(device, context, asset, game);
+	
 	m_renderTextureDummy.setRenderTargetView(target, viewport);
 	m_depthTextureDummy.setDepthStencilView(targetDepth);
 	m_renderTextureDummy.clear(context, 0, 0, 0, 0);

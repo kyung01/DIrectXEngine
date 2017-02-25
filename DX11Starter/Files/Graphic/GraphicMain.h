@@ -67,7 +67,7 @@ namespace NGraphic {
 		void beginRendering(ID3D11DeviceContext *context);// = 0;
 		void endRendering(ID3D11DeviceContext *context);// = 0;
 		void getScreenWidth(int &w, int &h);// = 0;
-		void updateBufferLightPrameter(ID3D11DeviceContext *context, ID3D11Buffer* buffer, std::list<std::shared_ptr<NScene::Light>> &lights);
+		void updateBufferLightPrameter(ID3D11DeviceContext *context,  std::list<std::shared_ptr<NScene::Light>> &lights);
 		void updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights);
 
 		
@@ -86,7 +86,7 @@ namespace NGraphic {
 		void update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene);
 		
 
-
+		void renderUpdate(ID3D11Device * device, ID3D11DeviceContext * context, Asset& asset, NGame::Context &game);
 		void render(
 			ID3D11Device * device, ID3D11DeviceContext * context,
 			ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
