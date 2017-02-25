@@ -271,23 +271,24 @@ void NGraphic::Frustum::testReconstruction(NBuffer::ClusterIndex* clusterIndexs,
 
 		indexClusterItem += max( max(it->light.size(),it->decal.size()) , it->reflection.size() );
 	}
-	int lightCount = 1, decalCount = 22, probeCount = 33;
+	int lightCount = 1, decalCount = 22, probeCount = 33, extraNumber = 0;
 	unsigned int myCount = 0;
 	myCount |= probeCount;
 	myCount <<= 8;
 	myCount |= decalCount;
 	myCount <<= 8;
 	myCount |= lightCount;
-	//myCount <<= 8;
-	//myCount |= 0;
+	myCount <<= 8;
+	myCount |= extraNumber;
 	byte *myCounts = new byte[4];
 	myCounts[0] = myCount >> 0; // 1
 	myCounts[1] = myCount >> 8; //22
 	myCounts[2] = myCount >> 16; //33
-	myCounts[3] = myCount >> 24; //0
+	myCounts[3] = myCount >> 24; //10
 
 	for (int i = 0; i < 4; i++) {
 		std::cout << "NUM "<<i <<" : " << (int)myCounts[i] << "\n";
+		//prints 1 then 22 then 33 then 10
 	}
 	delete myCounts;
 }

@@ -7,6 +7,7 @@ DirectX::XMFLOAT4X4 RenderInstruction::MAT_TEMP;
 DirectX::XMFLOAT4X4 RenderInstruction::matWorld;
 DirectX::XMFLOAT4X4 RenderInstruction::matView;
 DirectX::XMFLOAT4X4 RenderInstruction::matProj;
+
 void RenderInstruction::SET_MATRIX(ISimpleShader * shader, std::string name, XMMATRIX matrix)
 {
 	DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(matrix));
@@ -165,10 +166,9 @@ void RenderInstruction::RENDER_DEBUG(
 	//context->RSSetState(asset.RASTR_STATE_CULL_);
 	context->OMSetBlendState(asset.BLEND_STATE_ADDITIVE, 0, 0xffffffff);
 
-	DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(scene.m_camMain.getViewMatrix())); // Transpose for HLSL!
-	shaderVert.SetMatrix4x4("view", matStore);
-	DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(scene.m_camMain.getProjectionMatrix())); // Transpose for HLSL!
-	shaderVert.SetMatrix4x4("proj", matStore);
+	SET_MATRIX(&shaderVert, "view", scene.m_camMain.getViewMatrix());
+	SET_MATRIX(&shaderVert, "proj", scene.m_camMain.getProjectionMatrix());
+	
 	shaderFrag.SetShaderResourceView("textureEyeDepth",textureEyeDepth.getShaderResourceView());
 	shaderFrag.SetSamplerState("samplerBoarderZero", asset.m_samplers[SAMPLER_ID_BORDER_ZERO]);
 	shaderFrag.SetFloat("SCREEN_WIDTH", renderTexture.getWidth());
@@ -279,7 +279,8 @@ void RenderInstruction::RENDER_DEBUG(
 
 	float randomSeed = 0;
 
-	for (auto it = m_frustum.m_clusters.begin(); it != m_frustum.m_clusters.end(); it++, index++) {
+	//SET_MATRIX(&shaderVert, "view", Matrix::Identity);
+	for (auto it = m_frustum.m_clusters.begin(); it != m_frustum.m_clusters.end() ; it++, index++) {
 		randomSeed++;
 		if (it->light.size()) {
 			auto frustum = asset.m_frustums[index];
@@ -374,7 +375,7 @@ void RenderInstruction::RENDER_WORLD_NORMAL_DIFFUSE(
 
 	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(scene.m_camMain.getViewMatrix())); // Transpose for HLSL!
 	shaderVert.SetMatrix4x4("view", matrixStore);
-	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(scene.m_camMain.getProjectionMatrix(targetWorld.getWidth(), targetWorld.getHeight()))); // Transpose for HLSL!
+	DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(scene.m_camMain.getProjectionMatrix())); // Transpose for HLSL!
 	shaderVert.SetMatrix4x4("proj", matrixStore);
 	shaderFrag.SetSamplerState("samplerWrap", asset.m_samplers[SAMPLER_ID_WRAP]);
 

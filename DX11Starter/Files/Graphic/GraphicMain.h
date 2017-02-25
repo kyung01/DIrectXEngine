@@ -82,7 +82,9 @@ namespace NGraphic {
 		std::map<int, Shader*> shaders;
 		// Width and hieght is for the resolution in wihich this graphic main will adjust to render things onto
 		GraphicMain();
-		bool init(ID3D11Device *device, ID3D11DeviceContext *context, int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight);
+		bool init(ID3D11Device *device, ID3D11DeviceContext *context,
+			int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight,
+			float mainCameraFov);
 		void update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene);
 		
 

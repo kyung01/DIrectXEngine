@@ -215,13 +215,14 @@ GraphicMain::GraphicMain()
 {
 }
 bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context, 
-	int width, int height, int textureIndirectLightWidth, int textureIndirectLightHeight)
+	int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight,
+	float mainCameraFov)
 {
-	this->m_width = width;
-	this->m_height = height;
+	this->m_width = textureWidth;
+	this->m_height = textureHeight;
 	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
 	m_rsm_flux_eye_perspective_height = textureIndirectLightHeight;
-	m_frustum.init(3.14 / 2, 1, 10, 10, 10, 10);
+	m_frustum.init(mainCameraFov,0.02, 10, 10, 10, 10);
 	m_bufferClusterIndex = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::ClusterIndex>>(10 * 10 * 10);
 	m_bufferClusterItems = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::ClusterItem>>(10 * 10 * 10);
 
@@ -230,7 +231,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	m_bufferProbe = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::ProbeParameter>>(256);
 
 	if (
-		!initTextures(device,context,width,height, textureIndirectLightWidth, textureIndirectLightHeight)
+		!initTextures(device,context,textureWidth,textureHeight, textureIndirectLightWidth, textureIndirectLightHeight)
 		
 		) return false;
 
@@ -246,14 +247,19 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene)
 {
 	m_frustum.testBegin();
+	//auto viewMatrix = scene.m_camMain.getViewMatrix();
+	auto viewMatrix = Matrix::Identity;
+	
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		auto &light = **it;
 		switch (light.m_lightType) {
 		case NScene::POINTLIGHT:
-			m_frustum.testPointlight(light.m_pos, light.m_lightDistance);
+			m_frustum.testPointlight(XMVector3Transform(light.m_pos,viewMatrix), light.m_lightDistance);
 			break;
 		case NScene::SPOTLIGHT:
-			m_frustum.testSpotlight(light.m_pos,light.m_dirLook, light.m_lightDistance,light.getFOV());
+			m_frustum.testSpotlight(
+				XMVector3Transform(light.m_pos,viewMatrix), XMVector3Transform(light.m_dirLook,viewMatrix), 
+				light.m_lightDistance,light.getFOV());
 			break;
 		}
 	}
@@ -266,6 +272,19 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 		//delete arrClusterIndexs;
 		//delete arrClusterItems;
 	}
+	bool newLightInfo = false;
+	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+		if (m_lightInfos.find(it->get()->m_id) != m_lightInfos.end()) continue;
+		m_lightInfos[it->get()->m_id] = getLightInfo(device);
+		newLightInfo = true;
+	}
+	if (newLightInfo)
+		updateLightAtlas(scene.objs_lights);
+	updateBufferLightPrameter(context, scene.objs_lights);
+
+
+	m_frustum.testReconstruction(m_bufferClusterIndex->getData(), m_bufferClusterItems->getData(), m_bufferClusterItems->getSize());
+
 }
 
 
@@ -279,27 +298,15 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 
 void NGraphic::GraphicMain::renderUpdate(ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NGame::Context & game)
 {
-	NScene::Scene & scene = *game.m_scene;
-	bool newLightInfo = false;
-	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
-		if (m_lightInfos.find(it->get()->m_id) != m_lightInfos.end()) continue;
-		m_lightInfos[it->get()->m_id] = getLightInfo(device);
-		newLightInfo = true;
-	}
-	if (newLightInfo)
-		updateLightAtlas(scene.objs_lights);
-	updateBufferLightPrameter(context, scene.objs_lights);
-
 
 	m_bufferClusterIndex->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0));
-	m_bufferClusterItems->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1));
-	m_bufferLight->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2));
-	m_bufferDecal->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(3));
-	m_bufferProbe->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(4));
-
+	//m_bufferClusterItems->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1));
+	//m_bufferLight->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2));
+	//m_bufferDecal->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(3));
+	//m_bufferProbe->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(4));
+	//asset.m_shadersFrag[RENDER_TEST]->set
 	m_bufferLight->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0));
-	m_frustum.testReconstruction(m_bufferClusterIndex->getData(), m_bufferClusterItems->getData(), m_bufferClusterItems->getSize());
-
+	
 }
 
 void NGraphic::GraphicMain::render(
@@ -309,15 +316,17 @@ void NGraphic::GraphicMain::render(
 	)
 {
 	NScene::Scene & scene = *game.m_scene;
+	//scene.m_camMain.getProjectionMatrix(512, 512);
 	renderUpdate(device, context, asset, game);
 	
 	m_renderTextureDummy.setRenderTargetView(target, viewport);
 	m_depthTextureDummy.setDepthStencilView(targetDepth);
 	m_renderTextureDummy.clear(context, 0, 0, 0, 0);
 	m_depthTextureDummy.clear(context);
-	DirectX::SimpleMath::Matrix matSceneMvpFirstPerson = 
-		scene.m_camMain.getProjectionMatrix(viewport.Width, viewport.Height) *
-		scene.m_camMain.getViewMatrix() * scene.m_camMain.getModelMatrix();
+	auto matProjectionScreen = XMMatrixPerspectiveFovLH(scene.m_camMain.getFOV(), viewport.Width / viewport.Height, 0.1, 1000);
+	//DirectX::SimpleMath::Matrix matSceneMvpFirstPerson = 
+	//	scene.m_camMain.getProjectionMatrix(viewport.Width, viewport.Height) *
+	//	scene.m_camMain.getViewMatrix() * scene.m_camMain.getModelMatrix();
 	
 	if(true){
 		beginRendering(context);
@@ -413,7 +422,8 @@ void NGraphic::GraphicMain::render(
 		auto lightWorldMatirx = DirectX::XMMatrixMultiply(worldMatrixFrustum, it->get()->getModelMatrix());
 
 
-		DirectX::XMMATRIX lightMVP = DirectX::XMMatrixMultiply(light.getViewMatrix(), light.getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight()));
+		DirectX::XMMATRIX lightMVP = DirectX::XMMatrixMultiply(
+			light.getViewMatrix(), light.getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight()));
 		if (true) {
 			m_depthTextureDummy.clear(context);
 			m_depthTextures[DEPTH_FINAL]->clear(context);

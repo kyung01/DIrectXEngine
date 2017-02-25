@@ -26,6 +26,7 @@ namespace NGraphic {
 	};
 	class Frustum {
 	private:
+		void init(float angle, int divisionX, int divisionY, int divisionZ);
 	public:
 		static Vector3 getMaxVector(Vector3& a, Vector3& b);
 		static Vector3 getMinVector(Vector3& a, Vector3& b);
