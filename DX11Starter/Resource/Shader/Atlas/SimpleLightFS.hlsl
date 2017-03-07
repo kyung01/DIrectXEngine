@@ -28,11 +28,11 @@ cbuffer ProbeParameter : register(b4)
 
 cbuffer global : register(b5)
 {
-	matrix viewMatrix;
+	matrix eyeViewMatrix;
 	int frustumX, frustumY, frustumZ;
+	float eyeFov;
 	float eyeNear;
 	float eyeFar;
-	float eyeFov;
 	float dummy00;
 	float dummy01;
 	//LightParameter lightParameter[10];

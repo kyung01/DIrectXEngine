@@ -57,8 +57,8 @@ Matrix Object::getModelMatrix()
 }
 //Camera
 Camera::Camera() :
-	m_clipFar(9999999),
-	m_clipNear(0.01),
+	m_clipFar(100),
+	m_clipNear(0.1),
 	m_screenWidth(100),
 	m_screenHeight(100),
 	m_fov(3.14*0.5)

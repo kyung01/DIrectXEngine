@@ -219,7 +219,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	int width, int height, int textureIndirectLightWidth, int textureIndirectLightHeight)
 {
 	float 
-		NEAR_DISTANCE(1),
+		NEAR_DISTANCE(0.2),
 		FAR_DISTANCE(10),
 		X_DIIVIDE(10),
 		Y_DIVIDE(10),
@@ -294,13 +294,29 @@ void NGraphic::GraphicMain::render(
 	}
 	if(newLightInfo)
 		updateLightAtlas(scene.objs_lights);
-	m_bufferDataTranslator->translate(m_frustum.m_clusters);
-	m_bufferDataTranslator->translate(scene.objs_lights, m_lightInfos);
-	m_bufferDataTranslator->transfer(
-		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1),
-		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(3), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(4));
-	
-	m_bufferDataTranslator->m_lights->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0));
+
+
+
+	{
+		//m_bufferDataTranslator transfer buffer data
+		m_bufferDataTranslator->translate(m_frustum.m_clusters);
+		m_bufferDataTranslator->translate(scene.objs_lights, m_lightInfos);
+		m_bufferDataTranslator->transfer(
+			asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1),
+			asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(3), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(4));
+		
+		DirectX::XMFLOAT4X4 MAT_TEMP;
+		DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(scene.m_camMain.getViewMatrix()));
+
+		m_bufferDataTranslator->m_lights->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0));
+		asset.m_shadersFrag[RENDER_TEST]->SetMatrix4x4("eyeViewMatrix", MAT_TEMP);
+		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumX", (int)m_frustum.m_size.x);
+		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumY", (int)m_frustum.m_size.y);
+		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumZ", (int)m_frustum.m_size.z);
+		asset.m_shadersFrag[RENDER_TEST]->SetFloat("eyeFov", m_frustum.m_angle);
+		asset.m_shadersFrag[RENDER_TEST]->SetFloat("eyeNear", m_frustum.m_near);
+		asset.m_shadersFrag[RENDER_TEST]->SetFloat("eyeFar", m_frustum.m_far);
+	}
 
 	//updateBufferLightPrameter(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0)   ,scene.objs_lights);
 
