@@ -12,7 +12,7 @@ namespace NGraphic {
 			byte light;
 			byte decal;
 			byte probe;
-
+			byte dummy;
 
 
 		};

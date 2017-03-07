@@ -81,6 +81,6 @@ namespace NGraphic {
 		Load frustums from game class for debugging purpose 
 		*/
 		std::map<int,std::shared_ptr< MeshCube >> m_frustums;
-		void loadDebug_frustums(ID3D11Device * device, std::vector<NGraphic::ClusterAABB> cubes);
+		void loadDebug_frustums(ID3D11Device * device, std::vector<NGraphic::NFrustum::ClusterAABB> cubes);
 	};
  }

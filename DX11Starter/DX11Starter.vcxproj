@@ -133,12 +133,13 @@
     <ClCompile Include="Files\Game\cpp\Entities.cpp" />
     <ClCompile Include="Files\Game\cpp\Script Game.cpp" />
     <ClCompile Include="Files\Graphic\Buffer\Buffer.cpp" />
+    <ClCompile Include="Files\Graphic\cpp\BufferDataTranslator.cpp" />
     <ClCompile Include="Files\Graphic\Frustum.cpp" />
     <ClCompile Include="Files\Game\Script\X_Axis_Rotate.cpp" />
     <ClCompile Include="Files\Game\Script\Y_Axis_Rotate.cpp" />
     <ClCompile Include="Files\Graphic\Asset\Asset.cpp" />
     <ClCompile Include="Files\Graphic\cpp\DepthTexture.cpp" />
-    <ClCompile Include="Files\Graphic\cpp\Mesh.cpp" />
+    <ClCompile Include="Files\Graphic\Asset\Mesh.cpp" />
     <ClCompile Include="Files\Graphic\cpp\RenderTexture.cpp" />
     <ClCompile Include="Files\Graphic\cpp\RenderStateStack.cpp" />
     <ClCompile Include="Files\Graphic\Mesh\Meshes.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="Files\Game\ContextExamples.h" />
     <ClInclude Include="Files\Game\Entity.h" />
     <ClInclude Include="Files\Game\Context.h" />
+    <ClInclude Include="Files\Graphic\BufferDataTranslator.h" />
     <ClInclude Include="Files\Graphic\Buffer\ClusterIndex.h" />
     <ClInclude Include="Files\Graphic\Buffer\ClusterItem.h" />
     <ClInclude Include="Files\Graphic\Buffer\ClusterredFrustumBuffer.h" />
@@ -211,8 +213,6 @@
     <ClInclude Include="Files\imgui\stb_textedit.h" />
     <ClInclude Include="Files\imgui\stb_truetype.h" />
     <ClInclude Include="Files\Graphic\GraphicMain.h" />
-    <ClInclude Include="Files\Graphic\Asset\Model.h" />
-    <ClInclude Include="Files\Graphic\Shader.h" />
     <ClInclude Include="Files\Material.h" />
     <ClInclude Include="Files\Object.h" />
     <ClInclude Include="Files\Graphic\RenderTexture.h" />

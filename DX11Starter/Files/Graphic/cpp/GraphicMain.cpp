@@ -218,11 +218,19 @@ GraphicMain::GraphicMain()
 bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context, 
 	int width, int height, int textureIndirectLightWidth, int textureIndirectLightHeight)
 {
+	float 
+		NEAR_DISTANCE(1),
+		FAR_DISTANCE(10),
+		X_DIIVIDE(10),
+		Y_DIVIDE(10),
+		Z_DIVIDE(10),
+		CLUSTER_ITEM_SIZE(X_DIIVIDE*Y_DIVIDE*Z_DIVIDE*10);
 	this->m_width = width;
 	this->m_height = height;
 	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
 	m_rsm_flux_eye_perspective_height = textureIndirectLightHeight;
-	m_frustum.init(3.14 / 2, 1, 10, 10, 10, 10);
+	m_frustum.init(3.14 / 2, NEAR_DISTANCE, FAR_DISTANCE, X_DIIVIDE, Y_DIVIDE, Z_DIVIDE);
+	m_bufferDataTranslator = std::make_shared<BufferDataTranslator>(X_DIIVIDE* Y_DIVIDE* Z_DIVIDE, CLUSTER_ITEM_SIZE);
 	m_lightBuffer = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(10);
 
 	if (
@@ -241,6 +249,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 
 void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene)
 {
+	m_bufferDataTranslator->constrcut();
 	m_frustum.testBegin();
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		auto &light = **it;
@@ -253,7 +262,6 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 			break;
 		}
 	}
-	m_frustum.testReconstruction();
 }
 
 

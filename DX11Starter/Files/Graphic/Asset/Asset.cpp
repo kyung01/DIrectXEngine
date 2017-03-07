@@ -287,7 +287,7 @@ Vector3 NGraphic::Asset::getRandomColor(int seed)
 	//return Vector3();
 }
 
-void NGraphic::Asset::loadDebug_frustums(ID3D11Device * device, std::vector<NGraphic::ClusterAABB> cubes)
+void NGraphic::Asset::loadDebug_frustums(ID3D11Device * device, std::vector<NGraphic::NFrustum::ClusterAABB> cubes)
 {
 	for (int i = 0; i < cubes.size(); i++) {
 		m_frustums[i] = std::make_shared<MeshCube>(device,

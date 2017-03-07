@@ -1,13 +1,5 @@
 #pragma once
 #include <map>
-#include "Model.h"
-#include "Shader.h"
-#include "Camera.h"
-
-#include "SimpleShader.h"
-#include "RenderTexture.h"
-#include "DepthTexture.h"
-#include "Graphic\Scene\Light.h"
 #include <list>
 #include <map>
 #include <memory>
@@ -15,6 +7,8 @@
 
 #include <SimpleMath.h>
 #include <WICTextureLoader.h>
+#include <Graphic\RenderTexture.h>
+#include <Graphic\DepthTexture.h>
 #include <Graphic\Asset\Asset.h>
 #include <Graphic\Asset\Mesh.h>// TODO delete this
 #include <Graphic\Enum.h>
@@ -58,7 +52,7 @@ namespace NGraphic {
 			ID3D11Device * device, ID3D11DeviceContext * context,
 			Asset& asset,
 			RenderTexture& renderTexture, DepthTexture& depthTexture,
-			NGame::Context& game, NScene::Scene& scene, Frustum& m_frustum,
+			NGame::Context& game, NScene::Scene& scene, NFrustum::Frustum& m_frustum,
 			DepthTexture& textureEyeDepth);
 		static void RENDER_WORLD_NORMAL_DIFFUSE(
 			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset,

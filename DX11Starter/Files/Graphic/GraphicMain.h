@@ -1,7 +1,6 @@
 #pragma once
 #include <map>
 #include "Model.h"
-#include "Shader.h"
 #include "Camera.h"
 
 #include "SimpleShader.h"
@@ -22,6 +21,7 @@
 #include <Graphic\Enum.h>
 #include <Graphic\RenderStateStack.h>
 #include <Graphic\TextureAtlasSlicer.h>
+#include <Graphic\BufferDataTranslator.h>
 #include <Graphic\Buffer\KDynamicBuffer.h>
 #include <Graphic\Buffer\LightParameter.h>
 #include <Game\Context.h>
@@ -39,8 +39,14 @@ namespace NGraphic {
 		DepthTexture		m_depthTextureDummy;
 		int					m_rsm_flux_eye_perspective_width, 
 							m_rsm_flux_eye_perspective_height;
-		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::LightParameter>> m_lightBuffer;
+
 		
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::LightParameter>> m_lightBuffer;
+		std::shared_ptr<BufferDataTranslator> m_bufferDataTranslator;
+
+
+
+
 
 		DirectX::XMMATRIX getOrthogonalMatrixProj();
 		DirectX::XMMATRIX getOrthogonalMatrixView();
@@ -66,14 +72,13 @@ namespace NGraphic {
 
 		
 	public:
-		Frustum				m_frustum;
+		NFrustum::Frustum				m_frustum; // Eventually move to private or protected access level but for now, put it in a public for debug purpose
 		std::shared_ptr<TextureAtlasSlicer> m_atlasSlicer;
 
 		std::map<int, LightInfo> m_lightInfos;
 		std::map<KEnum, std::shared_ptr<RenderTexture>>	m_renderTextures;
 		std::map<KEnum, std::shared_ptr<DepthTexture>>	m_depthTextures;
 
-		std::map<int, Shader*> shaders;
 		// Width and hieght is for the resolution in wihich this graphic main will adjust to render things onto
 		GraphicMain();
 		bool init(ID3D11Device *device, ID3D11DeviceContext *context, int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight);

@@ -1,7 +1,7 @@
 #include "Frustum.h"
 #include <iostream>
 using namespace DirectX::SimpleMath;
-using namespace NGraphic;
+using namespace NGraphic::NFrustum;
 Vector3 Frustum::getMaxVector(Vector3 & a, Vector3 & b)
 {
 	return Vector3(max(a.x, b.x), max(a.y, b.y), max(a.z, b.z));
@@ -241,29 +241,6 @@ bool Frustum::testPointlight(std::pair<int, int> &result, std::vector<Plane> pla
 	result.first = x0;
 	result.second = x1;
 	return true;
-}
-
-void NGraphic::Frustum::testReconstruction()
-{
-	int lightCount = 1, decalCount = 22, probeCount = 33;
-	unsigned int myCount = 0;
-	myCount |= lightCount;
-	myCount <<= 8;
-	myCount |= decalCount;
-	myCount <<= 8;
-	myCount |= probeCount;
-	myCount <<= 8;
-	myCount |= 0;
-	byte *myCounts = new byte[4];
-	myCounts[0] = myCount >> 24;
-	myCounts[1] = myCount >> 16;
-	myCounts[2] = myCount >> 8;
-	myCounts[3] = myCount >> 0;
-
-	for (int i = 0; i < 4; i++) {
-		std::cout << "NUM "<<i <<" : " << (int)myCounts[i] << "\n";
-	}
-	delete myCounts;
 }
 /*
 

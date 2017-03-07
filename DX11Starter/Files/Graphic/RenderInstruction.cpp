@@ -143,7 +143,7 @@ void RenderInstruction::RENDER_DEBUG(
 	ID3D11Device * device, ID3D11DeviceContext * context,
 	Asset& asset,
 	RenderTexture& renderTexture, DepthTexture& depthTexture,
-	NGame::Context& game, NScene::Scene& scene, Frustum& m_frustum,
+	NGame::Context& game, NScene::Scene& scene, NFrustum::Frustum& m_frustum,
 	DepthTexture& textureEyeDepth
 	 ) {
 	

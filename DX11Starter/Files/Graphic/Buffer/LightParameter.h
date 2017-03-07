@@ -8,15 +8,16 @@
 namespace NGraphic {
 	namespace NBuffer {
 		struct LightParameter {
-			bool isSpotlight; // spotlight or pointlight
-			DirectX::XMFLOAT3 position;
-			DirectX::XMFLOAT3 axis;
-			float angle;
-			DirectX::XMFLOAT3 color;
-			float topLeftX, topLeftY, viewPortWidth, viewPortHeight;
-			DirectX::XMMATRIX inverseViewProjX; //used to get depth information;
-			DirectX::XMMATRIX inverseViewProjY; //used to get depth information;
-			DirectX::XMMATRIX inverseViewProjZ; //used to get depth information;
+			bool isSpotlight;			// 1
+			DirectX::XMFLOAT3 position;	// 4
+			DirectX::XMFLOAT3 axis;		// 3
+			float angle;				// 4
+			DirectX::XMFLOAT3 color;	// 3
+			float dummy;				// 4
+			float topLeftX, topLeftY, viewPortWidth, viewPortHeight; // 4
+			DirectX::XMMATRIX inverseViewProjX; //16
+			DirectX::XMMATRIX inverseViewProjY; //16
+			DirectX::XMMATRIX inverseViewProjZ; //16
 		};
 	}
 

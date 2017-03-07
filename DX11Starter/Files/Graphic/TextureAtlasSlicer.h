@@ -1,7 +1,5 @@
 #pragma once
 #include <map>
-#include "Model.h"
-#include "Shader.h"
 #include "Camera.h"
 
 #include "SimpleShader.h"
