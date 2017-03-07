@@ -88,14 +88,8 @@ Matrix Camera::getProjectionMatrix(float width, float height)
 {
 	m_screenWidth = width;
 	m_screenHeight = height;
-	if (m_isDirty_matProjection) {
-		m_isDirty_matProjection = false;
-		m_matProjection = DirectX::XMMatrixPerspectiveFovLH(
-			m_fov,		// Field of View Angle
-			m_screenWidth / m_screenHeight,		// Aspect ratio
-			m_clipNear, m_clipFar);					// Far clip plane distance
-	}
-	return m_matProjection;
+	m_isDirty_matProjection = true;
+	return getProjectionMatrix();
 }
 
 Matrix Camera::getProjectionMatrix(float fov, float screen_width, float screen_height, float clipNear, float clipFar)

@@ -360,7 +360,7 @@ void NGraphic::GraphicMain::render(
 	auto worldMatrixFrustum = DirectX::SimpleMath::Matrix::CreateRotationX(3.14 / 2);
 	auto viewMatirx = scene.m_camMain.getViewMatrix();
 	auto projMatrix = scene.m_camMain.getProjectionMatrix(m_width, m_height);
-
+	
 	//context->OMSetBlendState(asset.BLEND_STATE_, 0, 0xffffffff);
 	//context->RSSetState(asset.RASTR_STATE_CULL_BACK);
 	RenderInstruction::RENDER_WORLD_NORMAL_DIFFUSE(
