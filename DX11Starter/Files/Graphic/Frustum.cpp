@@ -110,7 +110,7 @@ void Frustum::testBegin()
 	}
 }
 bool willDebug = false;
-void Frustum::testPointlight(Vector3 center, float radius)
+void Frustum::testPointlight(int lightIndex, Vector3 center, float radius)
 {
 	int index;
 	std::pair<int, int> resultX,resultY,resultZ;
@@ -125,7 +125,7 @@ void Frustum::testPointlight(Vector3 center, float radius)
 					auto &cube = m_cubes[index];
 					if (aabbArvo(cube.leftBottomFar, cube.rightTopNear, center, radius))
 					{
-						m_clusters[index].light.push_back(0);
+						m_clusters[index].light.push_back(lightIndex);
 						//std::cout << "YES ARVO\n";
 					}
 					//m_clusters[index].light.push_back(0);
@@ -135,11 +135,8 @@ void Frustum::testPointlight(Vector3 center, float radius)
 				}
 		
 	}
-	//std::cout << "X: " << resultX.first << "->" << resultX.second << "\n";
-	//std::cout << "Y: " << resultY.first << "->" << resultY.second << "\n";
-	//std::cout << "Z: " << resultZ.first << "->" << resultZ.second << "\n";
 }
-void Frustum::testSpotlight(Vector3 vertex, Vector3 axis, float H, float alpha)
+void Frustum::testSpotlight(int lightIndex, Vector3 vertex, Vector3 axis, float H, float alpha)
 {
 	//;axis.z += 0.1435;//add noise to make sure they are not perfectly aligned
 	int index;
@@ -157,7 +154,7 @@ void Frustum::testSpotlight(Vector3 vertex, Vector3 axis, float H, float alpha)
 				for (int i = resultX.first; i < resultX.second; i++) {
 					index = i + j* m_size.x + k*m_size.x*m_size.y;
 					auto &cube = m_cubes[index];
-					m_clusters[index].light.push_back(0);
+					m_clusters[index].light.push_back(lightIndex);
 					//else
 				}
 

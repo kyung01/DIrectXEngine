@@ -251,14 +251,20 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 {
 	//m_bufferDataTranslator->constrcut();
 	m_frustum.testBegin();
-	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+	int index = 0;
+	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++, index++) {
 		auto &light = **it;
+		Vector3 pos = XMVector3Transform(light.m_pos, scene.m_camMain.getViewMatrix());
+		Vector3 posDirLook = XMVector3Transform(light.m_pos + light.m_dirLook, scene.m_camMain.getViewMatrix());
+		Vector3 dir = posDirLook - pos;
+
 		switch (light.m_lightType) {
 		case NScene::POINTLIGHT:
-			m_frustum.testPointlight(light.m_pos, light.m_lightDistance);
+			//m_frustum.testPointlight(index, light.m_pos, light.m_lightDistance);
+			m_frustum.testPointlight(index, pos, light.m_lightDistance);
 			break;
 		case NScene::SPOTLIGHT:
-			m_frustum.testSpotlight(light.m_pos,light.m_dirLook, light.m_lightDistance,light.getFOV());
+			m_frustum.testSpotlight(index, pos, dir, light.m_lightDistance,light.getFOV());
 			break;
 		}
 	}
