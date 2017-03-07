@@ -230,7 +230,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
 	m_rsm_flux_eye_perspective_height = textureIndirectLightHeight;
 	m_frustum.init(3.14 / 2, NEAR_DISTANCE, FAR_DISTANCE, X_DIIVIDE, Y_DIVIDE, Z_DIVIDE);
-	m_bufferDataTranslator = std::make_shared<BufferDataTranslator>(X_DIIVIDE* Y_DIVIDE* Z_DIVIDE, CLUSTER_ITEM_SIZE);
+	m_bufferDataTranslator = std::make_shared<BufferDataTranslator>(X_DIIVIDE* Y_DIVIDE* Z_DIVIDE, CLUSTER_ITEM_SIZE,256,256,256);
 	m_lightBuffer = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(10);
 
 	if (
@@ -249,7 +249,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 
 void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene)
 {
-	m_bufferDataTranslator->constrcut();
+	//m_bufferDataTranslator->constrcut();
 	m_frustum.testBegin();
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		auto &light = **it;
@@ -289,7 +289,15 @@ void NGraphic::GraphicMain::render(
 	}
 	if(newLightInfo)
 		updateLightAtlas(scene.objs_lights);
-	updateBufferLightPrameter(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0)   ,scene.objs_lights);
+	m_bufferDataTranslator->translate(m_frustum.m_clusters);
+	m_bufferDataTranslator->translate(scene.objs_lights, m_lightInfos);
+	m_bufferDataTranslator->transfer(
+		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1),
+		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(3), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(4));
+	
+	m_bufferDataTranslator->m_lights->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0));
+
+	//updateBufferLightPrameter(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0)   ,scene.objs_lights);
 
 	m_renderTextureDummy.setRenderTargetView(target, viewport);
 	m_depthTextureDummy.setDepthStencilView(targetDepth);

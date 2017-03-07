@@ -14,13 +14,13 @@ namespace NGraphic {
 		class KDynamicBuffer {
 		private:
 			int maxCount;
-			T* lights;
 			//ID3D11Buffer *m_buffer;
 		protected:
 		public:
+			T* m_data;
 			KDynamicBuffer( int maxLight) {
 				this->maxCount = maxLight;
-				lights = new T[maxLight];
+				m_data = new T[maxLight];
 				//D3D11_BUFFER_DESC vbd;
 				//vbd.Usage = D3D11_USAGE_DYNAMIC;
 				//vbd.ByteWidth = sizeof(T) * maxLight;       // 3 = number of vertices in the buffer
@@ -35,10 +35,10 @@ namespace NGraphic {
 				
 			};
 			~KDynamicBuffer() {
-				delete lights;
+				delete m_data;
 			};
 			void setData(T data, int at) {
-				lights[at] = data;
+				m_data[at] = data;
 
 			};
 			bool setData(ID3D11DeviceContext *context, ID3D11Buffer *m_buffer) {
@@ -47,7 +47,7 @@ namespace NGraphic {
 				if (!DirectXUtility::HRESULT_CHECK(
 					context->Map(m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
 					return false;
-				memcpy(mappedResource.pData, lights, sizeof(T) * maxCount);
+				memcpy(mappedResource.pData, m_data, sizeof(T) * maxCount);
 				context->Unmap(m_buffer, 0);
 				return true;
 			}

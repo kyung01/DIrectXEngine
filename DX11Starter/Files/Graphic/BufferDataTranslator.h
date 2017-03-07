@@ -8,11 +8,14 @@
 #include <memory>
 
 #include <Graphic\Frustum.h>
+#include <Graphic\Scene\Light.h>
+#include <Graphic\Buffer\KDynamicBuffer.h>
 #include <Graphic\Buffer\ClusterIndex.h>
 #include <Graphic\Buffer\ClusterItem.h>
 #include <Graphic\Buffer\LightParameter.h>
 #include <Graphic\Buffer\DecalParameter.h>
 #include <Graphic\Buffer\ProbeParameter.h>
+#include <Graphic\LightInfo.h>
 
 //BufferDataTranslator
 //Takes datas from other classes and construct them into a format that GPU can take.
@@ -21,13 +24,19 @@ namespace NGraphic {
 	class BufferDataTranslator {
 		int m_arrClusterIndexSize;
 		int m_arrClusterItemSize;
-		std::shared_ptr<NBuffer::ClusterIndex>	m_arrClusterIndexs;
-		std::shared_ptr<NBuffer::ClusterItem>	m_arrClusterItems;
-	public : 
-		BufferDataTranslator(int clusterSize, int lightItemMax);
+	public :
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::ClusterIndex>>	m_clusterIndexs;
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::ClusterItem>>	m_clusterItems;
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::LightParameter>> m_lights;
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::DecalParameter>> m_decals;
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::ProbeParameter>> m_probes;
+		//std::shared_ptr<NBuffer::ClusterIndex*>	m_arrClusterIndexs;
+		//std::shared_ptr<NBuffer::ClusterItem*>	m_arrClusterItems;
+		BufferDataTranslator(int clusterSize, int clusterItemMax, int lightMax, int decalMax, int probeMax);
 		void constrcut();
-		void constrcut(std::vector<NFrustum::Cluster> &cluster);
-
+		void translate(std::vector<NFrustum::Cluster> &cluster);
+		void translate(std::list<std::shared_ptr<NScene::Light>>& lights, std::map<int, LightInfo> &m_lightInfos);
+		void transfer(ID3D11Buffer* bufferClusterIndex, ID3D11Buffer* bufferClusterItem, ID3D11Buffer* bufferLights, ID3D11Buffer* bufferDecals, ID3D11Buffer* bufferProbes);
 	};
 	
 
