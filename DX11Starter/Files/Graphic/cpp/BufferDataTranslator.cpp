@@ -14,6 +14,7 @@ NGraphic::BufferDataTranslator::BufferDataTranslator(int clusterSize, int cluste
 	//m_arrClusterItems = std::make_shared<NBuffer::ClusterItem*>(new NBuffer::ClusterItem[lightItemMax]);
 }
 //TODO take m_clusters data then put it in a array of ClusterIndex while putting the data into array of ClusterItem
+//http://stackoverflow.com/questions/7787423/c-get-nth-byte-of-integer
 void BufferDataTranslator::constrcut()
 {
 	int lightCount = 1, decalCount = 22, probeCount = 33;

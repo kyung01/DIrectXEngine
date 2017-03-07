@@ -45,11 +45,25 @@ struct VertexToPixel
 	float4 worldPos		: POSITION;
 };
 
-
+int getClusterBelong(
+	float3 dirHorBegin, float3 dirHorEnd,
+	float3 dirVrtBegin, float3 dirVrtEnd, 
+	float near, float far, 
+	float divX, float divY, float divZ, 
+	float3 position) {
+	return 0;
+}
 
 // Entry point for this pixel shader
 float4 main(VertexToPixel input) : SV_TARGET
 {
+	float x = cos(eyeFov);
+	float z = sin(eyeFov);
+	float3 dirHorizontal	= float3(-x, 0, z);
+	float3 dirVertical		= float3(0, x, z);
+	int clusterID = getClusterBelong(float3(-x, 0, z), float3(x, 0, z), float3(0, x, z), float3(0, -x, z), eyeNear, eyeFar, frustumX, frustumY, frustumZ,input.worldPos);
+	int clusterIndex = clusterIndexs[clusterID];
+
 	float3 color = float3(0,0,0);
 	for (int i = 0; i < 5; i++) {
 		LightParameter light0 = lightParameter[i];
@@ -58,7 +72,12 @@ float4 main(VertexToPixel input) : SV_TARGET
 	return float4(color,1);
 }
 /*
-LightParameter light0 = lightParameter[0];
-float shine = spotLight(light0.position, light0.axis, light0.angle*0.5, light0.angle, position);
-return float4(shine,0,0,1);
+
+float3 color = float3(0,0,0);
+for (int i = 0; i < 5; i++) {
+LightParameter light0 = lightParameter[i];
+color += light0.color * spotLight(light0.position, light0.axis, light0.angle*0.5, light0.angle, input.worldPos);
+}
+return float4(color,1);
+
 */
