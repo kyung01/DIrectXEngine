@@ -24,6 +24,8 @@
 #include <Graphic\BufferDataTranslator.h>
 #include <Graphic\Buffer\KDynamicBuffer.h>
 #include <Graphic\Buffer\LightParameter.h>
+#include <Graphic\Buffer\DecalParameter.h>
+#include <Graphic\Buffer\ProbeParameter.h>
 #include <Game\Context.h>
 
 
@@ -39,7 +41,15 @@ namespace NGraphic {
 		DepthTexture		m_depthTextureDummy;
 		int					m_rsm_flux_eye_perspective_width, 
 							m_rsm_flux_eye_perspective_height;
+<<<<<<< HEAD
 
+=======
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::ClusterIndex>> m_bufferClusterIndex;
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::ClusterItem>> m_bufferClusterItems;
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::LightParameter>> m_bufferLight;
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::DecalParameter>> m_bufferDecal;
+		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::ProbeParameter>> m_bufferProbe;
+>>>>>>> origin/master
 		
 		std::shared_ptr<NBuffer::KDynamicBuffer<NBuffer::LightParameter>> m_lightBuffer;
 		std::shared_ptr<BufferDataTranslator> m_bufferDataTranslator;
@@ -67,7 +77,7 @@ namespace NGraphic {
 		void beginRendering(ID3D11DeviceContext *context);// = 0;
 		void endRendering(ID3D11DeviceContext *context);// = 0;
 		void getScreenWidth(int &w, int &h);// = 0;
-		void updateBufferLightPrameter(ID3D11DeviceContext *context, ID3D11Buffer* buffer, std::list<std::shared_ptr<NScene::Light>> &lights);
+		void updateBufferLightPrameter(ID3D11DeviceContext *context,  std::list<std::shared_ptr<NScene::Light>> &lights);
 		void updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights);
 
 		
@@ -81,11 +91,13 @@ namespace NGraphic {
 
 		// Width and hieght is for the resolution in wihich this graphic main will adjust to render things onto
 		GraphicMain();
-		bool init(ID3D11Device *device, ID3D11DeviceContext *context, int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight);
+		bool init(ID3D11Device *device, ID3D11DeviceContext *context,
+			int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight,
+			float mainCameraFov);
 		void update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene);
 		
 
-
+		void renderUpdate(ID3D11Device * device, ID3D11DeviceContext * context, Asset& asset, NGame::Context &game);
 		void render(
 			ID3D11Device * device, ID3D11DeviceContext * context,
 			ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,

@@ -21,7 +21,7 @@ struct VertexShaderInput
 struct VertexToPixel
 {
 	float4 position		: SV_POSITION;
-	float4 worldPos		: POSITION;
+	float3 worldPos		: POSITION;
 };
 
 // --------------------------------------------------------
@@ -38,7 +38,7 @@ VertexToPixel main(VertexShaderInput input)
 	float4 worldPos = mul(float4(input.position, 1.0f), world);
 														// Get world position of vertex
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);
-	output.worldPos = float4(worldPos.xyz, output.position.w);
+	output.worldPos = worldPos.xyz;
 	//output.worldPos = float4(worldPos.xyz, output.position.w);
 	//output.worldPos = float4(worldPos.xyz, output.position.w);
 

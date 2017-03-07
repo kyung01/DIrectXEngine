@@ -9,7 +9,7 @@ void NGame::LoadExample00(Context &context)
 	if(true)for (int i = 0; i < 10; i++) for (int j = 0; j < 5; j++)
 	{
 		auto obj = context.m_scene->getObjSolid();
-		obj.get()->m_meshId = NGraphic::MESH_ID_TORUS;
+		obj.get()->m_meshId = NGraphic::MESH_ID_SPHERE;
 		obj.get()->m_textures[NGraphic::TEXTURE_TYPE_DIFFUSE] = NGraphic::KEnum::TEXTURE_ID_WHITE;
 		obj.get()->m_textures[NGraphic::TEXTURE_TYPE_PROPERTY] = NGraphic::KEnum::TEXTURE_ID_RED;
 		obj.get()->m_textures[NGraphic::TEXTURE_TYPE_NORMAL] = NGraphic::KEnum::TEXTURE_ID_NORMAL_DEFAULT;// normalIds[i % 6];

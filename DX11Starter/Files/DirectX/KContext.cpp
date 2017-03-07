@@ -62,7 +62,7 @@ void KContext::Init()
 
 	m_renderContexts.push_back({ "example00","Created for demo purpose.", NGame::Context(),GraphicMain(), Scene() });
 	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
-		if (!it->engine.init(this->device, this->context, 700,700, 256, 256)) {
+		if (!it->engine.init(this->device, this->context,1024,1024, 256, 256,it->scene.m_camMain.getFOV())) {
 			std::cout << "GraphicMain failed to init" << std::endl;
 		}
 		it->gameContext.init(& it->scene);

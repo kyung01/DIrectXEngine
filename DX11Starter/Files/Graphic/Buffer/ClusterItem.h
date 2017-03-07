@@ -12,9 +12,14 @@ namespace NGraphic {
 			byte light;
 			byte decal;
 			byte probe;
+<<<<<<< HEAD
 			byte dummy;
 
 
+=======
+			//8 buts, to match up with GPU constant buffer
+			byte dummy;
+>>>>>>> origin/master
 		};
 	}
 

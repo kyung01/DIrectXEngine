@@ -28,7 +28,7 @@ namespace NGraphic {
 			//MAT_VIEW_POINTLIGHT_Y_PLUS, MAT_VIEW_POINTLIGHT_Y_MINUS,
 			//MAT_VIEW_POINTLIGHT_Z_PLUS, MAT_VIEW_POINTLIGHT_Z_MINUS,
 			matWorld, matView, matProj;
-		static void SET_MATRIX(ISimpleShader *shader, std::string name,  XMMATRIX matrix);
+		static void SET_MATRIX(ISimpleShader *shader, std::string name, XMMATRIX matrix);
 		static void RENDER_LIGHTS(ID3D11DeviceContext * context, SimpleVertexShader& shaderVertSimpleColor, SimpleFragmentShader& DshaderFrag, Mesh& mesh, XMMATRIX& worldMatrix);
 	public:
 		

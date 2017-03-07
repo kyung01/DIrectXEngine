@@ -99,7 +99,7 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 	return true;
 }
 void GraphicMain::updateBufferLightPrameter(
-	ID3D11DeviceContext *context, ID3D11Buffer* buffer, std::list<std::shared_ptr<NScene::Light>>& lights)
+	ID3D11DeviceContext *context,  std::list<std::shared_ptr<NScene::Light>>& lights)
 {
 	int index = 0;
 	NBuffer::LightParameter parameter;
@@ -115,11 +115,10 @@ void GraphicMain::updateBufferLightPrameter(
 		parameter.topLeftY = info.topLeftY;
 		parameter.viewPortWidth = info.viewportWidth;
 		parameter.viewPortHeight = info.viewportHeight;
-		m_lightBuffer->setData(parameter, index++);
+		m_bufferLight->setData(parameter, index++);
 
 		//parameter.inverseViewProjX
 	}
-	m_lightBuffer->setData(context, buffer);
 	
 }
 
@@ -216,8 +215,10 @@ GraphicMain::GraphicMain()
 {
 }
 bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context, 
-	int width, int height, int textureIndirectLightWidth, int textureIndirectLightHeight)
+	int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight,
+	float mainCameraFov)
 {
+<<<<<<< HEAD
 	float 
 		NEAR_DISTANCE(1),
 		FAR_DISTANCE(10),
@@ -232,9 +233,22 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	m_frustum.init(3.14 / 2, NEAR_DISTANCE, FAR_DISTANCE, X_DIIVIDE, Y_DIVIDE, Z_DIVIDE);
 	m_bufferDataTranslator = std::make_shared<BufferDataTranslator>(X_DIIVIDE* Y_DIVIDE* Z_DIVIDE, CLUSTER_ITEM_SIZE);
 	m_lightBuffer = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(10);
+=======
+	this->m_width = textureWidth;
+	this->m_height = textureHeight;
+	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
+	m_rsm_flux_eye_perspective_height = textureIndirectLightHeight;
+	m_frustum.init(mainCameraFov,1.0, 10, 10, 10, 10);
+	m_bufferClusterIndex = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::ClusterIndex>>(10 * 10 * 10);
+	m_bufferClusterItems = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::ClusterItem>>(10 * 10 * 10);
+
+	m_bufferLight = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(256);
+	m_bufferDecal = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::DecalParameter>>(256);
+	m_bufferProbe = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::ProbeParameter>>(256);
+>>>>>>> origin/master
 
 	if (
-		!initTextures(device,context,width,height, textureIndirectLightWidth, textureIndirectLightHeight)
+		!initTextures(device,context,textureWidth,textureHeight, textureIndirectLightWidth, textureIndirectLightHeight)
 		
 		) return false;
 
@@ -251,17 +265,48 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 {
 	m_bufferDataTranslator->constrcut();
 	m_frustum.testBegin();
+	auto viewMatrix = scene.m_camMain.getViewMatrix();
+	//auto viewMatrix = Matrix::Identity;
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		auto &light = **it;
+		Vector3 lightPos = XMVector3Transform(light.m_pos, viewMatrix);
+		Vector3 lightPosLook = XMVector3Transform(light.m_pos + light.m_dirLook, viewMatrix);
+		Vector3 lightLookDir = lightPosLook-lightPos;
 		switch (light.m_lightType) {
 		case NScene::POINTLIGHT:
-			m_frustum.testPointlight(light.m_pos, light.m_lightDistance);
+			m_frustum.testPointlight(lightPos, light.m_lightDistance);
 			break;
 		case NScene::SPOTLIGHT:
-			m_frustum.testSpotlight(light.m_pos,light.m_dirLook, light.m_lightDistance,light.getFOV());
+			m_frustum.testSpotlight(lightPos, lightLookDir, 
+				light.m_lightDistance,light.getFOV());
 			break;
 		}
 	}
+<<<<<<< HEAD
+=======
+	{
+		//int ARR_MAX_CLUSTER_INDEX = m_frustum.m_size.x*m_frustum.m_size.y*m_frustum.m_size.z;
+		//int ARR_MAX_CLUSTER_ITEM = ARR_MAX_CLUSTER_INDEX;
+		//NBuffer::ClusterIndex * arrClusterIndexs	= new NBuffer::ClusterIndex[ARR_MAX_CLUSTER_INDEX];
+		//NBuffer::ClusterItem * arrClusterItems		= new NBuffer::ClusterItem[ARR_MAX_CLUSTER_ITEM];
+
+		//delete arrClusterIndexs;
+		//delete arrClusterItems;
+	}
+	bool newLightInfo = false;
+	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
+		if (m_lightInfos.find(it->get()->m_id) != m_lightInfos.end()) continue;
+		m_lightInfos[it->get()->m_id] = getLightInfo(device);
+		newLightInfo = true;
+	}
+	if (newLightInfo)
+		updateLightAtlas(scene.objs_lights);
+	updateBufferLightPrameter(context, scene.objs_lights);
+
+
+	m_frustum.testReconstruction(m_bufferClusterIndex->getData(), m_bufferClusterItems->getData(), m_bufferClusterItems->getSize());
+
+>>>>>>> origin/master
 }
 
 
@@ -273,6 +318,19 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 
 
 
+void NGraphic::GraphicMain::renderUpdate(ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NGame::Context & game)
+{
+
+	m_bufferClusterIndex->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0));
+	//m_bufferClusterItems->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1));
+	//m_bufferLight->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2));
+	//m_bufferDecal->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(3));
+	//m_bufferProbe->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(4));
+	//asset.m_shadersFrag[RENDER_TEST]->set
+	m_bufferLight->setData(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0));
+	
+}
+
 void NGraphic::GraphicMain::render(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
 	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
@@ -280,24 +338,17 @@ void NGraphic::GraphicMain::render(
 	)
 {
 	NScene::Scene & scene = *game.m_scene;
-
-	bool newLightInfo = false;
-	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
-		if (m_lightInfos.find(it->get()->m_id) != m_lightInfos.end()) continue;
-		m_lightInfos[it->get()->m_id] = getLightInfo(device);
-		newLightInfo = true;
-	}
-	if(newLightInfo)
-		updateLightAtlas(scene.objs_lights);
-	updateBufferLightPrameter(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0)   ,scene.objs_lights);
-
+	//scene.m_camMain.getProjectionMatrix(512, 512);
+	renderUpdate(device, context, asset, game);
+	
 	m_renderTextureDummy.setRenderTargetView(target, viewport);
 	m_depthTextureDummy.setDepthStencilView(targetDepth);
 	m_renderTextureDummy.clear(context, 0, 0, 0, 0);
 	m_depthTextureDummy.clear(context);
-	DirectX::SimpleMath::Matrix matSceneMvpFirstPerson = 
-		scene.m_camMain.getProjectionMatrix(viewport.Width, viewport.Height) *
-		scene.m_camMain.getViewMatrix() * scene.m_camMain.getModelMatrix();
+	auto matProjectionScreen = XMMatrixPerspectiveFovLH(scene.m_camMain.getFOV(), viewport.Width / viewport.Height, 0.1, 1000);
+	//DirectX::SimpleMath::Matrix matSceneMvpFirstPerson = 
+	//	scene.m_camMain.getProjectionMatrix(viewport.Width, viewport.Height) *
+	//	scene.m_camMain.getViewMatrix() * scene.m_camMain.getModelMatrix();
 	
 	if(true){
 		beginRendering(context);
@@ -393,7 +444,8 @@ void NGraphic::GraphicMain::render(
 		auto lightWorldMatirx = DirectX::XMMatrixMultiply(worldMatrixFrustum, it->get()->getModelMatrix());
 
 
-		DirectX::XMMATRIX lightMVP = DirectX::XMMatrixMultiply(light.getViewMatrix(), light.getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight()));
+		DirectX::XMMATRIX lightMVP = DirectX::XMMatrixMultiply(
+			light.getViewMatrix(), light.getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight()));
 		if (true) {
 			m_depthTextureDummy.clear(context);
 			m_depthTextures[DEPTH_FINAL]->clear(context);

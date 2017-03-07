@@ -28,6 +28,15 @@ cbuffer ProbeParameter : register(b4)
 
 cbuffer global : register(b5)
 {
+	matrix cameraViemMatrix; // to translate world position to camera's view matrix
+	float FOV; 
+	float Z_NEAR;
+	float Z_FAR;
+	int CLUSTER_X_DIVISON; //16 b
+	int CLUSTER_Y_DIVISON;
+	int CLUSTER_Z_DIVISON;
+	int dummy;//16 b
+
 	//LightParameter lightParameter[10];
 };
 // Defines the input to this pixel shader
@@ -35,7 +44,7 @@ cbuffer global : register(b5)
 struct VertexToPixel
 {
 	float4 position		: SV_POSITION;
-	float4 worldPos		: POSITION;
+	float3 worldPos		: POSITION;
 };
 
 
@@ -43,6 +52,7 @@ struct VertexToPixel
 // Entry point for this pixel shader
 float4 main(VertexToPixel input) : SV_TARGET
 {
+	//float4 posFfromCamera = mul(float4(input.worldPos, 1.0f), cameraViemMatrix);
 	float3 color = float3(0,0,0);
 	for (int i = 0; i < 5; i++) {
 		LightParameter light0 = lightParameter[i];
