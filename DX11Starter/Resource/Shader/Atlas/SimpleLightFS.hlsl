@@ -28,6 +28,13 @@ cbuffer ProbeParameter : register(b4)
 
 cbuffer global : register(b5)
 {
+	matrix viewMatrix;
+	int frustumX, frustumY, frustumZ;
+	float eyeNear;
+	float eyeFar;
+	float eyeFov;
+	float dummy00;
+	float dummy01;
 	//LightParameter lightParameter[10];
 };
 // Defines the input to this pixel shader

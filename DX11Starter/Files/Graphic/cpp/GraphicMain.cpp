@@ -246,7 +246,6 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	return true;
 }
 
-
 void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene)
 {
 	//m_bufferDataTranslator->constrcut();
