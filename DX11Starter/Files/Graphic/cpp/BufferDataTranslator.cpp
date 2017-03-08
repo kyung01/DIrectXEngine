@@ -10,6 +10,10 @@ NGraphic::BufferDataTranslator::BufferDataTranslator(int clusterSize, int cluste
 	m_lights = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(lightMax);
 	m_decals = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::DecalParameter>>(decalMax);
 	m_probes = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::ProbeParameter>>(probeMax);
+
+
+
+
 	//m_arrClusterIndexs = std::make_shared<NBuffer::ClusterIndex*>(new NBuffer::ClusterIndex[clusterSize]);
 	//m_arrClusterItems = std::make_shared<NBuffer::ClusterItem*>(new NBuffer::ClusterItem[lightItemMax]);
 }
@@ -19,18 +23,23 @@ void BufferDataTranslator::constrcut()
 {
 	int lightCount = 1, decalCount = 22, probeCount = 33;
 	unsigned int myCount = 0;
-	myCount |= lightCount;
-	myCount <<= 8;
-	myCount |= decalCount;
+	myCount |= 0;
 	myCount <<= 8;
 	myCount |= probeCount;
 	myCount <<= 8;
-	myCount |= 0;
+	myCount |= decalCount;
+	myCount <<= 8;
+	myCount |= lightCount;
 	byte *myCounts = new byte[4];
 	myCounts[0] = myCount >> 24;
 	myCounts[1] = myCount >> 16;
 	myCounts[2] = myCount >> 8;
 	myCounts[3] = myCount >> 0;
+
+	int a = (myCount >> (8 * 0)) & 0xff;
+	int b = (myCount >> (8 * 1)) & 0xff;
+	int c = (myCount >> (8 * 2)) & 0xff;
+	std::cout << " A B C " << a << " , " << b << " , " << c << std::endl;
 
 	for (int i = 0; i < 4; i++) {
 		std::cout << "NUM " << i << " : " << (int)myCounts[i] << "\n";
@@ -93,6 +102,10 @@ void NGraphic::BufferDataTranslator::translate(std::vector<NFrustum::Cluster>& c
 
 }
 
-void NGraphic::BufferDataTranslator::transfer(ID3D11Buffer * bufferClusterIndex, ID3D11Buffer * bufferClusterItem, ID3D11Buffer * bufferLights, ID3D11Buffer * bufferDecals, ID3D11Buffer * bufferProbes)
+void NGraphic::BufferDataTranslator::transfer(ID3D11DeviceContext * context, 
+	ID3D11Buffer * bufferClusterIndex, ID3D11Buffer * bufferClusterItem, ID3D11Buffer * bufferLights, ID3D11Buffer * bufferDecals, ID3D11Buffer * bufferProbes)
 {
+	m_clusterIndexs.get()->setData(context, bufferClusterIndex);
+	m_clusterItems.get()->setData(context, bufferClusterItem);
+	m_lights.get()->setData(context, bufferLights);
 }

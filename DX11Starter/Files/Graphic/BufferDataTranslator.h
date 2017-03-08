@@ -36,7 +36,7 @@ namespace NGraphic {
 		void constrcut();
 		void translate(std::vector<NFrustum::Cluster> &cluster);
 		void translate(std::list<std::shared_ptr<NScene::Light>>& lights, std::map<int, LightInfo> &m_lightInfos);
-		void transfer(ID3D11Buffer* bufferClusterIndex, ID3D11Buffer* bufferClusterItem, ID3D11Buffer* bufferLights, ID3D11Buffer* bufferDecals, ID3D11Buffer* bufferProbes);
+		void transfer(ID3D11DeviceContext * context, ID3D11Buffer* bufferClusterIndex, ID3D11Buffer* bufferClusterItem, ID3D11Buffer* bufferLights, ID3D11Buffer* bufferDecals, ID3D11Buffer* bufferProbes);
 	};
 	
 
