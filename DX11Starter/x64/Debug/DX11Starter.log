@@ -1,0 +1,7 @@
+﻿  BufferDataTranslator.cpp
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\bufferdatatranslator.cpp(81): warning C4267: '=': conversion from 'size_t' to 'byte', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\bufferdatatranslator.cpp(82): warning C4267: '=': conversion from 'size_t' to 'byte', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\bufferdatatranslator.cpp(83): warning C4267: '=': conversion from 'size_t' to 'byte', possible loss of data
+c:\users\kyunghwan chang\documents\github\directxengine\dx11starter\files\graphic\cpp\bufferdatatranslator.cpp(77): warning C4101: 'item': unreferenced local variable
+  DX11Starter.vcxproj -> C:\Users\kyunghwan chang\Documents\GitHub\DIrectXEngine\DX11Starter\x64\Debug\DX11Starter.exe
+  DX11Starter.vcxproj -> C:\Users\kyunghwan chang\Documents\GitHub\DIrectXEngine\DX11Starter\x64\Debug\DX11Starter.pdb (Full PDB)

@@ -31,7 +31,6 @@ namespace NGraphic {
 			float m_near;
 			float m_far;
 			Vector3 m_size;
-			float m_angle;
 			float m_division;
 			std::vector<ClusterAABB> m_cubes;
 			std::vector<DirectX::SimpleMath::Plane> planesX, planesY, planesZ;

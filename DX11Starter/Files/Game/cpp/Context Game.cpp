@@ -7,6 +7,14 @@ NGame::Context::Context()
 float cosMag = 0;
 void NGame::Context::update(float timeElapsed)
 {
+	for (auto it = m_entities.begin(); it != m_entities.end(); it++) {
+		(*it)->update(*this, timeElapsed);
+	}
+
+	for (auto it = m_lights.begin(); it != m_lights.end(); it++) {
+		(*it)->update(*this, timeElapsed);
+	}
+	return;
 	cosMag += timeElapsed*0.2;
 
 	Vector3 pos = Vector3(0, 0, 5) + Vector3(cos(cosMag), sin(cosMag) * 2, 0);
@@ -32,17 +40,11 @@ void NGame::Context::update(float timeElapsed)
 
 
 
-	for (auto it = m_entities.begin(); it != m_entities.end(); it++) {
-		(*it)->update(*this, timeElapsed);
-	}
-
-	for (auto it = m_lights.begin(); it != m_lights.end(); it++) {
-		(*it)->update(*this, timeElapsed);
-	}
 }
 void Context::init(NGraphic::NScene::Scene * scene)
 {
 	m_scene = scene;
+	return;
 	//auto sphere00 = scene->getObjSolid();
 	//sphere00->m_meshId = NGraphic::MESH_ID_SPHERE;
 	//sphere00->setScale(Vector3(2.0f));

@@ -101,25 +101,6 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 void GraphicMain::updateBufferLightPrameter(
 	ID3D11DeviceContext *context, ID3D11Buffer* buffer, std::list<std::shared_ptr<NScene::Light>>& lights)
 {
-	int index = 0;
-	NBuffer::LightParameter parameter;
-	for (auto it = lights.begin(); it != lights.end(); it++) {
-		auto &light = **it;
-		auto &info = m_lightInfos[it->get()->m_id];
-		parameter.angle = light.getFOV();
-		parameter.axis = light.m_dirLook;
-		parameter.color = light.getLightColor();
-		parameter.isSpotlight = light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT;
-		parameter.position = light.m_pos;
-		parameter.topLeftX = info.topLeftX;
-		parameter.topLeftY = info.topLeftY;
-		parameter.viewPortWidth = info.viewportWidth;
-		parameter.viewPortHeight = info.viewportHeight;
-		m_lightBuffer->setData(parameter, index++);
-
-		//parameter.inverseViewProjX
-	}
-	m_lightBuffer->setData(context, buffer);
 	
 }
 
@@ -219,19 +200,19 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	int width, int height, int textureIndirectLightWidth, int textureIndirectLightHeight)
 {
 	float 
-		NEAR_DISTANCE(0.2),
-		FAR_DISTANCE(10),
+		NEAR_DISTANCE(0.1),
+		FAR_DISTANCE(100),
 		X_DIIVIDE(10),
 		Y_DIVIDE(10),
 		Z_DIVIDE(10),
-		CLUSTER_ITEM_SIZE(256);
+		CLUSTER_ITEM_SIZE(4000);
 	this->m_width = width;
 	this->m_height = height;
 	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
 	m_rsm_flux_eye_perspective_height = textureIndirectLightHeight;
 	m_frustum.init(3.14 / 2, NEAR_DISTANCE, FAR_DISTANCE, X_DIIVIDE, Y_DIVIDE, Z_DIVIDE);
 	m_bufferDataTranslator = std::make_shared<BufferDataTranslator>(X_DIIVIDE* Y_DIVIDE* Z_DIVIDE, CLUSTER_ITEM_SIZE,256,256,256);
-	m_lightBuffer = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(10);
+	//m_lightBuffer = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(10);
 
 	if (
 		!initTextures(device,context,width,height, textureIndirectLightWidth, textureIndirectLightHeight)
@@ -250,12 +231,17 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 {
 	m_bufferDataTranslator->constrcut();
 	m_frustum.testBegin();
-	int index = 0;
+	int index =0;
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++, index++) {
 		auto &light = **it;
 		Vector3 pos = XMVector3Transform(light.m_pos, scene.m_camMain.getViewMatrix());
 		Vector3 posDirLook = XMVector3Transform(light.m_pos + light.m_dirLook, scene.m_camMain.getViewMatrix());
 		Vector3 dir = posDirLook - pos;
+		dir.Normalize();
+
+		//Vector3 pos = light.m_pos;
+		//Vector3 posDirLook = XMVector3Transform(light.m_pos + light.m_dirLook, scene.m_camMain.getViewMatrix());
+		//Vector3 dir = light.m_dirLook;
 
 		switch (light.m_lightType) {
 		case NScene::POINTLIGHT:
@@ -318,7 +304,7 @@ void NGraphic::GraphicMain::render(
 		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumX", (int)m_frustum.m_size.x);
 		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumY", (int)m_frustum.m_size.y);
 		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumZ", (int)m_frustum.m_size.z);
-		asset.m_shadersFrag[RENDER_TEST]->SetFloat("eyeFov", m_frustum.m_angle);
+		asset.m_shadersFrag[RENDER_TEST]->SetFloat("eyeFov", m_frustum.m_fov);
 		asset.m_shadersFrag[RENDER_TEST]->SetFloat("eyeNear", m_frustum.m_near);
 		asset.m_shadersFrag[RENDER_TEST]->SetFloat("eyeFar", m_frustum.m_far);
 		asset.m_shadersFrag[RENDER_TEST]->CopyAllBufferData();

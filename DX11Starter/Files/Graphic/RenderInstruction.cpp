@@ -208,8 +208,8 @@ void RenderInstruction::RENDER_DEBUG(
 	}
 	float red = 0;
 
-	float angle = -m_frustum.m_angle / 2;
-	float angleIncrease = m_frustum.m_angle / m_frustum.m_division;
+	float angle = -m_frustum.m_fov / 2;
+	float angleIncrease = m_frustum.m_fov / m_frustum.m_division;
 
 	if (false)for (auto it = m_frustum.planesX.begin(); it != m_frustum.planesX.end(); it++) {
 		auto matRotation = DirectX::XMMatrixRotationY(angle);

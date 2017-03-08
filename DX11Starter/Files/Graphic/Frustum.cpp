@@ -31,7 +31,6 @@ void Frustum::init(float angle,float nearDistance, float farDistance, int divisi
 	m_far = farDistance;
 	m_cubes.resize(divisionX*divisionY*divisionZ);
 	m_size = Vector3(divisionX, divisionY, divisionZ);
-	m_angle = angle;
 	m_division = divisionX;
 	planesX.resize(divisionX + 1);
 	planesY.resize(divisionY + 1);

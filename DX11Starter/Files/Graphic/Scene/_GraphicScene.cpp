@@ -151,6 +151,7 @@ Light::Light()
 	m_lightColor = Vector3(1, 1, 1);
 	setScale(Vector3(1, 1, 1));
 }
+
 void Light::setLightColor(Vector3 color)
 {
 	m_isLightDirty = true;

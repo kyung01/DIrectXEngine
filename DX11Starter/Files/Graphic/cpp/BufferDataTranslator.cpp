@@ -82,12 +82,17 @@ void NGraphic::BufferDataTranslator::translate(std::vector<NFrustum::Cluster>& c
 		index.decalCount = cluster[i].decal.size();
 		index.reflectionCount = cluster[i].reflection.size();
 		m_clusterIndexs->setData(index, i);
-		for (auto itLight = cluster[i].light.begin(); itLight != cluster[i].light.end() && (offset+ indexLight) < m_arrClusterItemSize; itLight++, indexLight++) {
-			m_clusterItems->m_data[offset + indexLight].light = *itLight;
+		
+
+
+
+
+		for (auto itLight = cluster[i].light.begin(); itLight != cluster[i].light.end() && (offset+ indexLight) < m_arrClusterItemSize; itLight++) {
+			m_clusterItems->m_data[offset + indexLight++].light = *itLight;
 			//m_bufferItems->setData(offset + indexLight)
 			//m_arrClusterItems.get()[offset + indexLight]->light = *itLight;
 		}
-		for (auto itDecal = cluster[i].light.begin(); itDecal != cluster[i].light.end() && (offset + indexDecal) < m_arrClusterItemSize; itDecal++, indexDecal++) {
+		for (auto itDecal = cluster[i].decal.begin(); itDecal != cluster[i].decal.end() && (offset + indexDecal) < m_arrClusterItemSize; itDecal++, indexDecal++) {
 			//m_arrClusterItems.get()[offset + indexDecal]->decal = *itDecal;
 			m_clusterItems->m_data[offset + indexDecal].decal = *itDecal;
 		}
@@ -97,8 +102,15 @@ void NGraphic::BufferDataTranslator::translate(std::vector<NFrustum::Cluster>& c
 		}
 
 		offset += max(max(indexLight, indexDecal), indexProbe);
+		//std::cout << "OFFSET AT " << offset <<  "BECAUSE" << indexLight << " , " << indexDecal<< " , " << indexProbe << std::endl;
+		//system("pause");
 		
 	}
+	//for (int i = 0; i < m_arrClusterItemSize; i++) {
+	//	std::cout << "DEBUG " << (int)m_clusterItems->m_data[i].light << " , " << (int)m_clusterItems->m_data[i].decal << " , " << (int)m_clusterItems->m_data[i].probe << " , " << std::endl;
+	//	system("pause");
+	//}
+	std::cout << "OFFSET " << offset << "\n";
 
 }
 
