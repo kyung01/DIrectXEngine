@@ -14,11 +14,13 @@ void NGame::Context::update(float timeElapsed)
 	for (auto it = m_lights.begin(); it != m_lights.end(); it++) {
 		(*it)->update(*this, timeElapsed);
 	}
-	return;
+	//return;
+
 	cosMag += timeElapsed*0.2;
 
-	Vector3 pos = Vector3(0, 0, 5) + Vector3(cos(cosMag), sin(cosMag) * 2, 0);
+	Vector3 pos = Vector3(0, 0, 5) + Vector3(cos(cosMag), sin(cosMag) * 2, 3.5*cos(cosMag*3));
 	solidLightPoint->setPos(pos.x, pos.y, pos.z);
+	return;
 	{
 		float angleX = cosMag*1.1;
 		float angleY = cosMag*1.5;
@@ -44,14 +46,18 @@ void NGame::Context::update(float timeElapsed)
 void Context::init(NGraphic::NScene::Scene * scene)
 {
 	m_scene = scene;
-	return;
 	//auto sphere00 = scene->getObjSolid();
 	//sphere00->m_meshId = NGraphic::MESH_ID_SPHERE;
 	//sphere00->setScale(Vector3(2.0f));
+	//return;
 
-
-	auto sphereLight = scene->getPointLight(Vector3(1, 1, 1), 1);
-
+	auto sphereLight = scene->getPointLight(Vector3(1, 1, 1), 1.0f);
+	auto objSolidPointLight = Light::GET_POINTLIGHT(Vector4(1, 1, 1, 1),0.5f);
+	objSolidPointLight->m_graphicObjects.push_back(sphereLight);
+	objSolidPointLight->setPos(0, 0, 5);
+	m_lights.push_back(objSolidPointLight);
+	this->solidLightPoint = objSolidPointLight;
+	return;
 
 	//auto cone = scene->getObjSolid();
 	auto coneLight = scene->getSpotLight(3.14/2,Vector3(1,1,1),1);
@@ -59,18 +65,14 @@ void Context::init(NGraphic::NScene::Scene * scene)
 	//cone->setScale(Vector3(2.0f));
 	//cone->setRotation(DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), -3.14 / 2));
 
-	auto objSolidPointLight = Light::GET_POINTLIGHT(Vector4(1, 1, 1, 1), 0.5f);
-	this->solidLightPoint = objSolidPointLight;
 	auto objSolidSpotLight = Light::GET_SPOTLIGHT(3.14159265359 /2.0f,Vector4(1, 1, 1, 1), 1.0f);
 	this->solidLightSpot = objSolidSpotLight;
 	//objSolidPointLight->m_graphicObjects.push_back(sphere00);
-	objSolidPointLight->m_graphicObjects.push_back(sphereLight);
-	objSolidPointLight->setPos(0, 0, 5);
+	
 	//objSolidSpotLight->m_graphicObjects.push_back(cone);
 	objSolidSpotLight->m_graphicObjects.push_back(coneLight);
 	objSolidSpotLight->setPos(0, 0, 5);
 
-	m_lights.push_back(objSolidPointLight);
 	m_lights.push_back(objSolidSpotLight);
 
 

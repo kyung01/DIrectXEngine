@@ -4,6 +4,9 @@ struct ClusterIndex
 	uint offset;
 	//32
 	uint lightDecalProbeCount;
+
+	uint dummyA;
+	uint dummyB;
 	//half lightCount;
 	//half decalCount;
 	//half reflectionCount;
@@ -11,6 +14,9 @@ struct ClusterIndex
 struct ClusterItem {
 
 	uint lightDecalProbeIndex;
+	uint dummyA;
+	uint dummyB;
+	uint dummyC;
 };
 struct LightParameter
 {

@@ -201,11 +201,11 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 {
 	float 
 		NEAR_DISTANCE(0.1),
-		FAR_DISTANCE(100),
+		FAR_DISTANCE(10),
 		X_DIIVIDE(10),
 		Y_DIVIDE(10),
 		Z_DIVIDE(10),
-		CLUSTER_ITEM_SIZE(4000);
+		CLUSTER_ITEM_SIZE(3200);
 	this->m_width = width;
 	this->m_height = height;
 	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
@@ -229,15 +229,31 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 
 void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene)
 {
-	m_bufferDataTranslator->constrcut();
+	//m_bufferDataTranslator->constrcut();
 	m_frustum.testBegin();
 	int index =0;
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++, index++) {
 		auto &light = **it;
-		Vector3 pos = XMVector3Transform(light.m_pos, scene.m_camMain.getViewMatrix());
-		Vector3 posDirLook = XMVector3Transform(light.m_pos + light.m_dirLook, scene.m_camMain.getViewMatrix());
-		Vector3 dir = posDirLook - pos;
+
+
+
+		//DirectX::XMFLOAT4X4 MAT_TEMP;
+		//DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(scene.m_camMain.getViewMatrix()));
+
+
+
+
+		Vector4 pos4 = XMVector3Transform(light.m_pos, scene.m_camMain.getViewMatrix());
+		Vector4 posDirLook4 = XMVector3Transform(light.m_pos + light.m_dirLook, scene.m_camMain.getViewMatrix());
+		//Vector4 dir4 = posDirLook4 - pos4;
+
+
+		Vector3 pos = light.m_pos;
+		Vector3 posDirLook = posDirLook4;
+		Vector3 dir = light.m_dirLook;
 		dir.Normalize();
+
+
 
 		//Vector3 pos = light.m_pos;
 		//Vector3 posDirLook = XMVector3Transform(light.m_pos + light.m_dirLook, scene.m_camMain.getViewMatrix());
@@ -270,7 +286,9 @@ void NGraphic::GraphicMain::render(
 	Asset& asset, NGame::Context &game	
 	)
 {
+
 	NScene::Scene & scene = *game.m_scene;
+	//std::cout << "HOW MANY LIGHTS " << scene.objs_lights.size() << std::endl;
 
 	bool newLightInfo = false;
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {

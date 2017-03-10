@@ -11,7 +11,7 @@ cbuffer ClusterList : register(b0)
 
 cbuffer ClusterItems : register(b1)
 {
-	ClusterItem clusterItems[4000];
+	ClusterItem clusterItems[3200];
 };
 cbuffer LightParameters : register(b2)
 {
@@ -54,7 +54,7 @@ int getClusterBelong(
 	float near, float far, 
 	float divX, float divY, float divZ, 
 	float4 position) {
-	position = mul(float4(position.xyz,1), eyeViewMatrix);
+	//position = mul(float4(position.xyz,1), eyeViewMatrix);
 
 	float x = position.x;
 	float y = position.y;
@@ -70,7 +70,7 @@ int getClusterBelong(
 	float idY = floor(max(0, -y / (abs(dirVrtEnd - dirVrtBegin) / divY)));
 	float idZ = floor(max(0, z / (abs(far - near) / divZ)));
 
-	return floor(x + y*(divX)+z*(divX*divY));
+	return idX +idY*(divX) +idZ*(divX*divY);
 }
 
 // Entry point for this pixel shader
@@ -87,49 +87,54 @@ float4 main(VertexToPixel input) : SV_TARGET
 	ClusterIndex clusterIndex = clusterIndexs[clusterID];
 
 
-	int clusterItemOffset = clusterIndex.offset;
-	int clusterItemLightCount = (clusterIndex.lightDecalProbeCount >> (8 * 0)) & 0xff;
-	int clusterItemDecalCount = (clusterIndex.lightDecalProbeCount >> (8 * 1)) & 0xff;
-	int clusterItemProbeCount = (clusterIndex.lightDecalProbeCount >> (8 * 2)) & 0xff;
+	uint clusterItemOffset = clusterIndex.offset;
+	uint clusterItemLightCount = (clusterIndex.lightDecalProbeCount >> (8 * 0)) & 0xff;
+	uint clusterItemDecalCount = (clusterIndex.lightDecalProbeCount >> (8 * 1)) & 0xff;
+	uint clusterItemProbeCount = (clusterIndex.lightDecalProbeCount >> (8 * 2)) & 0xff;
 
 	float3 color = float3(0,0,0);
 
 
 	for (int i = 0; i < clusterItemLightCount; i++) {
-		int lightIndex =  ((clusterItems[clusterItemOffset+i].lightDecalProbeIndex >> (8 * 0)) & 0xff);
-		
-		LightParameter light0 = lightParameter[lightIndex];
-		color += light0.color * spotLight(light0.position, light0.axis, light0.angle*0.5, light0.angle, input.worldPos);
+		//int lightIndex = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex >> (8 * 0)) & 0xff);
+		int lightIndex2222 = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex ) & 0xff);
+		//int lightIndex2 = ((clusterItems[clusterItemOffset + i+1].lightDecalProbeIndex ) & 0xff);
+
+		LightParameter light0 = lightParameter[lightIndex2222];
+		//LightParameter light1 = lightParameter[lightIndex+1];
+		if(light0.isSpotlight)
+			color += light0.color * spotLight(light0.position, light0.axis, light0.angle*0.5, light0.angle, input.worldPos);
+		else {
+			color += light0.color * (1.0f/(1+length(light0.position- input.worldPos) ) );// spotLight(lightPos, lightDir, lightInner, lightOutter, position);
+		}
+			//color += light1.color * spotLight(light1.position, light1.axis, light1.angle*0.5, light1.angle, input.worldPos);
 		//break;
-	}							
-	if (clusterItemLightCount >= 2) {
-		int lightIndexA = (clusterItems[clusterItemOffset + 0].lightDecalProbeIndex >> (8 * 0)) & 0xff;
-		int lightIndex = (clusterItems[clusterItemOffset + 1].lightDecalProbeIndex >> (8 * 0)) & 0xff;
-		//return float4(lightIndexA, lightIndex, 0.3f, 1);
-	}
-	//color *= 0.00001f;
-	//for (int i = 0; i < 2; i++) {
+	}	
+
+	//color *= 0.0001f;
+	//
+	//int clusterColor = clusterID % 4;
+	//
+	//if (clusterColor == 0) {
+	//	color += float3(1, 0, 0);
+	//}
+	//else if (clusterColor == 1) {
+	//
+	//	color += float3(0, 1, 0);
+	//}
+	//else if (clusterColor == 2) {
+	//
+	//	color += float3(0, 0, 1);
+	//}
+	//else if (clusterColor == 3) {
+	//
+	//	color += float3(1, 1, 0);
+	//}
+	//for (int i = 0; i < 3; i++) {
 	//	LightParameter light0 = lightParameter[i];
 	//	color += light0.color * spotLight(light0.position, light0.axis, light0.angle*0.5, light0.angle, input.worldPos);
 	//}
-	/*
-	if (clusterItemLightCount == 1) {
-		return float4(1, 0, 1, 1);
-	}
-	else if (clusterItemLightCount == 0) {
-		return float4(0.1f, 0.1f, 0.1f, 1);
-	}
-	else if (clusterItemLightCount == 2) {
-		return float4(1.1f, 1.1f, 0.1f, 1);
-	}
-	else if (clusterItemLightCount == 3) {
-		return float4(.5f, .5f, 0.5f, 1);
-	}
-	*/
-	//return float4( clusterItemLightCount,0,0,1);
-	float4 posFromCamera = mul(float4(input.worldPos.xyz,1), eyeViewMatrix);
 
-	//return float4(color + float3(0,0, clusterID /10.00f) , 1);
 	return float4(color,1);
 }
 /*

@@ -9,14 +9,16 @@
 namespace NGraphic {
 	namespace NBuffer {
 		struct ClusterIndex {
-			unsigned int offeset;	//4 byte			 
+			unsigned int offeset;	//4 byte		
+			unsigned int countLightDecalProbe;
+			unsigned int a, b;
 			//8 bits
-			byte lightCount;
-			//8 bits
-			byte decalCount;
-			//8 bits
-			byte reflectionCount;	
-			byte dummy;
+			//byte lightCount;
+			////8 bits
+			//byte decalCount;
+			////8 bits
+			//byte reflectionCount;	
+			//byte dummy;
 			
 
 

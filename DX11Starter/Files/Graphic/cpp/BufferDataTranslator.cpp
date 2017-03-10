@@ -62,8 +62,9 @@ void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& 
 		parameter.topLeftY = info.topLeftY;
 		parameter.viewPortWidth = info.viewportWidth;
 		parameter.viewPortHeight = info.viewportHeight;
-		m_lights->setData(parameter, index++);
-
+		m_lights->setData(parameter, index);
+		//std::cout << "LIGHT WAS AT " << index << std::endl;;
+		index++;
 		//parameter.inverseViewProjX
 	}
 	//m_lights->setData(context, buffer);
@@ -72,45 +73,104 @@ void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& 
 void NGraphic::BufferDataTranslator::translate(std::vector<NFrustum::Cluster>& cluster)
 {
 	int offset = 0;
-	
 	NBuffer::ClusterIndex	index;
-	NBuffer::ClusterItem	item;
 	for (int i = 0; i < m_arrClusterIndexSize; i++) {
 		int indexLight(0), indexDecal(0), indexProbe(0);
+		int lightCount (cluster[i].light.size()), decalCount(cluster[i].decal.size()), probeCount(cluster[i].reflection.size());
+
 		index.offeset = offset;
-		index.lightCount = cluster[i].light.size();
-		index.decalCount = cluster[i].decal.size();
-		index.reflectionCount = cluster[i].reflection.size();
+		//index.offeset = 0;
+
+		unsigned int myCount = 0;
+		myCount |= 0;
+		myCount <<= 8;
+		myCount |= probeCount;
+		myCount <<= 8;
+		myCount |= decalCount;
+		myCount <<= 8;
+		myCount |= lightCount;
+
+		index.countLightDecalProbe = myCount;
 		m_clusterIndexs->setData(index, i);
 		
 
 
 
+		int offsetOld = offset;
 
 		for (auto itLight = cluster[i].light.begin(); itLight != cluster[i].light.end() && (offset+ indexLight) < m_arrClusterItemSize; itLight++) {
-			m_clusterItems->m_data[offset + indexLight++].light = *itLight;
+			//m_clusterItems->m_data[offset + indexLight++].light = *itLight;
 			//m_bufferItems->setData(offset + indexLight)
 			//m_arrClusterItems.get()[offset + indexLight]->light = *itLight;
-		}
-		for (auto itDecal = cluster[i].decal.begin(); itDecal != cluster[i].decal.end() && (offset + indexDecal) < m_arrClusterItemSize; itDecal++, indexDecal++) {
-			//m_arrClusterItems.get()[offset + indexDecal]->decal = *itDecal;
-			m_clusterItems->m_data[offset + indexDecal].decal = *itDecal;
-		}
-		for (auto itProbe = cluster[i].reflection.begin(); itProbe != cluster[i].reflection.end() && (offset + indexProbe) < m_arrClusterItemSize; itProbe++, indexProbe++) {
-			//m_arrClusterItems.get()[offset + indexProbe]->probe = *itProbe;
-			m_clusterItems->m_data[offset + indexProbe].probe = *itProbe;
-		}
 
-		offset += max(max(indexLight, indexDecal), indexProbe);
-		//std::cout << "OFFSET AT " << offset <<  "BECAUSE" << indexLight << " , " << indexDecal<< " , " << indexProbe << std::endl;
+
+
+			int lightCount = *itLight, decalCount = 0, probeCount = 0;
+			unsigned int myCount = 0;
+			myCount |= 0;
+			myCount <<= 8;
+			myCount |= probeCount;
+			myCount <<= 8;
+			myCount |= decalCount;
+			myCount <<= 8;
+			myCount |= lightCount;
+
+			NBuffer::ClusterItem	item;
+			item.lightDecalProbeDummy = myCount;
+
+			m_clusterItems->setData(item, offset + indexLight++);
+		}
+		//for (auto itDecal = cluster[i].decal.begin(); itDecal != cluster[i].decal.end() && (offset + indexDecal) < m_arrClusterItemSize; itDecal++, indexDecal++) {
+		//	//m_arrClusterItems.get()[offset + indexDecal]->decal = *itDecal;
+		//	m_clusterItems->m_data[offset + indexDecal].decal = *itDecal;
+		//}
+		//for (auto itProbe = cluster[i].reflection.begin(); itProbe != cluster[i].reflection.end() && (offset + indexProbe) < m_arrClusterItemSize; itProbe++, indexProbe++) {
+		//	//m_arrClusterItems.get()[offset + indexProbe]->probe = *itProbe;
+		//	m_clusterItems->m_data[offset + indexProbe].probe = *itProbe;
+		//}
+
+		//offset += max(max(indexLight, indexDecal), indexProbe);
+		offset += indexLight;
+		if (offsetOld == offset) {
+			std::cout << "OFFSET AT " << offset << " MX AT " << m_arrClusterItemSize<<std::endl << "BECAUSE" << indexLight << " , " << indexDecal << " , " << indexProbe << std::endl;
+
+		}
+		offsetOld = offset;
 		//system("pause");
 		
 	}
-	//for (int i = 0; i < m_arrClusterItemSize; i++) {
-	//	std::cout << "DEBUG " << (int)m_clusterItems->m_data[i].light << " , " << (int)m_clusterItems->m_data[i].decal << " , " << (int)m_clusterItems->m_data[i].probe << " , " << std::endl;
-	//	system("pause");
-	//}
-	std::cout << "OFFSET " << offset << "\n";
+	std::cout << "OFFSET ENDED AT " << offset <<std::endl ;;// " MX AT " << m_arrClusterItemSize << std::endl << "BECAUSE" << indexLight << " , " << indexDecal << " , " << indexProbe << std::endl;
+
+	int lightValue = 0 ;
+	/*
+	for (int i = 0; i < m_arrClusterItemSize; i++) {
+	
+		int  decalCount = 22, probeCount = 33;
+		unsigned int myCount = 0;
+		myCount |= 0;
+		myCount <<= 8;
+		myCount |= probeCount;
+		myCount <<= 8;
+		myCount |= decalCount;
+		myCount <<= 8;
+		myCount |= lightValue;
+		lightValue += 1;
+		if (lightValue == 2) {
+			lightValue = 0;
+		}
+
+		NBuffer::ClusterItem	item;
+		item.lightDecalProbeDummy = myCount;
+
+		m_clusterItems->setData(item, i);
+		
+		int lightIndex = ((item.lightDecalProbeDummy) & 0xff);
+		//std::cout << lightIndex << " , " << std::endl;
+		//std::cout << "DEBUG " << (int)m_clusterItems->m_data[i].light << " , " << (int)m_clusterItems->m_data[i].decal << " , " << (int)m_clusterItems->m_data[i].probe << " , " << std::endl;
+		//system("pause");
+	}
+	*/
+	//std::cout << "OFFSET " << offset << "\n";
 
 }
 

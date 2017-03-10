@@ -9,10 +9,12 @@
 namespace NGraphic {
 	namespace NBuffer {
 		struct ClusterItem {
-			byte light;
-			byte decal;
-			byte probe;
-			byte dummy;
+			unsigned int lightDecalProbeDummy;
+			unsigned int a, b, c;
+			//byte light;
+			//byte decal;
+			//byte probe;
+			//byte dummy;
 
 
 		};
