@@ -25,10 +25,11 @@ struct LightParameter
 	float3 axis;
 	float angle;
 	float3 color;
+	float dummy;				// 4
 	float topLeftX, topLeftY, viewPortWidth, viewPortHeight;
-	matrix inverseViewProjX; //used to get depth information;
-	matrix inverseViewProjY; //used to get depth information;
-	matrix inverseViewProjZ; //used to get depth information;
+	matrix matLight; //used to get depth information;
+	//matrix inverseProjectionViewMatrix; //used to get depth information;
+	//matrix inverseViewProjZ; //used to get depth information;
 };
 
 struct DecalParameter {

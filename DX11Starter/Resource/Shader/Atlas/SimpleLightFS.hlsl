@@ -54,7 +54,7 @@ int getClusterBelong(
 	float near, float far, 
 	float divX, float divY, float divZ, 
 	float4 position) {
-	//position = mul(float4(position.xyz,1), eyeViewMatrix);
+	position = mul(float4(position.xyz,1), eyeViewMatrix);
 
 	float x = position.x;
 	float y = position.y;
@@ -84,6 +84,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float3 dirHorizontal	= float3(-x, 0, z);
 	float3 dirVertical		= float3(0, x, z);
 	int clusterID = getClusterBelong(-x, x,  x, -x, eyeNear, eyeFar, frustumX, frustumY, frustumZ,float4(input.worldPos) );
+	
 	ClusterIndex clusterIndex = clusterIndexs[clusterID];
 
 
@@ -97,7 +98,9 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 	for (int i = 0; i < clusterItemLightCount; i++) {
 		//int lightIndex = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex >> (8 * 0)) & 0xff);
-		int lightIndex2222 = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex ) & 0xff);
+		int lightIndex2222 = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex ) & 0xff);	
+		
+		//lightIndex2222 = 0;
 		//int lightIndex2 = ((clusterItems[clusterItemOffset + i+1].lightDecalProbeIndex ) & 0xff);
 
 		LightParameter light0 = lightParameter[lightIndex2222];
@@ -107,9 +110,19 @@ float4 main(VertexToPixel input) : SV_TARGET
 		else {
 			color += light0.color * (1.0f/(1+length(light0.position- input.worldPos) ) );// spotLight(lightPos, lightDir, lightInner, lightOutter, position);
 		}
-			//color += light1.color * spotLight(light1.position, light1.axis, light1.angle*0.5, light1.angle, input.worldPos);
-		//break;
+		float4 posFromLightPerspective = mul(float4(input.worldPos.xyz, 1.0f), light0.matLight);
+		posFromLightPerspective /= posFromLightPerspective.w;
+		float2 uv = float2((posFromLightPerspective.x + 1) / 2.0f, 1-(posFromLightPerspective.y + 1) / 2.0f);
+		uv.x = light0.topLeftX +uv.x * light0.viewPortWidth;
+		uv.y = light0.topLeftY + (uv.y) * light0.viewPortHeight;
+		uv /= 1024.0f;
+		float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv);
+		//color.xyz += lightBaked.xyz * 0.1f;
+
 	}	
+	//if (clusterItemLightCount >= 3) {
+	//	color += float4(0.3f, 0.3f, 0.3f, 0);
+	//}
 
 	//color *= 0.0001f;
 	//

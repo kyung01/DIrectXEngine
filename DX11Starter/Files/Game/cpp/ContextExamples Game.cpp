@@ -95,7 +95,7 @@ void NGame::LoadExample00(Context &context)
 		auto lightObj = context.m_scene->getSpotLight(3.14/2, Vector3(20,0,0),10000);
 		auto lightEntity = new Entity();
 		lightEntity->m_graphicObjects.push_back(lightObj);
-		lightEntity->setPos(-2.0, 0, 1.5);
+		lightEntity->setPos(0.0, 0, 0.0);
 		lightObj->setLightColor(20,0,0);
 		lightObj->setScale(Vector3(15, 15, 15));
 		context.addEntity(std::shared_ptr<Entity>(lightEntity));

@@ -77,7 +77,7 @@ namespace NGraphic {
 			NScene::Scene& scene,
 			RenderTexture & renderTexture, DepthTexture & depthTexture,
 			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix, 
-			
+			RenderTexture & lightAtlas,
 			ID3D11Buffer *lightParameters
 		);//rendering the normal scene
 

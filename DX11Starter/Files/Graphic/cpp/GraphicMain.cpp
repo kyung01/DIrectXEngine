@@ -150,16 +150,17 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 	beginRendering(context);
 	auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
 	m_renderTextures[TARGET_LIGHT_ATLAS]->clear(context,0,0,0,1);
+	m_depthTextures[DEPTH_LIGHT_ATLAS]->clear(context);
 	//m_depthTextures[DEPTH_LIGHT_ATLAS]->clear(context);
 
 
-	m_depthTextures[DEPTH_LIGHT_ATLAS]->clear(context);
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		auto &light = **it;
 		auto &lightInfo = m_lightInfos[light.m_id];
 		//What kinds of lights are there ?
 		//if (light.m_lightType != NScene::LIGHT_TYPE::SPOTLIGHT) continue;
-		
+		std::cout << "\nlightInfo.topLeftX" << lightInfo.topLeftX << " AND " << "lightInfo.viewportWidth" << lightInfo.viewportWidth << " \n";
+		std::cout << "\nlightInfo.topLeftY" << lightInfo.topLeftY << " AND " << "lightInfo.viewportHE" << lightInfo.viewportHeight << " \n";
 		if(light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT)
 			RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 			device, context, asset,
@@ -201,7 +202,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 {
 	float 
 		NEAR_DISTANCE(0.1),
-		FAR_DISTANCE(10),
+		FAR_DISTANCE(100),
 		X_DIIVIDE(10),
 		Y_DIVIDE(10),
 		Z_DIVIDE(10),
@@ -243,15 +244,16 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 
 
 
-		Vector4 pos4 = XMVector3Transform(light.m_pos, scene.m_camMain.getViewMatrix());
-		Vector4 posDirLook4 = XMVector3Transform(light.m_pos + light.m_dirLook, scene.m_camMain.getViewMatrix());
-		//Vector4 dir4 = posDirLook4 - pos4;
-
-
-		Vector3 pos = light.m_pos;
-		Vector3 posDirLook = posDirLook4;
-		Vector3 dir = light.m_dirLook;
+		Vector3 pos = XMVector3Transform(light.m_pos, scene.m_camMain.getViewMatrix());
+		Vector3 posDirLook = XMVector3Transform(light.m_pos + light.m_dirLook, scene.m_camMain.getViewMatrix());
+		Vector3 dir = posDirLook - pos;
 		dir.Normalize();
+		//std::cout << index << " pos : " << pos.x << " " << pos.y << " " << pos.z << "\n";
+		//std::cout << index << " dir : " << dir.x << " " << dir.y << " " << dir.z << "\n";
+
+		//Vector3 pos = light.m_pos;
+		//Vector3 posDirLook = posDirLook4;
+		//Vector3 dir = light.m_dirLook;
 
 
 
@@ -328,6 +330,14 @@ void NGraphic::GraphicMain::render(
 		asset.m_shadersFrag[RENDER_TEST]->CopyAllBufferData();
 	}
 
+	auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
+	auto worldMatrixFrustum = DirectX::SimpleMath::Matrix::CreateRotationX(3.14 / 2);
+	auto viewMatirx = scene.m_camMain.getViewMatrix();
+	auto projMatrix = scene.m_camMain.getProjectionMatrix(m_width, m_height);
+	m_renderTextures[TARGET_TEST]->clear(context, 0, 0, 0, 0);
+	m_depthTextures[DEPTH_TEST]->clear(context);
+	//now start rendering real stuff
+
 	//updateBufferLightPrameter(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0)   ,scene.objs_lights);
 
 	m_renderTextureDummy.setRenderTargetView(target, viewport);
@@ -337,7 +347,13 @@ void NGraphic::GraphicMain::render(
 	DirectX::SimpleMath::Matrix matSceneMvpFirstPerson = 
 		scene.m_camMain.getProjectionMatrix(viewport.Width, viewport.Height) *
 		scene.m_camMain.getViewMatrix() * scene.m_camMain.getModelMatrix();
-	
+
+	beginRendering(context);
+	endRendering(context);
+	renderLightAtlas(device, context, asset, *game.m_scene);
+	RenderInstruction::RENDER_TEST(device, context, asset, scene, *m_renderTextures[TARGET_TEST], *m_depthTextures[DEPTH_TEST], 
+		worldMatrix, viewMatirx, projMatrix, *m_renderTextures[TARGET_LIGHT_ATLAS], 0);
+
 	if(true){
 		beginRendering(context);
 		m_renderTextureDummy.clear(context, 0, 0, 0, 0);
@@ -387,11 +403,6 @@ void NGraphic::GraphicMain::render(
 		endRendering(context);
 	}
 
-	auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
-	auto worldMatrixFrustum = DirectX::SimpleMath::Matrix::CreateRotationX(3.14 / 2);
-	auto viewMatirx = scene.m_camMain.getViewMatrix();
-	auto projMatrix = scene.m_camMain.getProjectionMatrix(m_width, m_height);
-	
 	//context->OMSetBlendState(asset.BLEND_STATE_, 0, 0xffffffff);
 	//context->RSSetState(asset.RASTR_STATE_CULL_BACK);
 	RenderInstruction::RENDER_WORLD_NORMAL_DIFFUSE(
@@ -402,17 +413,12 @@ void NGraphic::GraphicMain::render(
 		*m_renderTextures[TARGET_PROPERTY],
 		*m_depthTextures[DEPTH_WORLD],
 		worldMatrix);
-	m_renderTextures[TARGET_TEST]->clear(context, 0, 0, 0, 0);
-	m_depthTextures[DEPTH_TEST]->clear(context);
-	RenderInstruction::RENDER_TEST(device, context, asset, scene, *m_renderTextures[TARGET_TEST], *m_depthTextures[DEPTH_TEST], worldMatrix, viewMatirx, projMatrix, 0);
-	//now start rendering real stuff
 	
 
 	m_renderTextures[TARGET_FINAL]->clear(context, 0, 0, 0, 1);
 	
 
 	
-	renderLightAtlas(device, context, asset, *game.m_scene);
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 	
 

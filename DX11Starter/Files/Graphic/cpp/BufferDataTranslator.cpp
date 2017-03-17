@@ -62,6 +62,18 @@ void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& 
 		parameter.topLeftY = info.topLeftY;
 		parameter.viewPortWidth = info.viewportWidth;
 		parameter.viewPortHeight = info.viewportHeight;
+
+
+		auto matViewProj = DirectX::XMMatrixMultiply(
+			light.getViewMatrix(),
+			light.getProjectionMatrix() );
+
+		DirectX::XMFLOAT4X4 MAT_TEMP;
+		DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(matViewProj));
+		parameter.matLight = MAT_TEMP;
+
+
+
 		m_lights->setData(parameter, index);
 		//std::cout << "LIGHT WAS AT " << index << std::endl;;
 		index++;
@@ -132,7 +144,7 @@ void NGraphic::BufferDataTranslator::translate(std::vector<NFrustum::Cluster>& c
 		//offset += max(max(indexLight, indexDecal), indexProbe);
 		offset += indexLight;
 		if (offsetOld == offset) {
-			std::cout << "OFFSET AT " << offset << " MX AT " << m_arrClusterItemSize<<std::endl << "BECAUSE" << indexLight << " , " << indexDecal << " , " << indexProbe << std::endl;
+			//std::cout << "OFFSET AT " << offset << " MX AT " << m_arrClusterItemSize<<std::endl << "BECAUSE" << indexLight << " , " << indexDecal << " , " << indexProbe << std::endl;
 
 		}
 		offsetOld = offset;

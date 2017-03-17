@@ -462,7 +462,12 @@ void NGraphic::RenderInstruction::RENDER_WORLD(
 
 }
 
-void RenderInstruction::RENDER_TEST(ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene, RenderTexture & renderTexture, DepthTexture & depthTexture, DirectX::SimpleMath::Matrix & worldMatrix, DirectX::SimpleMath::Matrix & viewMatrix, DirectX::SimpleMath::Matrix & projMatrix, 
+void RenderInstruction::RENDER_TEST(
+	ID3D11Device * device, ID3D11DeviceContext * context, 
+	Asset & asset, NScene::Scene & scene, 
+	RenderTexture & renderTexture, DepthTexture & depthTexture, 
+	DirectX::SimpleMath::Matrix & worldMatrix, DirectX::SimpleMath::Matrix & viewMatrix, DirectX::SimpleMath::Matrix & projMatrix, 
+	RenderTexture & lightAtlas,
 	ID3D11Buffer * lightParameters)
 {
 
@@ -502,7 +507,8 @@ void RenderInstruction::RENDER_TEST(ID3D11Device * device, ID3D11DeviceContext *
 	//shaderVert.SetMatrix4x4("view", matrixStore);
 	//DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(projMatrix)); // Transpose for HLSL!
 	//shaderVert.SetMatrix4x4("proj", matrixStore);
-	//shaderFrag.SetSamplerState("samplerWrap", asset.m_samplers[SAMPLER_ID_WRAP]);
+	shaderFrag.SetShaderResourceView("textureLightAtlas", lightAtlas.getShaderResourceView());
+	shaderFrag.SetSamplerState("sampler_default", asset.m_samplers[SAMPLER_ID_BORDER_ZERO]);
 
 	shaderVert.SetShader();
 	shaderFrag.SetShader();
@@ -524,6 +530,7 @@ void RenderInstruction::RENDER_TEST(ID3D11Device * device, ID3D11DeviceContext *
 				0, \
 				0); \
 	}
+	shaderFrag.SetShaderResourceView("textureLightAtlas", 0);
 }
 
 void NGraphic::RenderInstruction::RENDER_DIRECT_LIGHT(
@@ -614,6 +621,7 @@ void RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 	SET_MATRIX(&shaderVert, "world", worldMatrix);
 	SET_MATRIX(&shaderVert, "view", viewMatrix);
 	SET_MATRIX(&shaderVert, "proj", projMatrix);
+	shaderFrag.SetSamplerState("sampler_default", asset.m_samplers[SAMPLER_ID_WRAP]);
 
 	VIEWPORT_TEMP = renderTexture.getViewport();
 	renderTexture.setViewport(VIEWPORT);
@@ -642,6 +650,7 @@ void RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 				0); \
 	}
 }
+
 void NGraphic::RenderInstruction::RENDER_LIGHT_ATLAS_TEST(
 
 	ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
