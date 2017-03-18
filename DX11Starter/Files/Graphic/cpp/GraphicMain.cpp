@@ -106,7 +106,7 @@ void GraphicMain::updateBufferLightPrameter(
 
 void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights)
 {
-	float size = 3;
+	float size = 8;
 	
 	m_atlasSlicer->clear();
 	for (auto it = lights.begin(); it != lights.end(); it++) {
@@ -352,7 +352,7 @@ void NGraphic::GraphicMain::render(
 	endRendering(context);
 	renderLightAtlas(device, context, asset, *game.m_scene);
 	RenderInstruction::RENDER_TEST(device, context, asset, scene, *m_renderTextures[TARGET_TEST], *m_depthTextures[DEPTH_TEST], 
-		worldMatrix, viewMatirx, projMatrix, *m_renderTextures[TARGET_LIGHT_ATLAS], 0);
+		worldMatrix, viewMatirx, projMatrix, *m_depthTextures[DEPTH_LIGHT_ATLAS], 0);
 
 	if(true){
 		beginRendering(context);
@@ -496,7 +496,7 @@ void NGraphic::GraphicMain::render(
 		}
 
 	}
-	if (true) {
+	if (false) {
 		m_depthTextures[DEPTH_FINAL]->clear(context);
 		RenderInstruction::RENDER_DEBUG(
 			device, context, asset,

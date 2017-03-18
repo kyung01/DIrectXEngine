@@ -95,30 +95,42 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 	float3 color = float3(0,0,0);
 
-
+	[loop]
 	for (int i = 0; i < clusterItemLightCount; i++) {
+		float3 colorAdd = float3(0, 0, 0);
 		//int lightIndex = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex >> (8 * 0)) & 0xff);
 		int lightIndex2222 = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex ) & 0xff);	
-		
+		//if (lightIndex2222 != 1)
+		//	lightIndex2222 = 1;
 		//lightIndex2222 = 0;
 		//int lightIndex2 = ((clusterItems[clusterItemOffset + i+1].lightDecalProbeIndex ) & 0xff);
 
-		LightParameter light0 = lightParameter[lightIndex2222];
-		//LightParameter light1 = lightParameter[lightIndex+1];
-		if(light0.isSpotlight)
-			color += light0.color * spotLight(light0.position, light0.axis, light0.angle*0.5, light0.angle, input.worldPos);
-		else {
-			color += light0.color * (1.0f/(1+length(light0.position- input.worldPos) ) );// spotLight(lightPos, lightDir, lightInner, lightOutter, position);
-		}
-		float4 posFromLightPerspective = mul(float4(input.worldPos.xyz, 1.0f), light0.matLight);
+		LightParameter light = lightParameter[lightIndex2222];
+		float4 posFromLightPerspective = mul(float4(input.worldPos.xyz, 1.0f), light.matLight);
+		float lightDepth = posFromLightPerspective.w;
 		posFromLightPerspective /= posFromLightPerspective.w;
-		float2 uv = float2((posFromLightPerspective.x + 1) / 2.0f, 1-(posFromLightPerspective.y + 1) / 2.0f);
-		uv.x = light0.topLeftX +uv.x * light0.viewPortWidth;
-		uv.y = light0.topLeftY + (uv.y) * light0.viewPortHeight;
-		uv /= 1024.0f;
-		float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv);
-		//color.xyz += lightBaked.xyz * 0.1f;
+		//LightParameter light1 = lightParameter[lightIndex+1];
+		
+		if(light.isSpotlight)
+			colorAdd += light.color * spotLight(light.position, light.axis, light.angle*0.5, light.angle, input.worldPos);
+		else {
+			colorAdd += light.color * (1.0f/ pow((1+length(light.position- input.worldPos) ),2) );// spotLight(lightPos, lightDir, lightInner, lightOutter, position);
+		}
 
+		float2 uv = float2 (   (posFromLightPerspective.x *0.5+ 0.5) ,  (posFromLightPerspective.y *0.5 + 0.5f));
+		uv.x = light.topLeftX + uv.x * light.viewPortWidth;
+		uv.y = light.topLeftY + (1-uv.y) * light.viewPortHeight;
+		uv /= 1024.0f;
+		//uv.y = 1 - uv.y;
+		float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv);
+		//colorAdd += lightBaked.xyz * 1.0f
+		if (max(0, lightDepth - 0.1) < lightBaked.x) {
+
+			color += colorAdd;// * (max(0, lightDepth - 0.1)< lightBaked.x);
+		}
+		 //scolor += colorAdd;
+		//color += lightBaked.w*0.001F;
+		
 	}	
 	//if (clusterItemLightCount >= 3) {
 	//	color += float4(0.3f, 0.3f, 0.3f, 0);

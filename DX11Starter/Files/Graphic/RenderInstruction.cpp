@@ -467,7 +467,7 @@ void RenderInstruction::RENDER_TEST(
 	Asset & asset, NScene::Scene & scene, 
 	RenderTexture & renderTexture, DepthTexture & depthTexture, 
 	DirectX::SimpleMath::Matrix & worldMatrix, DirectX::SimpleMath::Matrix & viewMatrix, DirectX::SimpleMath::Matrix & projMatrix, 
-	RenderTexture & lightAtlas,
+	DepthTexture & lightAtlas,
 	ID3D11Buffer * lightParameters)
 {
 
@@ -508,16 +508,15 @@ void RenderInstruction::RENDER_TEST(
 	//DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(projMatrix)); // Transpose for HLSL!
 	//shaderVert.SetMatrix4x4("proj", matrixStore);
 	shaderFrag.SetShaderResourceView("textureLightAtlas", lightAtlas.getShaderResourceView());
-	shaderFrag.SetSamplerState("sampler_default", asset.m_samplers[SAMPLER_ID_BORDER_ZERO]);
+	shaderFrag.SetSamplerState("sampler_default", asset.m_samplers[SAMPLER_ID_BORDER_ONE]);
 
 	shaderVert.SetShader();
 	shaderFrag.SetShader();
 	for (auto it = scene.objs_solid.begin(); it != scene.objs_solid.end(); it++) {
 		\
-			NGraphic::NScene::Object& light = **it; \
-			NGraphic::Mesh& mesh = *asset.m_meshes[light.m_meshId]; \
-			DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(light.getModelMatrix())); \
-			shaderVert.SetMatrix4x4("world", matrixStore); \
+			NGraphic::NScene::Object& solidObj = **it; \
+			NGraphic::Mesh& mesh = *asset.m_meshes[solidObj.m_meshId]; 
+			SET_MATRIX(&shaderVert, "world", solidObj.getModelMatrix());
 			shaderVert.CopyAllBufferData(); \
 			shaderFrag.CopyAllBufferData(); \
 			//context->VSSetConstantBuffers(0, 1, &lightParameters);

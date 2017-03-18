@@ -10,18 +10,26 @@ void NGame::LoadExample00(Context &context)
 	{
 		auto obj = context.m_scene->getObjSolid();
 		obj.get()->m_meshId = NGraphic::MESH_ID_TORUS;
+		if (i <= 5)
+			obj.get()->m_meshId = NGraphic::MESH_ID_HELIX;
+		if (j <= 2)
+			obj.get()->m_meshId = NGraphic::MESH_ID_CUBE;
 		obj.get()->m_textures[NGraphic::TEXTURE_TYPE_DIFFUSE] = NGraphic::KEnum::TEXTURE_ID_WHITE;
 		obj.get()->m_textures[NGraphic::TEXTURE_TYPE_PROPERTY] = NGraphic::KEnum::TEXTURE_ID_RED;
 		obj.get()->m_textures[NGraphic::TEXTURE_TYPE_NORMAL] = NGraphic::KEnum::TEXTURE_ID_NORMAL_DEFAULT;// normalIds[i % 6];
 		obj.get()->m_textures[NGraphic::TEXTURE_TYPE_SPECULAR] = NGraphic::KEnum::TEXTURE_ID_WHITE;
 		obj.get()->setScale(Vector3(0.7, 0.7, 0.7));
+		if (i <= 5)
+			obj.get()->setScale(Vector3(0.2, 0.2, 0.2));
+		if (j <= 2)
+			obj.get()->setScale(Vector3(0.5, 0.5, 0.5));
 		auto e = new Entity();
 		context.addEntity(std::shared_ptr<Entity>(e));
 		e->m_graphicObjects.push_back(obj);
-		e->setPos(-5.0f + i, -2.5 + j, 6);
+		e->setPos(-5.0f + i, -2.5 + j, 1);
 		e->setRotation(Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), rand() * 100) *Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), rand() * 100)*Quaternion::CreateFromAxisAngle(Vector3(0, 0, 1), rand() * 100));
 	}
-	if (true)for (int i = 0; i < 10; i++) for (int j = 0; j < 5; j++)
+	if (false)for (int i = 0; i < 10; i++) for (int j = 0; j < 5; j++)
 	{
 		auto obj = context.m_scene->getObjSolid();
 		obj.get()->m_meshId = NGraphic::MESH_ID_TORUS;
