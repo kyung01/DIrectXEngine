@@ -468,6 +468,7 @@ void RenderInstruction::RENDER_TEST(
 	RenderTexture & renderTexture, DepthTexture & depthTexture, 
 	DirectX::SimpleMath::Matrix & worldMatrix, DirectX::SimpleMath::Matrix & viewMatrix, DirectX::SimpleMath::Matrix & projMatrix, 
 	DepthTexture & lightAtlas,
+	RenderTexture & lightAtlas2,
 	ID3D11Buffer * lightParameters)
 {
 
@@ -507,8 +508,8 @@ void RenderInstruction::RENDER_TEST(
 	//shaderVert.SetMatrix4x4("view", matrixStore);
 	//DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(projMatrix)); // Transpose for HLSL!
 	//shaderVert.SetMatrix4x4("proj", matrixStore);
-	shaderFrag.SetShaderResourceView("textureLightAtlas", lightAtlas.getShaderResourceView());
-	shaderFrag.SetSamplerState("sampler_default", asset.m_samplers[SAMPLER_ID_BORDER_ONE]);
+	shaderFrag.SetShaderResourceView("textureLightAtlas", lightAtlas2.getShaderResourceView());
+	shaderFrag.SetSamplerState("sampler_default", asset.m_samplers[SAMPLER_ID_WRAP]);
 
 	shaderVert.SetShader();
 	shaderFrag.SetShader();

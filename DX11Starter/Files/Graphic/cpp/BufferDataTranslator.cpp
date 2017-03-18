@@ -63,17 +63,18 @@ void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& 
 		parameter.viewPortWidth = info.viewportWidth;
 		parameter.viewPortHeight = info.viewportHeight;
 		std::cout << "LIGHT POS " << light.m_pos.x << " , " << light.m_pos.y << " , " << light.m_pos.z << "\n";
+		std::cout << "LIGHT ViewPort TIOP" << info.topLeftX << " , " << info.topLeftY << "\n";
 		std::cout << "LIGHT ViewPort " << info.viewportWidth << " , " << info.viewportHeight << "\n";
 
 		auto matViewProj = DirectX::XMMatrixMultiply(
 			light.getViewMatrix(),
 			light.getProjectionMatrix(info.viewportWidth, info.viewportHeight) );
 
-		DirectX::XMFLOAT4X4 MAT_TEMP;
-		DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(matViewProj));
-		parameter.matLight = MAT_TEMP;
-		//DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(light.getProjectionMatrix(info.viewportWidth, info.viewportHeight)));
-		//parameter.matLightProjection = MAT_TEMP;
+		DirectX::XMStoreFloat4x4(&parameter.matLight, XMMatrixTranspose(light.getViewMatrix()));
+		//parameter.matLight = MAT_TEMP;
+		//DirectX::XMFLOAT4X4 MAT_TEMP2;
+		DirectX::XMStoreFloat4x4(&parameter.matLightProjection, XMMatrixTranspose(light.getProjectionMatrix(info.viewportWidth, info.viewportHeight)));
+		//parameter.matLightProjection = MAT_TEMP2;
 
 
 

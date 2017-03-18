@@ -76,8 +76,9 @@ namespace NGraphic {
 			ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
 			NScene::Scene& scene,
 			RenderTexture & renderTexture, DepthTexture & depthTexture,
-			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix, 
+			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
 			DepthTexture & lightAtlas,
+			RenderTexture & lightAtlas2,
 			ID3D11Buffer *lightParameters
 		);//rendering the normal scene
 

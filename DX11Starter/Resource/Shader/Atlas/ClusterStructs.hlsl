@@ -27,8 +27,8 @@ struct LightParameter
 	float3 color;
 	float dummy;				// 4
 	float topLeftX, topLeftY, viewPortWidth, viewPortHeight;
-	matrix matLight; //used to get depth information;
-	//matrix matLightProjection; //used to get depth information;
+	float4x4 matLight; //used to get depth information;
+	float4x4 matLightProjection; //used to get depth information;
 	//matrix inverseProjectionViewMatrix; //used to get depth information;
 	//matrix inverseViewProjZ; //used to get depth information;
 };

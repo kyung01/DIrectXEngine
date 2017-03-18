@@ -352,7 +352,7 @@ void NGraphic::GraphicMain::render(
 	endRendering(context);
 	renderLightAtlas(device, context, asset, *game.m_scene);
 	RenderInstruction::RENDER_TEST(device, context, asset, scene, *m_renderTextures[TARGET_TEST], *m_depthTextures[DEPTH_TEST], 
-		worldMatrix, viewMatirx, projMatrix, *m_depthTextures[DEPTH_LIGHT_ATLAS], 0);
+		worldMatrix, viewMatirx, projMatrix, *m_depthTextures[DEPTH_LIGHT_ATLAS], *m_renderTextures[TARGET_LIGHT_ATLAS], 0);
 
 	if(true){
 		beginRendering(context);

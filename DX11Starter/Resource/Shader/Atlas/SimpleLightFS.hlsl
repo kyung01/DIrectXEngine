@@ -95,20 +95,25 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 	float3 color = float3(0,0,0);
 
-	[loop]
-	for (int i = 0; i < clusterItemLightCount; i++) {
+	//[loop]
+	if(clusterItemLightCount > 0)
+	//for (int i = 0; i < clusterItemLightCount; i++) 
+	{
 		float3 colorAdd = float3(0, 0, 0);
 		//int lightIndex = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex >> (8 * 0)) & 0xff);
-		int lightIndex2222 = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex ) & 0xff);	
+		int lightIndex2222 = ((clusterItems[clusterItemOffset + 0].lightDecalProbeIndex ) & 0xff);	
+		// if (lightIndex2222 != 1) return(1, 0, 0, 1);
 		//if (lightIndex2222 != 1)
 		//	lightIndex2222 = 1;
 		//lightIndex2222 = 0;
 		//int lightIndex2 = ((clusterItems[clusterItemOffset + i+1].lightDecalProbeIndex ) & 0xff);
 
 		LightParameter light = lightParameter[lightIndex2222];
-		float4 posFromLightPerspective = mul(float4(input.worldPos.xyz, 1.0f), light.matLight);
+		float4x4 worldViewProj = mul(light.matLight, light.matLightProjection);
+		float4 posFromLight = mul(float4(input.worldPos.xyz, 1.0f), light.matLight);
+		float4 posFromLightPerspective = mul(float4(input.worldPos.xyz, 1.0f), worldViewProj);
 		float lightDepth = posFromLightPerspective.w;
-		posFromLightPerspective /= posFromLightPerspective.w;
+		posFromLightPerspective /=0.001f + posFromLightPerspective.w;
 		//LightParameter light1 = lightParameter[lightIndex+1];
 		
 		if(light.isSpotlight)
@@ -118,15 +123,28 @@ float4 main(VertexToPixel input) : SV_TARGET
 		}
 
 		float2 uv = float2 (   (posFromLightPerspective.x *0.5+ 0.5) ,  (posFromLightPerspective.y *0.5 + 0.5f));
-		uv.x = light.topLeftX + uv.x * light.viewPortWidth;
-		uv.y = light.topLeftY + (1-uv.y) * light.viewPortHeight;
-		uv /= 1024.0f;
-		//uv.y = 1 - uv.y;
+		if (uv.x < 0 || uv.x > 1 || uv.y < 0 || uv.y > 1) {
+			return float4(1, 0, 0, 1);
+		}
+		uv.x =  (uv.x) * light.viewPortWidth;
+		uv.y =  (1-uv.y) * light.viewPortHeight;
+		//uv /= 1024.0f;
+		uv.x = light.topLeftX/1024.0f + ( uv.x / 1024.0f);
+		uv.y = light.topLeftY/1024.0f + ( uv.y / 1024.0f);
 		float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv);
 		//colorAdd += lightBaked.xyz * 1.0f
-		if (max(0, lightDepth - 0.1) < lightBaked.x) {
 
-			color += colorAdd;// * (max(0, lightDepth - 0.1)< lightBaked.x);
+		color += colorAdd *(max(0, lightDepth - 0.1)< lightBaked.w);
+		color *= 0.0001f;
+		color += lightBaked.xyz;
+		//color += light.topLeftY/192.0f -1;
+		//color += saturate(colorAdd *((lightDepth - 0.1f)  < lightBaked.w));
+		//color += saturate( colorAdd  * 0.0001f );
+		
+		//*((lightDepth / 90) < lightBaked.x);
+		if (max(0, lightDepth - 0.1) < lightBaked.w) {
+
+			//color += colorAdd;// * (max(0, lightDepth - 0.1)< lightBaked.x);
 		}
 		 //scolor += colorAdd;
 		//color += lightBaked.w*0.001F;
