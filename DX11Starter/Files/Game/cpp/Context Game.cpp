@@ -14,7 +14,7 @@ void NGame::Context::update(float timeElapsed)
 	for (auto it = m_lights.begin(); it != m_lights.end(); it++) {
 		(*it)->update(*this, timeElapsed);
 	}
-	return;
+	//return;
 
 	cosMag += timeElapsed*0.2;
 
@@ -49,7 +49,7 @@ void Context::init(NGraphic::NScene::Scene * scene)
 	//auto sphere00 = scene->getObjSolid();
 	//sphere00->m_meshId = NGraphic::MESH_ID_SPHERE;
 	//sphere00->setScale(Vector3(2.0f));
-	return;
+	//return;
 
 	auto sphereLight = scene->getPointLight(Vector3(1, 1, 1), 1.0f);
 	auto objSolidPointLight = Light::GET_POINTLIGHT(Vector4(1, 1, 1, 1),0.5f);

@@ -109,7 +109,6 @@ void NGame::LoadExample00(Context &context)
 		context.addEntity(std::shared_ptr<Entity>(lightEntity));
 
 	}
-	return;
 	{
 		auto lightObj = context.m_scene->getSpotLight(3.14 / 2, Vector3(0, 0, 20), 10000);
 		auto lightEntity = new Entity();
@@ -119,6 +118,7 @@ void NGame::LoadExample00(Context &context)
 		lightObj->setScale(Vector3(15, 15, 15));
 		context.addEntity(std::shared_ptr<Entity>(lightEntity));
 	}
+	return;
 	{
 		auto lightObj = context.m_scene->getSpotLight(3.14 / 2, Vector3(0, 20, 0), 10000);
 		auto lightEntity = new Entity();

@@ -106,7 +106,7 @@ void GraphicMain::updateBufferLightPrameter(
 
 void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights)
 {
-	float size = 8;
+	float size = 5;
 	
 	m_atlasSlicer->clear();
 	for (auto it = lights.begin(); it != lights.end(); it++) {
@@ -123,7 +123,7 @@ void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &li
 			else {
 				size += 1.9f;
 				//std::cout << "GraphicMain::updateLightAtlas-> Received available space\n";
-				//std::cout << it->second.topLeftX << " , " << it->second.topLeftY<< " , " << it->second.viewportWidth << " , " << it->second.viewportHeight<<"\n";
+				std::cout <<"CREATED VIEWPORT : " << info.topLeftX << " , " << info.topLeftY<< " , " << info.viewportWidth << " , " << info.viewportHeight<<"\n";
 
 				//success
 
@@ -302,16 +302,16 @@ void NGraphic::GraphicMain::render(
 		updateLightAtlas(scene.objs_lights);
 
 
+	//m_bufferDataTranslator transfer buffer data
+	m_bufferDataTranslator->translate(m_frustum.m_clusters);
+	m_bufferDataTranslator->translate(scene.objs_lights, m_lightInfos);
+
+	m_bufferDataTranslator->transfer(
+		context,
+		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1),
+		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2), 0, 0);
 
 	{
-		//m_bufferDataTranslator transfer buffer data
-		m_bufferDataTranslator->translate(m_frustum.m_clusters);
-		m_bufferDataTranslator->translate(scene.objs_lights, m_lightInfos);
-		
-		m_bufferDataTranslator->transfer(
-			context,
-			asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1),
-			asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2), 0,0);
 		
 		
 		DirectX::XMFLOAT4X4 MAT_TEMP;

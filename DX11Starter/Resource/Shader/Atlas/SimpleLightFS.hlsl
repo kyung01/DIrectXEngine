@@ -95,13 +95,13 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 	float3 color = float3(0,0,0);
 
-	//[loop]
-	if(clusterItemLightCount > 0)
-	//for (int i = 0; i < clusterItemLightCount; i++) 
+	[loop]
+	//if(clusterItemLightCount > 0)
+	for (int i = 0; i < clusterItemLightCount; i++) 
 	{
 		float3 colorAdd = float3(0, 0, 0);
 		//int lightIndex = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex >> (8 * 0)) & 0xff);
-		int lightIndex2222 = ((clusterItems[clusterItemOffset + 0].lightDecalProbeIndex ) & 0xff);	
+		int lightIndex2222 = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex ) & 0xff);	
 		// if (lightIndex2222 != 1) return(1, 0, 0, 1);
 		//if (lightIndex2222 != 1)
 		//	lightIndex2222 = 1;
@@ -121,22 +121,22 @@ float4 main(VertexToPixel input) : SV_TARGET
 		else {
 			colorAdd += light.color * (1.0f/ pow((1+length(light.position- input.worldPos) ),2) );// spotLight(lightPos, lightDir, lightInner, lightOutter, position);
 		}
-
+		 
 		float2 uv = float2 (   (posFromLightPerspective.x *0.5+ 0.5) ,  (posFromLightPerspective.y *0.5 + 0.5f));
 		if (uv.x < 0 || uv.x > 1 || uv.y < 0 || uv.y > 1) {
-			return float4(1, 0, 0, 1);
+			continue;
 		}
-		uv.x =  (uv.x) * light.viewPortWidth;
-		uv.y =  (1-uv.y) * light.viewPortHeight;
+		uv.x = (uv.x) * light.viewPortWidth;
+		uv.y = (1 - uv.y) * light.viewPortHeight;
 		//uv /= 1024.0f;
-		uv.x = light.topLeftX/1024.0f + ( uv.x / 1024.0f);
-		uv.y = light.topLeftY/1024.0f + ( uv.y / 1024.0f);
+		uv.x = light.topLeftX/1280.0f + ( uv.x / 1280.0f);
+		uv.y = light.topLeftY/1280.0f + ( uv.y / 1280.0f);
 		float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv);
 		//colorAdd += lightBaked.xyz * 1.0f
 
-		color += colorAdd *(max(0, lightDepth - 0.1)< lightBaked.w);
-		color *= 0.0001f;
-		color += lightBaked.xyz;
+		color += colorAdd *(max(0, lightDepth - 0.01)< lightBaked.w);
+		//color *= 0.0001f;
+		//color += lightBaked.xyz;
 		//color += light.topLeftY/192.0f -1;
 		//color += saturate(colorAdd *((lightDepth - 0.1f)  < lightBaked.w));
 		//color += saturate( colorAdd  * 0.0001f );
