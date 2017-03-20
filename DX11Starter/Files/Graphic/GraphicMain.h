@@ -71,6 +71,18 @@ namespace NGraphic {
 		void updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights);
 
 		
+
+		void renderDeferred();
+		void renderClustteredForwardRendering(
+
+			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene,
+			RenderTexture & textureTarget, DepthTexture & depthTarget,
+			RenderTexture & textureAtlas, DepthTexture & depthAtlas,
+			Matrix & matWorld, Matrix& matView, Matrix & matProj,
+			bool isLightChanged,
+			int frustumSizeX, int frustumSizeY, int frustumSizeZ,
+			float frustumFov, float frustumNear, float frustumFar
+		);
 	public:
 		NFrustum::Frustum				m_frustum; // Eventually move to private or protected access level but for now, put it in a public for debug purpose
 		std::shared_ptr<TextureAtlasSlicer> m_atlasSlicer;

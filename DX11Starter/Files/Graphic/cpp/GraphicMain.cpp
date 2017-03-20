@@ -159,8 +159,8 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 		auto &lightInfo = m_lightInfos[light.m_id];
 		//What kinds of lights are there ?
 		//if (light.m_lightType != NScene::LIGHT_TYPE::SPOTLIGHT) continue;
-		std::cout << "\nlightInfo.topLeftX" << lightInfo.topLeftX << " AND " << "lightInfo.viewportWidth" << lightInfo.viewportWidth << " \n";
-		std::cout << "\nlightInfo.topLeftY" << lightInfo.topLeftY << " AND " << "lightInfo.viewportHE" << lightInfo.viewportHeight << " \n";
+		//std::cout << "\nlightInfo.topLeftX" << lightInfo.topLeftX << " AND " << "lightInfo.viewportWidth" << lightInfo.viewportWidth << " \n";
+		//std::cout << "\nlightInfo.topLeftY" << lightInfo.topLeftY << " AND " << "lightInfo.viewportHE" << lightInfo.viewportHeight << " \n";
 		if(light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT)
 			RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 			device, context, asset,
@@ -280,7 +280,47 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 
 
 
+void GraphicMain::renderClustteredForwardRendering(
+	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene,
+	RenderTexture & textureTarget, DepthTexture & depthTarget,
+	RenderTexture & textureAtlas, DepthTexture & depthAtlas,
+	Matrix & matWorld, Matrix& matView, Matrix & matProj,
+	bool isLightChanged,
+	int frustumSizeX, int frustumSizeY, int frustumSizeZ,
+	float frustumFov, float frustumNear, float frustumFar
+)
+{
+	if (isLightChanged)
+		updateLightAtlas(scene.objs_lights);
+	//m_bufferDataTranslator transfer buffer data
+	m_bufferDataTranslator->translate(m_frustum.m_clusters);
+	m_bufferDataTranslator->translate(scene.objs_lights, m_lightInfos);
+	m_bufferDataTranslator->transfer(
+		context,
+		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1),
+		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2), 0, 0);
+	//Transfer other datas that dataTranslator doesn't handle
+	{
+		DirectX::XMFLOAT4X4 MAT_TEMP;
+		DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(matView));
+		asset.m_shadersFrag[RENDER_TEST]->SetMatrix4x4("eyeViewMatrix", MAT_TEMP);
+		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumX", frustumSizeX);
+		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumY", frustumSizeY);
+		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumZ", frustumSizeZ);
+		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumFov", frustumFov);
+		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumNear",frustumNear);
+		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumFar", frustumFar);
+		asset.m_shadersFrag[RENDER_TEST]->CopyAllBufferData();
+	}
+	//Clear once before the new scene
+	m_renderTextures[TARGET_TEST]->clear(context, 0, 0, 0, 0);
+	m_depthTextures[DEPTH_TEST]->clear(context);
+	//Render
+	renderLightAtlas(device, context, asset, scene);
+	RenderInstruction::RENDER_TEST(device, context, asset, scene, textureTarget,depthTarget,
+		matWorld,matView,matProj , depthAtlas, textureAtlas, 0);
 
+}
 
 void NGraphic::GraphicMain::render(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
@@ -298,44 +338,29 @@ void NGraphic::GraphicMain::render(
 		m_lightInfos[it->get()->m_id] = getLightInfo(device);
 		newLightInfo = true;
 	}
-	if(newLightInfo)
-		updateLightAtlas(scene.objs_lights);
-
-
-	//m_bufferDataTranslator transfer buffer data
-	m_bufferDataTranslator->translate(m_frustum.m_clusters);
-	m_bufferDataTranslator->translate(scene.objs_lights, m_lightInfos);
-
-	m_bufferDataTranslator->transfer(
-		context,
-		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1),
-		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2), 0, 0);
-
-	{
-		
-		
-		DirectX::XMFLOAT4X4 MAT_TEMP;
-		DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(scene.m_camMain.getViewMatrix()));
-		//DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(scene.m_camMain.getViewMatrix()));
-
-
-		//asset.m_shadersFrag[RENDER_TEST]->SetShader();
-		asset.m_shadersFrag[RENDER_TEST]->SetMatrix4x4("eyeViewMatrix", MAT_TEMP);
-		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumX", (int)m_frustum.m_size.x);
-		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumY", (int)m_frustum.m_size.y);
-		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumZ", (int)m_frustum.m_size.z);
-		asset.m_shadersFrag[RENDER_TEST]->SetFloat("eyeFov", m_frustum.m_fov);
-		asset.m_shadersFrag[RENDER_TEST]->SetFloat("eyeNear", m_frustum.m_near);
-		asset.m_shadersFrag[RENDER_TEST]->SetFloat("eyeFar", m_frustum.m_far);
-		asset.m_shadersFrag[RENDER_TEST]->CopyAllBufferData();
-	}
+	
 
 	auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
 	auto worldMatrixFrustum = DirectX::SimpleMath::Matrix::CreateRotationX(3.14 / 2);
 	auto viewMatirx = scene.m_camMain.getViewMatrix();
 	auto projMatrix = scene.m_camMain.getProjectionMatrix(m_width, m_height);
-	m_renderTextures[TARGET_TEST]->clear(context, 0, 0, 0, 0);
-	m_depthTextures[DEPTH_TEST]->clear(context);
+
+
+	beginRendering(context);
+	renderClustteredForwardRendering(device, context, asset, *game.m_scene,
+		*m_renderTextures[TARGET_TEST], *m_depthTextures[DEPTH_TEST],
+		*m_renderTextures[TARGET_LIGHT_ATLAS] ,*m_depthTextures[DEPTH_LIGHT_ATLAS],
+		worldMatrix,viewMatirx,projMatrix,
+
+		newLightInfo,
+		(int)m_frustum.m_size.x,
+		(int)m_frustum.m_size.y,
+		(int)m_frustum.m_size.z,
+		m_frustum.m_fov,
+		m_frustum.m_near,
+		m_frustum.m_far
+	);
+	endRendering(context);
 	//now start rendering real stuff
 
 	//updateBufferLightPrameter(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0)   ,scene.objs_lights);
@@ -348,11 +373,7 @@ void NGraphic::GraphicMain::render(
 		scene.m_camMain.getProjectionMatrix(viewport.Width, viewport.Height) *
 		scene.m_camMain.getViewMatrix() * scene.m_camMain.getModelMatrix();
 
-	beginRendering(context);
-	endRendering(context);
-	renderLightAtlas(device, context, asset, *game.m_scene);
-	RenderInstruction::RENDER_TEST(device, context, asset, scene, *m_renderTextures[TARGET_TEST], *m_depthTextures[DEPTH_TEST], 
-		worldMatrix, viewMatirx, projMatrix, *m_depthTextures[DEPTH_LIGHT_ATLAS], *m_renderTextures[TARGET_LIGHT_ATLAS], 0);
+	
 
 	if(true){
 		beginRendering(context);

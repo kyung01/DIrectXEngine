@@ -62,9 +62,9 @@ void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& 
 		parameter.topLeftY = info.topLeftY;
 		parameter.viewPortWidth = info.viewportWidth;
 		parameter.viewPortHeight = info.viewportHeight;
-		std::cout << "LIGHT POS " << light.m_pos.x << " , " << light.m_pos.y << " , " << light.m_pos.z << "\n";
-		std::cout << "LIGHT ViewPort TIOP" << info.topLeftX << " , " << info.topLeftY << "\n";
-		std::cout << "LIGHT ViewPort " << info.viewportWidth << " , " << info.viewportHeight << "\n";
+		//std::cout << "LIGHT POS " << light.m_pos.x << " , " << light.m_pos.y << " , " << light.m_pos.z << "\n";
+		//std::cout << "LIGHT ViewPort TIOP" << info.topLeftX << " , " << info.topLeftY << "\n";
+		//std::cout << "LIGHT ViewPort " << info.viewportWidth << " , " << info.viewportHeight << "\n";
 
 		auto matViewProj = DirectX::XMMatrixMultiply(
 			light.getViewMatrix(),

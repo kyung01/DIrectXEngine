@@ -33,9 +33,9 @@ cbuffer global : register(b3)
 {
 	matrix eyeViewMatrix;
 	int frustumX, frustumY, frustumZ;
-	float eyeFov;
-	float eyeNear;
-	float eyeFar;
+	float frustumFov;
+	float frustumNear;
+	float frustumFar;
 	float dummy00;
 	float dummy01;
 	//LightParameter lightParameter[10];
@@ -79,11 +79,11 @@ float4 main(VertexToPixel input) : SV_TARGET
 	//return float4(length(posFromCamera.xyz), 0, 0, 1);
 
 
-	float x = cos(eyeFov/2.0f);
-	float z = sin(eyeFov / 2.0f);
+	float x = cos(frustumFov/2.0f);
+	float z = sin(frustumFov / 2.0f);
 	float3 dirHorizontal	= float3(-x, 0, z);
 	float3 dirVertical		= float3(0, x, z);
-	int clusterID = getClusterBelong(-x, x,  x, -x, eyeNear, eyeFar, frustumX, frustumY, frustumZ,float4(input.worldPos) );
+	int clusterID = getClusterBelong(-x, x,  x, -x, frustumNear, frustumFar, frustumX, frustumY, frustumZ,float4(input.worldPos) );
 	
 	ClusterIndex clusterIndex = clusterIndexs[clusterID];
 
@@ -96,17 +96,10 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float3 color = float3(0,0,0);
 
 	[loop]
-	//if(clusterItemLightCount > 0)
 	for (int i = 0; i < clusterItemLightCount; i++) 
 	{
 		float3 colorAdd = float3(0, 0, 0);
-		//int lightIndex = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex >> (8 * 0)) & 0xff);
 		int lightIndex2222 = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex ) & 0xff);	
-		// if (lightIndex2222 != 1) return(1, 0, 0, 1);
-		//if (lightIndex2222 != 1)
-		//	lightIndex2222 = 1;
-		//lightIndex2222 = 0;
-		//int lightIndex2 = ((clusterItems[clusterItemOffset + i+1].lightDecalProbeIndex ) & 0xff);
 
 		LightParameter light = lightParameter[lightIndex2222];
 		float4x4 worldViewProj = mul(light.matLight, light.matLightProjection);
@@ -135,85 +128,8 @@ float4 main(VertexToPixel input) : SV_TARGET
 		//colorAdd += lightBaked.xyz * 1.0f
 
 		color += colorAdd *(max(0, lightDepth - 0.01)< lightBaked.w);
-		//color *= 0.0001f;
-		//color += lightBaked.xyz;
-		//color += light.topLeftY/192.0f -1;
-		//color += saturate(colorAdd *((lightDepth - 0.1f)  < lightBaked.w));
-		//color += saturate( colorAdd  * 0.0001f );
 		
-		//*((lightDepth / 90) < lightBaked.x);
-		if (max(0, lightDepth - 0.1) < lightBaked.w) {
-
-			//color += colorAdd;// * (max(0, lightDepth - 0.1)< lightBaked.x);
-		}
-		 //scolor += colorAdd;
-		//color += lightBaked.w*0.001F;
 		
-	}	
-	//if (clusterItemLightCount >= 3) {
-	//	color += float4(0.3f, 0.3f, 0.3f, 0);
-	//}
-
-	//color *= 0.0001f;
-	//
-	//int clusterColor = clusterID % 4;
-	//
-	//if (clusterColor == 0) {
-	//	color += float3(1, 0, 0);
-	//}
-	//else if (clusterColor == 1) {
-	//
-	//	color += float3(0, 1, 0);
-	//}
-	//else if (clusterColor == 2) {
-	//
-	//	color += float3(0, 0, 1);
-	//}
-	//else if (clusterColor == 3) {
-	//
-	//	color += float3(1, 1, 0);
-	//}
-	//for (int i = 0; i < 3; i++) {
-	//	LightParameter light0 = lightParameter[i];
-	//	color += light0.color * spotLight(light0.position, light0.axis, light0.angle*0.5, light0.angle, input.worldPos);
-	//}
-
+	}
 	return float4(color,1);
 }
-/*
-*
-
-
-float x = cos(eyeFov);
-float z = sin(eyeFov);
-float3 dirHorizontal	= float3(-x, 0, z);
-float3 dirVertical		= float3(0, x, z);
-int clusterID = getClusterBelong(-x, x,x, -x, eyeNear, eyeFar, frustumX, frustumY, frustumZ,input.worldPos);
-ClusterIndex clusterIndex = clusterIndexs[clusterID];
-
-
-int clusterItemOffset = clusterIndex.offset;
-int clusterItemLightCount = (clusterIndex.lightDecalProbeCount >> (8 * 0)) & 0xff;
-int clusterItemDecalCount = (clusterIndex.lightDecalProbeCount >> (8 * 1)) & 0xff;
-int clusterItemProbeCount = (clusterIndex.lightDecalProbeCount >> (8 * 2)) & 0xff;
-
-float3 color = float3(0,0,0);
-for (int i = 0; i < 5; i++) {
-LightParameter light0 = lightParameter[i];
-color += light0.color * spotLight(light0.position, light0.axis, light0.angle*0.5, light0.angle, input.worldPos);
-}
-return float4(color,1);
-
-
-
-/
-/*
-
-float3 color = float3(0,0,0);
-for (int i = 0; i < 5; i++) {
-LightParameter light0 = lightParameter[i];
-color += light0.color * spotLight(light0.position, light0.axis, light0.angle*0.5, light0.angle, input.worldPos);
-}
-return float4(color,1);
-
-*/
