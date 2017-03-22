@@ -70,10 +70,10 @@ void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& 
 			light.getViewMatrix(),
 			light.getProjectionMatrix(info.viewportWidth, info.viewportHeight) );
 
-		DirectX::XMStoreFloat4x4(&parameter.matLight, XMMatrixTranspose(light.getViewMatrix()));
+		//DirectX::XMStoreFloat4x4(&parameter.matLight, XMMatrixTranspose(light.getViewMatrix()));
 		//parameter.matLight = MAT_TEMP;
 		//DirectX::XMFLOAT4X4 MAT_TEMP2;
-		DirectX::XMStoreFloat4x4(&parameter.matLightProjection, XMMatrixTranspose(light.getProjectionMatrix(info.viewportWidth, info.viewportHeight)));
+		DirectX::XMStoreFloat4x4(&parameter.matLight, XMMatrixTranspose(matViewProj));
 		//parameter.matLightProjection = MAT_TEMP2;
 
 

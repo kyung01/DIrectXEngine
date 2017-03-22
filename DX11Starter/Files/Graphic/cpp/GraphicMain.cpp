@@ -308,7 +308,7 @@ void GraphicMain::renderClustteredForwardRendering(
 		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumY", frustumSizeY);
 		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumZ", frustumSizeZ);
 		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumFov", frustumFov);
-		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumNear",frustumNear);
+		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumNear",frustumNear );
 		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumFar", frustumFar);
 		asset.m_shadersFrag[RENDER_TEST]->CopyAllBufferData();
 	}
@@ -517,7 +517,7 @@ void NGraphic::GraphicMain::render(
 		}
 
 	}
-	if (false) {
+	if (true) {
 		m_depthTextures[DEPTH_FINAL]->clear(context);
 		RenderInstruction::RENDER_DEBUG(
 			device, context, asset,

@@ -83,7 +83,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float z = sin(frustumFov / 2.0f);
 	float3 dirHorizontal	= float3(-x, 0, z);
 	float3 dirVertical		= float3(0, x, z);
-	int clusterID = getClusterBelong(-x, x,  x, -x, frustumNear, frustumFar, frustumX, frustumY, frustumZ,float4(input.worldPos) );
+	int clusterID = getClusterBelong(-x, x,  x, -x, frustumNear, frustumFar, frustumX, frustumY, frustumZ,float4(input.worldPos.xyz,1) );
 	
 	ClusterIndex clusterIndex = clusterIndexs[clusterID];
 
@@ -102,9 +102,9 @@ float4 main(VertexToPixel input) : SV_TARGET
 		int lightIndex2222 = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex ) & 0xff);	
 
 		LightParameter light = lightParameter[lightIndex2222];
-		float4x4 worldViewProj = mul(light.matLight, light.matLightProjection);
-		float4 posFromLight = mul(float4(input.worldPos.xyz, 1.0f), light.matLight);
-		float4 posFromLightPerspective = mul(float4(input.worldPos.xyz, 1.0f), worldViewProj);
+		//float4x4 worldViewProj = mul(light.matLight, light.matLightProjection);
+		//float4 posFromLight = mul(float4(input.worldPos.xyz, 1.0f), light.matLight);
+		float4 posFromLightPerspective = mul(float4(input.worldPos.xyz, 1.0f), light.matLight);
 		float lightDepth = posFromLightPerspective.w;
 		posFromLightPerspective /=0.001f + posFromLightPerspective.w;
 		//LightParameter light1 = lightParameter[lightIndex+1];
@@ -130,6 +130,9 @@ float4 main(VertexToPixel input) : SV_TARGET
 		color += colorAdd *(max(0, lightDepth - 0.01)< lightBaked.w);
 		
 		
+	}
+	if (clusterItemLightCount > 0) {
+		color = float3(0, 0.3f, 0);
 	}
 	return float4(color,1);
 }

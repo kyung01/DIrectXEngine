@@ -16,7 +16,7 @@ namespace NGraphic {
 			float dummy;				// 4
 			float topLeftX, topLeftY, viewPortWidth, viewPortHeight; // 4
 			DirectX::XMFLOAT4X4 matLight; //16
-			DirectX::XMFLOAT4X4 matLightProjection; //16
+			//DirectX::XMFLOAT4X4 matLightProjection; //16
 			//DirectX::XMMATRIX matViewProjInverse; //16
 			//DirectX::XMMATRIX inverseViewProjZ; //16
 		};

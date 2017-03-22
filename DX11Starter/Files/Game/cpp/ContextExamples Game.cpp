@@ -10,19 +10,19 @@ void NGame::LoadExample00(Context &context)
 	{
 		auto obj = context.m_scene->getObjSolid();
 		obj.get()->m_meshId = NGraphic::MESH_ID_TORUS;
-		if (i <= 5)
-			obj.get()->m_meshId = NGraphic::MESH_ID_HELIX;
-		if (j <= 2)
-			obj.get()->m_meshId = NGraphic::MESH_ID_CUBE;
+		//if (i <= 5)
+		//	obj.get()->m_meshId = NGraphic::MESH_ID_HELIX;
+		//if (j <= 2)
+		//	obj.get()->m_meshId = NGraphic::MESH_ID_CUBE;
 		obj.get()->m_textures[NGraphic::TEXTURE_TYPE_DIFFUSE] = NGraphic::KEnum::TEXTURE_ID_WHITE;
 		obj.get()->m_textures[NGraphic::TEXTURE_TYPE_PROPERTY] = NGraphic::KEnum::TEXTURE_ID_RED;
 		obj.get()->m_textures[NGraphic::TEXTURE_TYPE_NORMAL] = NGraphic::KEnum::TEXTURE_ID_NORMAL_DEFAULT;// normalIds[i % 6];
 		obj.get()->m_textures[NGraphic::TEXTURE_TYPE_SPECULAR] = NGraphic::KEnum::TEXTURE_ID_WHITE;
 		obj.get()->setScale(Vector3(0.7, 0.7, 0.7));
-		if (i <= 5)
-			obj.get()->setScale(Vector3(0.2, 0.2, 0.2));
-		if (j <= 2)
-			obj.get()->setScale(Vector3(0.5, 0.5, 0.5));
+		//if (i <= 5)
+		//	obj.get()->setScale(Vector3(0.2, 0.2, 0.2));
+		//if (j <= 2)
+		//	obj.get()->setScale(Vector3(0.5, 0.5, 0.5));
 		auto e = new Entity();
 		context.addEntity(std::shared_ptr<Entity>(e));
 		e->m_graphicObjects.push_back(obj);
@@ -104,11 +104,12 @@ void NGame::LoadExample00(Context &context)
 		auto lightEntity = new Entity();
 		lightEntity->m_graphicObjects.push_back(lightObj);
 		lightEntity->setPos(0.0, 0, 0.0);
-		lightObj->setLightColor(20,0,0);
+		lightObj->setLightColor(10,0,0);
 		//lightObj->setScale(Vector3(15, 15, 15));
 		context.addEntity(std::shared_ptr<Entity>(lightEntity));
 
 	}
+	return;
 	{
 		auto lightObj = context.m_scene->getSpotLight(3.14 / 2, Vector3(0, 0, 20), 10000);
 		auto lightEntity = new Entity();

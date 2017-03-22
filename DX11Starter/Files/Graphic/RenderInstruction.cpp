@@ -272,6 +272,7 @@ void RenderInstruction::RENDER_DEBUG(
 
 	DirectX::XMStoreFloat4x4(&matStore, Matrix::Identity); // Transpose for HLSL!
 	shaderVert.SetMatrix4x4("world", matStore);
+	shaderVert.SetMatrix4x4("view", matStore);
 
 	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
 	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
