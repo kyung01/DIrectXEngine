@@ -53,25 +53,26 @@ int getClusterBelong(
 	float dirVrtBegin, float dirVrtEnd, 
 	float near, float far, 
 	float divX, float divY, float divZ, 
-	float4 position) {
-	position = mul(float4(position.xyz,1), eyeViewMatrix);
+	float3 position) {
 
-	float x = position.x;
-	float y = position.y;
-	float z = position.z;
 	dirHorBegin = dirHorBegin	* position.z;
 	dirHorEnd = dirHorEnd		* position.z;
 	dirVrtBegin = dirVrtBegin	* position.z;
 	dirVrtEnd = dirVrtEnd		* position.z;
-	x -= dirHorBegin;
-	y -= dirVrtBegin;
-	z -= near;
-	float idX = floor(max(0, x / (abs(dirHorEnd - dirHorBegin) / divX)));
-	float idY = floor(max(0, -y / (abs(dirVrtEnd - dirVrtBegin) / divY)));
-	float idZ = floor(max(0, z / (abs(far - near) / divZ)));
+	float x = position.x - dirHorBegin;
+	float y = position.y - dirVrtBegin;
+	float z = position.z - near;
+	float idX = floor( x /         (abs  (dirHorEnd - dirHorBegin) / divX));
+	float idY = floor( -y / (abs(dirVrtEnd -dirVrtBegin) / divY));
+	float idZ = floor( z / (abs(far - near) / divZ));
 
+	if (idX < 0 && idY < 0 && idZ <0) return -5.0f;
+	if (idX < 0 && idY < 0) return -4.0f;
+	if (idX < 0 ) return -1.0f;
+	if (idY < 0 ) return -2.0f;
+	if (idZ < 0) return -3.0f;
 	return idX +idY*(divX) +idZ*(divX*divY);
-}
+}	
 
 // Entry point for this pixel shader
 float4 main(VertexToPixel input) : SV_TARGET
@@ -79,15 +80,30 @@ float4 main(VertexToPixel input) : SV_TARGET
 	//return float4(length(posFromCamera.xyz), 0, 0, 1);
 
 
-	float x = cos(frustumFov/2.0f);
-	float z = sin(frustumFov / 2.0f);
-	float3 dirHorizontal	= float3(-x, 0, z);
-	float3 dirVertical		= float3(0, x, z);
-	int clusterID = getClusterBelong(-x, x,  x, -x, frustumNear, frustumFar, frustumX, frustumY, frustumZ,float4(input.worldPos.xyz,1) );
+	float x = cos(frustumFov / 2.0f) * (1 / sin(frustumFov/2) ) ;
+	float z = sin(frustumFov / 2.0f) * (1 / cos(frustumFov / 2));;
 	
+	float4 positionFromEyePerspective = mul(float4(input.worldPos.xyz, 1), eyeViewMatrix);
+	int clusterID = getClusterBelong(-x, x,  x, -x, frustumNear, frustumFar, frustumX, frustumY, frustumZ, positionFromEyePerspective.xyz);
+	if (clusterID == -1) {
+		return float4(1, 0, 1, 1);
+
+	}
+	if (clusterID == -2) {
+		return float4(0, 1, 1, 1);
+
+	}
+	if (clusterID == -3) {
+		return float4(1, 1, 0, 1);
+
+	}
+	if (clusterID == -4) {
+		return float4(1, 0.5f, 1, 1);
+
+	}
 	ClusterIndex clusterIndex = clusterIndexs[clusterID];
-
-
+	
+		
 	uint clusterItemOffset = clusterIndex.offset;
 	uint clusterItemLightCount = (clusterIndex.lightDecalProbeCount >> (8 * 0)) & 0xff;
 	uint clusterItemDecalCount = (clusterIndex.lightDecalProbeCount >> (8 * 1)) & 0xff;
@@ -131,8 +147,6 @@ float4 main(VertexToPixel input) : SV_TARGET
 		
 		
 	}
-	if (clusterItemLightCount > 0) {
-		color = float3(0, 0.3f, 0);
-	}
+	
 	return float4(color,1);
 }

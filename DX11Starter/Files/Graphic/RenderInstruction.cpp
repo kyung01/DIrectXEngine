@@ -139,6 +139,7 @@ void NGraphic::RenderInstruction::RENDER_LIGHTSHAFT_SPOTLIGHT(
 	shaderFrag.SetShaderResourceView("textureWorld", 0);
 }
 
+
 void RenderInstruction::RENDER_DEBUG(
 	ID3D11Device * device, ID3D11DeviceContext * context,
 	Asset& asset,

@@ -73,7 +73,7 @@ namespace NGraphic {
 		
 
 		void renderDeferred();
-		void renderClustteredForwardRendering(
+		void renderClusterredForwardRendering(
 
 			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene,
 			RenderTexture & textureTarget, DepthTexture & depthTarget,

@@ -280,7 +280,7 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 
 
 
-void GraphicMain::renderClustteredForwardRendering(
+void GraphicMain::renderClusterredForwardRendering(
 	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene,
 	RenderTexture & textureTarget, DepthTexture & depthTarget,
 	RenderTexture & textureAtlas, DepthTexture & depthAtlas,
@@ -290,6 +290,7 @@ void GraphicMain::renderClustteredForwardRendering(
 	float frustumFov, float frustumNear, float frustumFar
 )
 {
+	//std::cout << "renderClusterredForwardRendering " << frustumFov << " \n";
 	if (isLightChanged)
 		updateLightAtlas(scene.objs_lights);
 	//m_bufferDataTranslator transfer buffer data
@@ -347,7 +348,8 @@ void NGraphic::GraphicMain::render(
 
 
 	beginRendering(context);
-	renderClustteredForwardRendering(device, context, asset, *game.m_scene,
+	
+	renderClusterredForwardRendering(device, context, asset, *game.m_scene,
 		*m_renderTextures[TARGET_TEST], *m_depthTextures[DEPTH_TEST],
 		*m_renderTextures[TARGET_LIGHT_ATLAS] ,*m_depthTextures[DEPTH_LIGHT_ATLAS],
 		worldMatrix,viewMatirx,projMatrix,
