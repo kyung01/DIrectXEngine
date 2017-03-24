@@ -66,17 +66,19 @@ void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& 
 		//std::cout << "LIGHT ViewPort TIOP" << info.topLeftX << " , " << info.topLeftY << "\n";
 		//std::cout << "LIGHT ViewPort " << info.viewportWidth << " , " << info.viewportHeight << "\n";
 
-		auto matViewProj = DirectX::XMMatrixMultiply(
-			light.getViewMatrix(),
-			light.getProjectionMatrix(info.viewportWidth, info.viewportHeight) );
+		
+		if (light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT) {
+			auto matViewProj = DirectX::XMMatrixMultiply(
+				light.getViewMatrix(),
+				light.getProjectionMatrix(info.viewportWidth, info.viewportHeight));
+			DirectX::XMStoreFloat4x4(&parameter.matLight, XMMatrixTranspose(matViewProj));
 
-		//DirectX::XMStoreFloat4x4(&parameter.matLight, XMMatrixTranspose(light.getViewMatrix()));
-		//parameter.matLight = MAT_TEMP;
-		//DirectX::XMFLOAT4X4 MAT_TEMP2;
-		DirectX::XMStoreFloat4x4(&parameter.matLight, XMMatrixTranspose(matViewProj));
-		//parameter.matLightProjection = MAT_TEMP2;
+		}
+		if (light.m_lightType == NScene::LIGHT_TYPE::POINTLIGHT) {
+			auto matProj = light.getProjectionMatrix(info.viewportWidth/6.0, info.viewportHeight/6.0);
+			DirectX::XMStoreFloat4x4(&parameter.matLight, XMMatrixTranspose(matProj));
 
-
+		}
 
 		m_lights->setData(parameter, index);
 		//std::cout << "LIGHT WAS AT " << index << std::endl;;

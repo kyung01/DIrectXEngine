@@ -520,13 +520,14 @@ void NGraphic::GraphicMain::render(
 
 	}
 	if (true) {
+		beginRendering(context);
 		m_depthTextures[DEPTH_FINAL]->clear(context);
 		RenderInstruction::RENDER_DEBUG(
 			device, context, asset,
 			*m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL],
 			game, scene, m_frustum,
 			*m_depthTextures[DEPTH_WORLD]);
-
+		endRendering(context);
 	}
 
 }

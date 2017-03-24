@@ -122,7 +122,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 		//float4 posFromLight = mul(float4(input.worldPos.xyz, 1.0f), light.matLight);
 		float4 posFromLightPerspective = mul(float4(input.worldPos.xyz, 1.0f), light.matLight);
 		float lightDepth = posFromLightPerspective.w;
-		posFromLightPerspective /=0.001f + posFromLightPerspective.w;
+		posFromLightPerspective /=0.00001f + posFromLightPerspective.w;
 		//LightParameter light1 = lightParameter[lightIndex+1];
 		
 		if(light.isSpotlight)
@@ -143,7 +143,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 		float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv);
 		//colorAdd += lightBaked.xyz * 1.0f
 
-		color += colorAdd *(max(0, lightDepth - 0.01)< lightBaked.w);
+		color += colorAdd *(( lightDepth - 0.01)< lightBaked.w);
 		
 		
 	}
