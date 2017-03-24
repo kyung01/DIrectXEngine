@@ -27,7 +27,7 @@ float isPixelLit(
 	return max(0,lightDepth - 0.1)< lightDepthClosest ;
 }
 float pointLight(
-	float3 lightPos,float3 lightDir, float lightInner,float lightOutter,
+	float3 lightPos, float3 lightDir, float lightInner, float lightOutter,
 	Texture2D textureShadow, float4x4 matLightMVP,
 	SamplerState samplerBoarderZero,
 	float3 eyePos,
@@ -46,5 +46,41 @@ float pointLight(
 	//return isPixelLit(textureShadow, samplerBoarderZero,
 	//	matLightMVP,
 	//	position);
-	return  l_spotlight * shadow* dot(normalize(posToLight), normal) ;
+	return  l_spotlight * shadow* dot(normalize(posToLight), normal);
+}
+float pointLight(
+	float3 lightPos,
+
+	float3 position, float3 normal) {
+
+	//float4 posFromLightPerspective = mul(float4(position 1.0f), lightMVP);
+	float3 posToLight = lightPos - position;
+
+	float3 lightToPos = position - lightPos;
+	float lightToPosMag = dot(lightToPos, lightToPos);
+	float brightness = 1 / (1 + lightToPosMag);
+
+																	  //return length(posToLight);
+																						  //return dot(normalize(posToLight), normal) * brightness * (max(0, lightDepth - 0.00001) < lightDepthClosest);
+																						  //return isPixelLit(textureShadow, samplerBoarderZero,
+																						  //	matLightMVP,
+																						  //	position);
+	return  brightness * dot(normalize(posToLight), normal);
+}
+float spotLight(
+	float3 lightPos, float3 lightDir, float lightInner, float lightOutter,
+	
+	float3 position, float3 normal) {
+
+	//float4 posFromLightPerspective = mul(float4(position 1.0f), lightMVP);
+	float3 posToLight = lightPos - position;
+	float l_spotlight = spotLight(lightPos, lightDir, lightInner, lightOutter, position); //spotLight(alpha, 1.0f, lightInner, lightOutter);
+	
+	//return l_spotlight;
+	//return length(posToLight);
+	//return dot(normalize(posToLight), normal) * brightness * (max(0, lightDepth - 0.00001) < lightDepthClosest);
+	//return isPixelLit(textureShadow, samplerBoarderZero,
+	//	matLightMVP,
+	//	position);
+	return  l_spotlight * dot(normalize(posToLight), normal) ;
 }

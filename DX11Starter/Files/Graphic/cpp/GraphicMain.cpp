@@ -519,7 +519,7 @@ void NGraphic::GraphicMain::render(
 		}
 
 	}
-	if (true) {
+	if (false) {
 		beginRendering(context);
 		m_depthTextures[DEPTH_FINAL]->clear(context);
 		RenderInstruction::RENDER_DEBUG(
