@@ -510,7 +510,7 @@ void RenderInstruction::RENDER_TEST(
 	//shaderVert.SetMatrix4x4("view", matrixStore);
 	//DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(projMatrix)); // Transpose for HLSL!
 	//shaderVert.SetMatrix4x4("proj", matrixStore);
-	shaderFrag.SetShaderResourceView("textureLightAtlas", lightAtlas2.getShaderResourceView());
+	shaderFrag.SetShaderResourceView("textureLightAtlas", lightAtlas.getShaderResourceView());
 	shaderFrag.SetSamplerState("sampler_default", asset.m_samplers[SAMPLER_ID_BORDER_ONE]);
 
 	shaderVert.SetShader();
