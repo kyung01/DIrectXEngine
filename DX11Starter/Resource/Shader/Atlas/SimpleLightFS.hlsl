@@ -158,13 +158,15 @@ float4 main(VertexToPixel input) : SV_TARGET
 		posFromLightPerspective2 /=0.00001f + posFromLightPerspective2.w;
 		//LightParameter light1 = lightParameter[lightIndex+1];
 
-		float3 uv_depth =
-			getPointlight_UVDepth(
-				light.matLight,
-				light.topLeftX, light.viewPortWidth, 1280.0f,
-				light.topLeftY, light.viewPortHeight, 1280.0f,
-				input.worldPos.xyz
-				);
+		float3 uv_depth = float3(-1, -1, 1);
+		uv_depth = getPointlight_UVDepth(
+			light.matLight,
+			light.topLeftX, light.viewPortWidth, 1280.0f,
+			light.topLeftY, light.viewPortHeight, 1280.0f,
+			input.worldPos.xyz
+			);
+
+		
 		if (uv_depth.x == -1 || uv_depth.y == -1) {
 			continue;
 		}
