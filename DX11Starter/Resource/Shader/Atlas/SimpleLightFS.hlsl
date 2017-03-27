@@ -104,8 +104,59 @@ float4 spotLight(
 	float3 vertPosition, float3 vertNormal) {
 	return float4(0, 0, 0, 0);
 }
-float4 pointLight() {
-	return float4(0, 0, 0, 0);
+float pointLight(float4x4 lightMat,  float3 lightPosition, float3 position, float3 normal) {
+	float light = pointLight(lightPosition, position, normal);
+	int pointLightIndex = getPointLightTextureIndex(input.worldPos, light.position);
+	if (pointLightIndex == -1) return float4(1, 1, 1, 1);
+	position = position - lightPosition;
+	switch (pointLightIndex) {
+	case 0:
+		break;
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+	case 5:
+		break;
+	}
+	float3 uv_depth = getPointlight_UVDepth(
+		light.matLight,
+		light.topLeftX, light.viewPortWidth, 1280.0f,
+		light.topLeftY, light.viewPortHeight, 1280.0f,
+		input.worldPos.xyz
+	);
+
+	float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv_depth.xy);
+	float isShadow = (uv_depth.z - 0.001)< lightBaked.x;
+	color += colorAdd * isShadow;
+
+	return light;
+}
+int getPointLightTextureIndex(float3 position, float lightPosition) {
+	float3 positionDiff = position - lightPosition;
+	if (abs(positionDiff.x) > abs(positionDiff.y) && abs(positionDiff.x) > abs(positionDiff.z)) {
+		if (positionDiff.x > 0)
+			return 0;
+		else
+			return 1;
+	}
+	if (abs(positionDiff.y) > abs(positionDiff.x) && abs(positionDiff.y) > abs(positionDiff.z)) {
+		if (positionDiff.y > 0)
+			return 2;
+		else
+			return 3;
+	}
+	if (abs(positionDiff.z) > abs(positionDiff.x) && abs(positionDiff.z) > abs(positionDiff.y)) {
+		if (positionDiff.z > 0)
+			return 4;
+		else
+			return 5;
+	}
+	return -1;
 }
 // Entry point for this pixel shader
 float4 main(VertexToPixel input) : SV_TARGET
@@ -159,26 +210,30 @@ float4 main(VertexToPixel input) : SV_TARGET
 		//LightParameter light1 = lightParameter[lightIndex+1];
 
 		float3 uv_depth = float3(-1, -1, 1);
-		uv_depth = getPointlight_UVDepth(
-			light.matLight,
-			light.topLeftX, light.viewPortWidth, 1280.0f,
-			light.topLeftY, light.viewPortHeight, 1280.0f,
-			input.worldPos.xyz
-			);
+		
 
 		
-		if (uv_depth.x == -1 || uv_depth.y == -1) {
-			continue;
-		}
-		float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv_depth.xy);
-		float isShadow = (uv_depth.z - 0.001)< lightBaked.x;
+		
 
 		if (light.isSpotlight) {
 			colorAdd += light.color * spotLight(light.position, light.axis, light.angle*0.5, light.angle, input.worldPos, inputNormal);
+			uv_depth = getPointlight_UVDepth(
+				light.matLight,
+				light.topLeftX, light.viewPortWidth, 1280.0f,
+				light.topLeftY, light.viewPortHeight, 1280.0f,
+				input.worldPos.xyz
+			);
+
 		}
 		else {
-			colorAdd += light.color * pointLight(light.position,  input.worldPos, inputNormal);
+			colorAdd += light.color * pointLight(light.matLight, light.position,  input.worldPos, inputNormal);
 		}
+		if (uv_depth.x == -1 || uv_depth.y == -1) {
+			continue;
+		}
+
+		float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv_depth.xy);
+		float isShadow = (uv_depth.z - 0.001)< lightBaked.x;
 		color += colorAdd * isShadow;
 		
 		

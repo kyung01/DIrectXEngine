@@ -8,7 +8,7 @@
 namespace NGraphic {
 	namespace NBuffer {
 		struct LightParameter {
-			bool isSpotlight;			// 1
+			float isSpotlight;			// 1
 			DirectX::XMFLOAT3 position;	// 4
 			DirectX::XMFLOAT3 axis;		// 3
 			float angle;				// 4

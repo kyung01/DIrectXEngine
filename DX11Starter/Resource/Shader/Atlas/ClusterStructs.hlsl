@@ -20,7 +20,7 @@ struct ClusterItem {
 };
 struct LightParameter
 {
-	bool isSpotlight; // spotlight or pointlight
+	float isSpotlight; // spotlight or pointlight
 	float3 position;
 	float3 axis;
 	float angle;

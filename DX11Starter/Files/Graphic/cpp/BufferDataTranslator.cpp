@@ -56,7 +56,9 @@ void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& 
 		parameter.angle = light.getFOV();
 		parameter.axis = light.m_dirLook;
 		parameter.color = light.getLightColor();
-		parameter.isSpotlight = light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT;
+		parameter.isSpotlight = (float)(light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT);
+		std::cout << parameter.isSpotlight << "\n";
+		//system("pause");
 		parameter.position = light.m_pos;
 		parameter.topLeftX = info.topLeftX;
 		parameter.topLeftY = info.topLeftY;
