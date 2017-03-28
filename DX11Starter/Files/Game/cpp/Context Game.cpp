@@ -16,9 +16,9 @@ void NGame::Context::update(float timeElapsed)
 	}
 	//return;
 
-	cosMag += timeElapsed*0.2;
+	cosMag += timeElapsed*0.01;
 
-	Vector3 pos = Vector3(0, 0, 5) + Vector3(cos(cosMag), sin(cosMag) * 2, 3.5*cos(cosMag*3));
+	Vector3 pos = Vector3(0, 2, 0) + Vector3(3.5*cos(cosMag), sin(cosMag) * 2, 0);
 	solidLightPoint->setPos(pos.x, pos.y, pos.z);
 	return;
 	{
@@ -48,7 +48,7 @@ void Context::init(NGraphic::NScene::Scene * scene)
 	m_scene = scene;
 	//return;
 
-	auto sphereLight = scene->getPointLight(Vector3(1, 1, 1), 1.0f);
+	auto sphereLight = scene->getPointLight(Vector3(1, 1, 1), 6.0f);
 	auto objSolidPointLight = Light::GET_POINTLIGHT(Vector4(1, 1, 1, 1),0.5f);
 	objSolidPointLight->m_graphicObjects.push_back(sphereLight);
 	objSolidPointLight->setPos(0, 0, 5);

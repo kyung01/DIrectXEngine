@@ -76,16 +76,40 @@ int getClusterBelong(
 }	
 float3 getPointlight_UVDepth(
 	float4x4 matLight,
-	float uBegin ,float uSize ,float uScale,
-	float vBegin ,float vSize ,float vScale,
+	float uBegin , float vBegin, 
+	float uSize , float vSize, 
+	float uScale, float vScale,
 	float3 position) {
 	float4 posFromLightPerspective = mul(float4(position.x, position.y, position.z, 1.0f), matLight);
-	posFromLightPerspective /= 0.0001 + posFromLightPerspective.w;
+	posFromLightPerspective /=  posFromLightPerspective.w;
 	float depthLight = posFromLightPerspective.z;
 	float u = posFromLightPerspective.x * 0.5 + 0.5; 
 	float v = posFromLightPerspective.y * 0.5 + 0.5; 
-	if (u < 0 || u > 1 || v < 0 || v > 1) {
-		return float3(-1, -1, 0);
+	float MIN_UV_ERROR = 0.0000000001;
+
+	if (u < 0) {
+		if (u > -MIN_UV_ERROR)
+			u = 0;
+		else 
+			return float3(-1, -1, 0);
+	}
+	if (v < 0) {
+		if (v > -MIN_UV_ERROR)
+			v = 0;
+		else
+			return float3(-1, -1, 0);
+	}
+	if (u > 1) {
+		if (u < 1 + MIN_UV_ERROR)
+			u = 1;
+		else
+			return float3(-1, -1, 0);
+	}
+	if (v > 1) {
+		if (v < 1 + MIN_UV_ERROR)
+			v = 1;
+		else
+			return float3(-1, -1, 0);
 	}
 
 	u = (uBegin + u * uSize) / uScale; 
@@ -104,40 +128,9 @@ float4 spotLight(
 	float3 vertPosition, float3 vertNormal) {
 	return float4(0, 0, 0, 0);
 }
-float pointLight(float4x4 lightMat,  float3 lightPosition, float3 position, float3 normal) {
-	float light = pointLight(lightPosition, position, normal);
-	int pointLightIndex = getPointLightTextureIndex(input.worldPos, light.position);
-	if (pointLightIndex == -1) return float4(1, 1, 1, 1);
-	position = position - lightPosition;
-	switch (pointLightIndex) {
-	case 0:
-		break;
-	case 1:
-		break;
-	case 2:
-		break;
-	case 3:
-		break;
-	case 4:
-		break;
-	case 5:
-		break;
-	}
-	float3 uv_depth = getPointlight_UVDepth(
-		light.matLight,
-		light.topLeftX, light.viewPortWidth, 1280.0f,
-		light.topLeftY, light.viewPortHeight, 1280.0f,
-		input.worldPos.xyz
-	);
 
-	float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv_depth.xy);
-	float isShadow = (uv_depth.z - 0.001)< lightBaked.x;
-	color += colorAdd * isShadow;
-
-	return light;
-}
-int getPointLightTextureIndex(float3 position, float lightPosition) {
-	float3 positionDiff = position - lightPosition;
+int getPointLightTextureIndex(float3 positionDiff) {
+	positionDiff = normalize(positionDiff);
 	if (abs(positionDiff.x) > abs(positionDiff.y) && abs(positionDiff.x) > abs(positionDiff.z)) {
 		if (positionDiff.x > 0)
 			return 0;
@@ -157,6 +150,105 @@ int getPointLightTextureIndex(float3 position, float lightPosition) {
 			return 5;
 	}
 	return -1;
+
+}
+float pointLight(
+
+	float4x4 matLight,
+	float viewportTopLeftX, 
+	float viewportTopLeftY,
+	float viewportWidth, 
+	float viewportHeight,
+	float viewportScaleX,
+	float viewportScaleY,
+	float3 lightPosition, 
+	float3 position, float3 normal) {
+	
+	float light = pointLight(lightPosition, position, normal);
+	int pointLightIndex = getPointLightTextureIndex(position - lightPosition);
+	if (pointLightIndex == -1) return float4(1, 1, 1, 1);
+	position = position - lightPosition;
+	//float x = position.x, y = position.y, z = position.z;
+
+	float dummy = 0;
+	switch (pointLightIndex) {
+	default:
+		return -1;
+	case 0:
+		dummy = position.x;
+		position.x = -position.z;
+		position.z = dummy;
+		break;
+	case 1:
+		dummy = position.x;
+		position.x = position.z;
+		position.z = -dummy;
+		break;
+	case 2:
+		dummy = position.y;
+		position.y = -position.z;
+		position.z = dummy;
+		break;
+	case 3:
+		dummy = position.y;
+		position.y = position.z;
+		position.z = -dummy;
+		break;
+	case 4:
+		break;
+	case 5:
+		position.x = -position.x;
+		position.z = -position.z;
+		break;
+	}
+	/*
+	switch (pointLightIndex) {
+	default:
+	return -1;
+	case 0:
+	dummy = position.x;
+	position.x = -position.z;
+	position.z = dummy;
+	break;
+	case 1:
+	dummy = position.x;
+	position.x = position.z;
+	position.z = -dummy;
+	break;
+	case 2:
+	dummy = position.y;
+	position.y = -position.z;
+	position.z = dummy;
+	break;
+	case 3:
+	dummy = position.y;
+	position.y = position.z;
+	position.z = -dummy;
+	break;
+	case 4:
+	break;
+	case 5:
+	position.x = -position.x;
+	position.z = -position.z;
+	break;
+	}
+	*/
+	viewportTopLeftX += (pointLightIndex )* ( viewportWidth/6.0);
+	viewportWidth = viewportWidth / 6.0;
+	float3 uv_depth = getPointlight_UVDepth(
+		matLight,
+		viewportTopLeftX, viewportTopLeftY,
+		viewportWidth, viewportHeight,
+		viewportScaleX, viewportScaleY,
+		position
+	);
+	if ( uv_depth.x == -1 || uv_depth.y == -1) {
+		return -2;
+	}
+	float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv_depth.xy);
+	float isShadow = (uv_depth.z - 0.001)< lightBaked.x;
+	
+	return light *isShadow;
 }
 // Entry point for this pixel shader
 float4 main(VertexToPixel input) : SV_TARGET
@@ -209,32 +301,45 @@ float4 main(VertexToPixel input) : SV_TARGET
 		posFromLightPerspective2 /=0.00001f + posFromLightPerspective2.w;
 		//LightParameter light1 = lightParameter[lightIndex+1];
 
-		float3 uv_depth = float3(-1, -1, 1);
-		
-
 		
 		
 
 		if (light.isSpotlight) {
+			float3 uv_depth = float3(-1, -1, 1);
+
+
 			colorAdd += light.color * spotLight(light.position, light.axis, light.angle*0.5, light.angle, input.worldPos, inputNormal);
 			uv_depth = getPointlight_UVDepth(
 				light.matLight,
-				light.topLeftX, light.viewPortWidth, 1280.0f,
-				light.topLeftY, light.viewPortHeight, 1280.0f,
+				light.topLeftX, light.topLeftY,
+				light.viewPortHeight,  light.viewPortWidth, 
+				1280.0f, 1280.0f,
 				input.worldPos.xyz
 			);
+			if (uv_depth.x == -1 || uv_depth.y == -1) {
+				continue;
+			}
+			float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv_depth.xy);
+			float isShadow = (uv_depth.z - 0.001)< lightBaked.x;
+			colorAdd *= isShadow;
 
 		}
 		else {
-			colorAdd += light.color * pointLight(light.matLight, light.position,  input.worldPos, inputNormal);
-		}
-		if (uv_depth.x == -1 || uv_depth.y == -1) {
-			continue;
-		}
+			float lightPointLight = pointLight(
+				light.matLight,
+				light.topLeftX, light.topLeftY,
+				light.viewPortWidth, light.viewPortHeight,
+				1280.0f, 1280.0f,
 
-		float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv_depth.xy);
-		float isShadow = (uv_depth.z - 0.001)< lightBaked.x;
-		color += colorAdd * isShadow;
+				light.position,
+				input.worldPos, inputNormal);
+			if (lightPointLight == -1) return float4(1, 0, 0, 1);
+			if (lightPointLight == -2) return float4(1, 0, 1, 1);
+			colorAdd += light.color * lightPointLight;
+		}
+		
+
+		color += colorAdd ;
 		
 		
 	}

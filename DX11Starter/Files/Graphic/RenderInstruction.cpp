@@ -715,7 +715,11 @@ void RenderInstruction::RENDER_LIGHT_ATLAS_POINT(
 	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, 
 	RenderTexture & renderTexture, DepthTexture & depthTexture, 
 	NScene::Scene & scene, 
-	DirectX::SimpleMath::Matrix & worldMatrix, DirectX::SimpleMath::Matrix & viewMatrixXPositive, DirectX::SimpleMath::Matrix & viewMatrixXNegative, DirectX::SimpleMath::Matrix & viewMatrixYPositive, DirectX::SimpleMath::Matrix & viewMatrixYNegative, DirectX::SimpleMath::Matrix & viewMatrixZPositive, DirectX::SimpleMath::Matrix & viewMatrixZNegative, DirectX::SimpleMath::Matrix & projMatrix, float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight)
+	DirectX::SimpleMath::Matrix & worldMatrix, 
+	DirectX::SimpleMath::Matrix & viewMatrixXPositive, DirectX::SimpleMath::Matrix & viewMatrixXNegative, 
+	DirectX::SimpleMath::Matrix & viewMatrixYPositive, DirectX::SimpleMath::Matrix & viewMatrixYNegative, 
+	DirectX::SimpleMath::Matrix & viewMatrixZPositive, DirectX::SimpleMath::Matrix & viewMatrixZNegative, 
+	DirectX::SimpleMath::Matrix & projMatrix, float topLeftX, float topLeftY, float viewportWidth, float ViewportHeight)
 {
 	RENDER_LIGHT_ATLAS_SPOT(
 		device, context, asset, renderTexture, depthTexture,
