@@ -78,7 +78,7 @@ float3 getPointlight_UVDepth(
 	float4x4 matLight,
 	float uBegin , float vBegin, 
 	float uSize , float vSize, 
-	float uScale, float vScale,
+	float uScale, float vScale,		
 	float3 position) {
 	float4 posFromLightPerspective = mul(float4(position.x, position.y, position.z, 1.0f), matLight);
 	posFromLightPerspective /=  posFromLightPerspective.w;
@@ -129,22 +129,21 @@ float4 spotLight(
 	return float4(0, 0, 0, 0);
 }
 
-int getPointLightTextureIndex(float3 positionDiff) {
-	positionDiff = normalize(positionDiff);
-	if (abs(positionDiff.x) > abs(positionDiff.y) && abs(positionDiff.x) > abs(positionDiff.z)) {
-		if (positionDiff.x > 0)
+int getPointLightTextureIndex(float3 lightToPosDir) {
+	if (abs(lightToPosDir.x) > abs(lightToPosDir.y) && abs(lightToPosDir.x) > abs(lightToPosDir.z)) {
+		if (lightToPosDir.x > 0)
 			return 0;
 		else
 			return 1;
 	}
-	if (abs(positionDiff.y) > abs(positionDiff.x) && abs(positionDiff.y) > abs(positionDiff.z)) {
-		if (positionDiff.y > 0)
+	if (abs(lightToPosDir.y) > abs(lightToPosDir.x) && abs(lightToPosDir.y) > abs(lightToPosDir.z)) {
+		if (lightToPosDir.y > 0)
 			return 2;
 		else
 			return 3;
 	}
-	if (abs(positionDiff.z) > abs(positionDiff.x) && abs(positionDiff.z) > abs(positionDiff.y)) {
-		if (positionDiff.z > 0)
+	if (abs(lightToPosDir.z) > abs(lightToPosDir.x) && abs(lightToPosDir.z) > abs(lightToPosDir.y)) {
+		if (lightToPosDir.z > 0)
 			return 4;
 		else
 			return 5;
@@ -165,12 +164,16 @@ float pointLight(
 	float3 position, float3 normal) {
 	
 	float light = pointLight(lightPosition, position, normal);
-	int pointLightIndex = getPointLightTextureIndex(position - lightPosition);
+	float3 positionDir = (position - lightPosition);
+	int pointLightIndex = getPointLightTextureIndex(positionDir);
 	if (pointLightIndex == -1) return float4(1, 1, 1, 1);
+	float3 positionOriginal = position;
 	position = position - lightPosition;
 	//float x = position.x, y = position.y, z = position.z;
 
 	float dummy = 0;
+
+
 	switch (pointLightIndex) {
 	default:
 		return -1;
@@ -201,38 +204,7 @@ float pointLight(
 		position.z = -position.z;
 		break;
 	}
-	/*
-	switch (pointLightIndex) {
-	default:
-	return -1;
-	case 0:
-	dummy = position.x;
-	position.x = -position.z;
-	position.z = dummy;
-	break;
-	case 1:
-	dummy = position.x;
-	position.x = position.z;
-	position.z = -dummy;
-	break;
-	case 2:
-	dummy = position.y;
-	position.y = -position.z;
-	position.z = dummy;
-	break;
-	case 3:
-	dummy = position.y;
-	position.y = position.z;
-	position.z = -dummy;
-	break;
-	case 4:
-	break;
-	case 5:
-	position.x = -position.x;
-	position.z = -position.z;
-	break;
-	}
-	*/
+	
 	viewportTopLeftX += (pointLightIndex )* ( viewportWidth/6.0);
 	viewportWidth = viewportWidth / 6.0;
 	float3 uv_depth = getPointlight_UVDepth(
@@ -246,6 +218,10 @@ float pointLight(
 		return -2;
 	}
 	float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv_depth.xy);
+	
+	//return lightBaked.xyz;// *min(1, lightBaked.w);
+
+
 	float isShadow = (uv_depth.z - 0.001)< lightBaked.x;
 	
 	return light *isShadow;
@@ -330,7 +306,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 				light.topLeftX, light.topLeftY,
 				light.viewPortWidth, light.viewPortHeight,
 				1280.0f, 1280.0f,
-
+			
 				light.position,
 				input.worldPos, inputNormal);
 			if (lightPointLight == -1) return float4(1, 0, 0, 1);

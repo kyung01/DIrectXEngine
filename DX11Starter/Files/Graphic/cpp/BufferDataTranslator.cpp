@@ -77,7 +77,7 @@ void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& 
 
 		}
 		if (light.m_lightType == NScene::LIGHT_TYPE::POINTLIGHT) {
-			auto matProj = light.getProjectionMatrix(info.viewportWidth/6.0, info.viewportHeight/6.0);
+			auto matProj = light.getProjectionMatrix(info.viewportWidth/6.0, info.viewportHeight);
 			DirectX::XMStoreFloat4x4(&parameter.matLight, XMMatrixTranspose(matProj));
 
 		}

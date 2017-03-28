@@ -180,7 +180,7 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 				pointLight->getMatrixXPlus(), pointLight->getMatrixXMinus(),
 				pointLight->getMatrixYPlus(), pointLight->getMatrixYMinus(), 
 				pointLight->getMatrixZPlus(), pointLight->getMatrixZMinus(), 
-				(**it).getProjectionMatrix(lightInfo.viewportWidth/6, lightInfo.viewportHeight),
+				(**it).getProjectionMatrix(lightInfo.viewportWidth/6, lightInfo.viewportWidth / 6),
 				lightInfo.topLeftX, lightInfo.topLeftY, lightInfo.viewportWidth, lightInfo.viewportHeight);
 		}
 
