@@ -185,6 +185,7 @@ NGraphic::NScene::PointLight::PointLight()
 {
 	Light();
 	m_lightType = LIGHT_TYPE::POINTLIGHT;
+	setFOV(3.14 / 2 + 0.01f);
 }
 
 

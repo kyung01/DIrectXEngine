@@ -65,7 +65,7 @@ float pointLight(
 																						  //return isPixelLit(textureShadow, samplerBoarderZero,
 																						  //	matLightMVP,
 																						  //	position);
-	return  brightness * dot(normalize(posToLight), normal);
+	return  brightness *max(0, dot(normalize(posToLight), normal) );
 }
 float spotLight(
 	float3 lightPos, float3 lightDir, float lightInner, float lightOutter,

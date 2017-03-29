@@ -1,6 +1,21 @@
 #include <Game\Context.h>
 #include <iostream>
 using namespace NGame;
+float NGame::Context::hprRandomFloat()
+{
+	return (rand()%100)/100.0f;
+}
+Vector3 NGame::Context::hprGetRandomColor(int seed)
+{
+	Vector3 colors[] = { Vector3(1,0,0) ,Vector3(1,1,0) ,Vector3(0,1,0),Vector3(0,1,1),Vector3(0,0,1),Vector3(1,0,1) };
+	int index = (seed*100) % 6;
+	float ratio = ((seed * 357) % 100) / 100.0f;
+	Vector3 colorFrom = colors[index];
+	Vector3 colorTo = colors[(index+1)%6];
+	Vector3 color = colorFrom + (colorTo - colorFrom)*ratio;
+	std::cout <<"SED "<< seed << " RATIO " << ratio <<" COLOR " << color.x << " " << color.y << " " << color.z << "\n";
+	return colorFrom + (colorTo - colorFrom)*ratio;
+}
 NGame::Context::Context()
 {
 }
@@ -14,7 +29,7 @@ void NGame::Context::update(float timeElapsed)
 	for (auto it = m_lights.begin(); it != m_lights.end(); it++) {
 		(*it)->update(*this, timeElapsed);
 	}
-	//return;
+	return;
 
 	cosMag += timeElapsed*0.01;
 
@@ -47,13 +62,34 @@ void Context::init(NGraphic::NScene::Scene * scene)
 {
 	m_scene = scene;
 	//return;
+	float X_MAX = 5.0f, Y_MAX = 3.0f, Z_MAX = 2.0f;
+	for (int i = 0; i < 10 ; i++) {
+		Vector3 lightPosition(-5 + X_MAX *	 hprRandomFloat(),2+ Y_MAX * hprRandomFloat(), -1+Z_MAX * hprRandomFloat());
+		Vector3 lightColor = hprGetRandomColor(hprRandomFloat() * 100);
+		auto objSolidPointLight = Light::GET_POINTLIGHT(Vector4(lightColor.x, lightColor.y, lightColor.z, 1), 5.0f);
+		int lightType = (int)(100 * hprRandomFloat()) ;
+		float e = hprRandomFloat();
+		if (lightType%2 == 0) {
+			auto sphereLight = scene->getPointLight(lightColor, 5.0f);
+			objSolidPointLight->m_graphicObjects.push_back(sphereLight);
+			m_lights.push_back(objSolidPointLight);
 
-	auto sphereLight = scene->getPointLight(Vector3(1, 1, 1), 6.0f);
-	auto objSolidPointLight = Light::GET_POINTLIGHT(Vector4(1, 1, 1, 1),0.5f);
-	objSolidPointLight->m_graphicObjects.push_back(sphereLight);
-	objSolidPointLight->setPos(0, 0, 5);
-	m_lights.push_back(objSolidPointLight);
-	this->solidLightPoint = objSolidPointLight;
+		}
+		else {
+
+			auto spotLight = scene->getSpotLight(3.14f/2 * (0.5f + hprRandomFloat() * 0.5f),lightColor, 10.0f);
+			spotLight->setLightColor(lightColor);
+			objSolidPointLight->m_graphicObjects.push_back(spotLight);
+			m_lights.push_back(objSolidPointLight);
+		}
+		objSolidPointLight->setPos(lightPosition.x, lightPosition.y, lightPosition.z);
+	}
+	//auto sphereLight = scene->getPointLight(Vector3(1, 1, 1), 5.0f);
+	//auto objSolidPointLight = Light::GET_POINTLIGHT(Vector4(1, 1, 1, 1), 5.0f);
+	//objSolidPointLight->m_graphicObjects.push_back(sphereLight);
+	//objSolidPointLight->setPos(0, 0, 5);
+	//m_lights.push_back(objSolidPointLight);
+	//this->solidLightPoint = objSolidPointLight;
 	return;
 
 	//auto cone = scene->getObjSolid();

@@ -8,6 +8,8 @@ namespace NGame {
 	private:
 
 	protected:
+		float hprRandomFloat();
+		Vector3 hprGetRandomColor(int seed);
 
 	public:
 

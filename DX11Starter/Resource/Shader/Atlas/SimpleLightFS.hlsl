@@ -309,13 +309,13 @@ float4 main(VertexToPixel input) : SV_TARGET
 			
 				light.position,
 				input.worldPos, inputNormal);
-			if (lightPointLight == -1) return float4(1, 0, 0, 1);
-			if (lightPointLight == -2) return float4(1, 0, 1, 1);
+			//if (lightPointLight == -1) return float4(1, 0, 0, 1);
+			//if (lightPointLight == -2) return float4(1, 0, 1, 1);
 			colorAdd += light.color * lightPointLight;
 		}
 		
 
-		color += colorAdd ;
+		color += saturate(colorAdd) ;
 		
 		
 	}

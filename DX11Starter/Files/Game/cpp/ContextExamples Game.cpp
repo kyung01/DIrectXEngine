@@ -15,7 +15,7 @@ void NGame::LoadExample00(Context &context)
 	plazaSolidObject.get()->m_textures[NGraphic::TEXTURE_TYPE_PROPERTY] = NGraphic::KEnum::TEXTURE_ID_RED;
 	plazaSolidObject.get()->m_textures[NGraphic::TEXTURE_TYPE_NORMAL] = NGraphic::KEnum::TEXTURE_ID_NORMAL_DEFAULT;// normalIds[i % 6];
 	plazaSolidObject.get()->m_textures[NGraphic::TEXTURE_TYPE_SPECULAR] = NGraphic::KEnum::TEXTURE_ID_WHITE;
-	plazaSolidObject.get()->setScale(Vector3(0.005, 0.005, 0.005));
+	plazaSolidObject.get()->setScale(Vector3(0.01, 0.01, 0.01));
 	
 	//if (j <= 2)
 	//	obj.get()->setScale(Vector3(0.5, 0.5, 0.5));
@@ -122,6 +122,7 @@ void NGame::LoadExample00(Context &context)
 
 
 
+	return;
 
 	{
 		auto lightObj = context.m_scene->getSpotLight(3.14/2, Vector3(20,0,0),10000);

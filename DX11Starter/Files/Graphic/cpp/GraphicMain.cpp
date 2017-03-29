@@ -106,7 +106,7 @@ void GraphicMain::updateBufferLightPrameter(
 
 void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights)
 {
-	float size = 5;
+	float size = 3;
 	
 	m_atlasSlicer->clear();
 	for (auto it = lights.begin(); it != lights.end(); it++) {
@@ -121,7 +121,7 @@ void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &li
 				system("pause");
 			}
 			else {
-				size += 1.9f;
+				//size += 1.9f;
 				//std::cout << "GraphicMain::updateLightAtlas-> Received available space\n";
 				std::cout <<"CREATED VIEWPORT : " << info.topLeftX << " , " << info.topLeftY<< " , " << info.viewportWidth << " , " << info.viewportHeight<<"\n";
 
@@ -130,7 +130,7 @@ void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &li
 			}
 		}
 		else {
-			if (!m_atlasSlicer->getRoom(info.topLeftX, info.topLeftY, info.viewportWidth, info.viewportHeight, 3 * 6, 3)) {
+			if (!m_atlasSlicer->getRoom(info.topLeftX, info.topLeftY, info.viewportWidth, info.viewportHeight, size * 6, size)) {
 				std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
 				system("pause");
 			}
@@ -157,10 +157,6 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		auto &light = **it;
 		auto &lightInfo = m_lightInfos[light.m_id];
-		//What kinds of lights are there ?
-		//if (light.m_lightType != NScene::LIGHT_TYPE::SPOTLIGHT) continue;
-		//std::cout << "\nlightInfo.topLeftX" << lightInfo.topLeftX << " AND " << "lightInfo.viewportWidth" << lightInfo.viewportWidth << " \n";
-		//std::cout << "\nlightInfo.topLeftY" << lightInfo.topLeftY << " AND " << "lightInfo.viewportHE" << lightInfo.viewportHeight << " \n";
 		if(light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT)
 			RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 			device, context, asset,
