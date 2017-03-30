@@ -137,17 +137,21 @@ void Frustum::testPointlight(int lightIndex, Vector3 center, float radius)
 				}
 		
 	}
+	else {
+	}
 }
 void Frustum::testSpotlight(int lightIndex, Vector3 vertex, Vector3 axis, float H, float alpha)
 {
 	//;axis.z += 0.1435;//add noise to make sure they are not perfectly aligned
 	int index;
 	std::pair<int, int> resultX, resultY, resultZ;
-
-
-	if (	testSpotlight(resultX, planesX, vertex, axis,H,alpha) 
-			&& testSpotlight(resultY, planesY, vertex, axis, H, alpha)
-			&& testSpotlight(resultZ, planesZ, vertex, axis, H, alpha)) {
+	//system("cls");
+	bool
+		isPlaneX = testSpotlight(resultX, planesX, vertex, axis, H, alpha),
+		isPlaneY = testSpotlight(resultY, planesY, vertex, axis, H, alpha),
+		isPlaneZ = testSpotlight(resultZ, planesZ, vertex, axis, H, alpha);
+	if (	 isPlaneX && isPlaneY && isPlaneZ) {
+		//std::cout << "testPointlight true \n";
 		//std::cout << "Checked\n";
 
 		//std::cout << "spotlight registered\n";
@@ -161,16 +165,33 @@ void Frustum::testSpotlight(int lightIndex, Vector3 vertex, Vector3 axis, float 
 				}
 
 	}
-}
-bool Frustum::testSpotlight(std::pair<int, int> &result, std::vector<Plane> planes, Vector3 vertex, Vector3 axis, float H, float alpha) {
+	else {
 
-	int x0 = -1, x1 = -1;
+		std::cout << "testPointlight false \n";
+	}
+	//std::cout << isPlaneX << " " << isPlaneY << " " << isPlaneZ << "" << "\n";
+	//std::cout << H<< " " << alpha << " \n";
+	//std::cout << vertex.x << " " << vertex.y << " " << vertex.z << " \n";
+	//std::cout << axis.x << " " << axis.y << " " << axis.z << " \n";
+}
+bool Frustum::testSpotlight(
+	std::pair<int, int> &result, 
+	std::vector<Plane> planes, 
+	Vector3 vertex, Vector3 axis, float H, float alpha, bool isDebug ) {
+
+	int x0 = -1, x1 = -1, last_vertex_p0_p1_Direction = 0;
+
+	float disVertex , p0DotCoordinate , p1DotCoordinate ;
 	for (int i = 0; i < planes.size(); i++) {
 
 		Vector3 n1 = ((Vector3)planes[i].Normal()).Cross(axis);
 		Vector3 n2 = n1.Cross(axis);
 		n2.Normalize();
-		//if (((Vector3)planes[i].Normal()).Dot(axis) <= 0.1) {
+		if (isDebug) {
+			std::cout << "TestSpotLight Debug 0-1 :  " << n1.x << " " << n1.y << " " << n1.z << " \n";
+			std::cout << "TestSpotLight Debug 0-2 :  " << n2.x << " " << n2.y << " " << n2.z << " \n";
+		}
+		//is the cone axis parallel to the normal?
 		if (n1.x*n1.x + n1.y*n1.y + n1.z*n1.z <= 0.01) {
 			if (abs(planes[i].DotCoordinate(vertex)) < H) {
 				x0 = max(0, i - 1);
@@ -180,13 +201,32 @@ bool Frustum::testSpotlight(std::pair<int, int> &result, std::vector<Plane> plan
 		//auto n2 = Vector3::Cross(Vector3::Cross(((Vector3)planes[i].Normal), axis), axis);
 		Vector3 p0 = vertex + H * axis - tan(alpha / 2) *H * n2;
 		Vector3 p1 = vertex + H * axis + tan(alpha / 2) *H * n2;
-		float disVertex = planes[i].DotCoordinate(vertex);
-		if (disVertex * planes[i].DotCoordinate(p0) < 0 || disVertex * planes[i].DotCoordinate(p1) < 0) {
+		p0DotCoordinate = planes[i].DotCoordinate(p0);
+		p1DotCoordinate = planes[i].DotCoordinate(p1);
+		disVertex = planes[i].DotCoordinate(vertex);
+		if (isDebug) {
+			std::cout << "TestSpotLight disVertex :  " << disVertex << " \n";
+			std::cout << "TestSpotLight disVertex mult 0 : " << planes[i].DotCoordinate(p0) << " \n";
+			std::cout << "TestSpotLight disVertex mult 1 : " << planes[i].DotCoordinate(p1) << " \n";
+		}
+		if (disVertex * p0DotCoordinate < 0 || disVertex *p1DotCoordinate < 0) {
 			x0 = max(0, i - 1);
 			break;
 		}
+		int vertex_p0_p1_Direction =( p0DotCoordinate / abs(p0DotCoordinate) >0)?1:-1;
+		if (last_vertex_p0_p1_Direction!= 0 && vertex_p0_p1_Direction != last_vertex_p0_p1_Direction) {
+			x0 = max(0, i - 1);
+			break;
+		}
+		else {
+			last_vertex_p0_p1_Direction = vertex_p0_p1_Direction;
+		}
+	}
+	if (isDebug) {
+		std::cout << "TestSpotLight Debug 1 " << x0 << " \n";
 	}
 	if (x0 == -1) return false;
+	last_vertex_p0_p1_Direction = 0;
 	for (int i = planes.size() - 1; i >= 0; i--) {
 
 		Vector3 n1 = ((Vector3)planes[i].Normal()).Cross(axis);
@@ -198,16 +238,30 @@ bool Frustum::testSpotlight(std::pair<int, int> &result, std::vector<Plane> plan
 				break;
 			}
 		}
-		//auto n2 = Vector3::Cross(Vector3::Cross(((Vector3)planes[i].Normal), axis), axis);
+
 		Vector3 p0 = vertex + H * axis - tan(alpha / 2) *H * n2;
 		Vector3 p1 = vertex + H * axis + tan(alpha / 2) *H * n2;
-		float disVertex = planes[i].DotCoordinate(vertex);
-		if (disVertex * planes[i].DotCoordinate(p0) < 0 || disVertex * planes[i].DotCoordinate(p1) < 0) {
+		disVertex = planes[i].DotCoordinate(vertex);
+		p0DotCoordinate = planes[i].DotCoordinate(p0);
+		p1DotCoordinate = planes[i].DotCoordinate(p1);
+		if (disVertex * p0DotCoordinate < 0 || disVertex * p1DotCoordinate< 0) {
 			x1 = min(i + 1, planes.size() - 1);
 			break;
 		}
+		int vertex_p0_p1_Direction = (p0DotCoordinate / abs(p0DotCoordinate) >0) ? 1 : -1;
+		if (last_vertex_p0_p1_Direction != 0 &&  vertex_p0_p1_Direction != last_vertex_p0_p1_Direction) {
+			x1 = min(i + 1, planes.size() - 1);
+			break;
+		}
+		else {
+			last_vertex_p0_p1_Direction = vertex_p0_p1_Direction;
+		}
+
 	}
 
+	if (isDebug) {
+		std::cout << "TestSpotLight Debug 2 " << x0  << " , " <<x1<< " \n";
+	}
 	if (x0 == -1 || x1 == -1) return false;
 	result.first = x0;
 	result.second = x1;

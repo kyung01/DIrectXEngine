@@ -152,6 +152,8 @@ void RenderInstruction::RENDER_DEBUG(
 	auto &shaderVert = *asset.m_shadersVert[RENDER_TRANSPARENT];
 	auto &shaderFrag = *asset.m_shadersFrag[RENDER_TRANSPARENT];
 	NGraphic::Mesh&		sphere = *asset.m_meshes[MESH_ID_SPHERE];
+	NGraphic::Mesh&		meshPointlight = *asset.m_meshes[MESH_POINTLIGHT];
+	NGraphic::Mesh&		meshSpotlight = *asset.m_meshes[MESH_ID_CONE];
 	NGraphic::Mesh&		box = *asset.m_meshes[MESH_ID_CUBE];
 	NGraphic::MeshLine&	line = *asset.m_meshLine;
 	NGraphic::MeshCube&	cube = *asset.m_meshCube;
@@ -164,12 +166,9 @@ void RenderInstruction::RENDER_DEBUG(
 
 
 	//context->RSSetState(asset.RASTR_STATE_CULL_);
-	context->OMSetBlendState(asset.BLEND_STATE_ADDITIVE, 0, 0xffffffff);
 
-	DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(scene.m_camMain.getViewMatrix())); // Transpose for HLSL!
-	shaderVert.SetMatrix4x4("view", matStore);
-	DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(scene.m_camMain.getProjectionMatrix())); // Transpose for HLSL!
-	shaderVert.SetMatrix4x4("proj", matStore);
+	SET_MATRIX(&shaderVert, "view", scene.m_camMain.getViewMatrix());
+	SET_MATRIX(&shaderVert, "proj", scene.m_camMain.getProjectionMatrix());
 	shaderFrag.SetShaderResourceView("textureEyeDepth",textureEyeDepth.getShaderResourceView());
 	shaderFrag.SetSamplerState("samplerBoarderZero", asset.m_samplers[SAMPLER_ID_BORDER_ZERO]);
 	shaderFrag.SetFloat("SCREEN_WIDTH", renderTexture.getWidth());
@@ -177,32 +176,45 @@ void RenderInstruction::RENDER_DEBUG(
 	shaderVert.SetShader();
 	shaderFrag.SetShader();
 
+	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
+	//renderTexture.clear(context, 1, 0, 0, 1);
+	//depthTexture.clear(context);
+	context->RSSetState(asset.RASTR_STATE_CULL_BACK);
+	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
+	//context->OMSetBlendState(asset.BLEND_STATE_ADDITIVE, 0, 0xffffffff);
 
 	//Render virtual objects in scale of light
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 
+		depthTexture.clear(context);
+		Vector3 pos = it->get()->m_pos;
 		Vector3 lightScale = it->get()->m_scale;
-		it->get()->setScale(Vector3(it->get()->m_lightDistance * 2));
+		it->get()->setScale(Vector3(it->get()->m_lightDistance *2));
 
-		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose(
-
-
-
-			(**it).getModelMatrix())); // Transpose for HLSL!
-		shaderVert.SetMatrix4x4("world", matStore);
+		SET_MATRIX(&shaderVert, "world", 
+			DirectX::XMMatrixMultiply( 
+					DirectX::XMMatrixMultiply(
+						DirectX::XMMatrixScaling(it->get()->m_lightDistance, it->get()->m_lightDistance, it->get()->m_lightDistance),
+						DirectX::XMMatrixRotationX(-3.14 / 2)
+					),
+				DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z)
+			) 
+		);
 		shaderFrag.SetFloat3("color", Vector3((**it).getLightColor()));
+		shaderFrag.SetFloat("transparent", 0.1f);
 
 
 		shaderVert.CopyAllBufferData();
 		shaderFrag.CopyAllBufferData();
 
+		auto &lightMesh =( (it->get()->m_lightType == NScene::LIGHT_TYPE::POINTLIGHT) ? meshPointlight : meshSpotlight);
 
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
-		context->IASetVertexBuffers(0, 1, &sphere.getBufferVertexRef(), &stride, &offset);
-		context->IASetIndexBuffer(sphere.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+		context->IASetVertexBuffers(0, 1, &lightMesh.getBufferVertexRef(), &stride, &offset);
+		context->IASetIndexBuffer(lightMesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
 		context->DrawIndexed(
-			sphere.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
+			lightMesh.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
 			0,     // Offset to the first index we want to use
 			0);    // Offset to add to each index when looking up vertices
 		it->get()->setScale(lightScale);
@@ -243,34 +255,6 @@ void RenderInstruction::RENDER_DEBUG(
 	context->RSSetState(asset.RASTR_STATE_CULL_BACK);
 	ID3D11Buffer * bufferVertices, *bufferIndices;
 
-	if (false)for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
-		bufferVertices = cube.getBufferVertices();
-		bufferIndices = cube.getBufferIndices();
-		Vector3 lightScale = it->get()->m_scale;
-		it->get()->setScale(Vector3::One);
-
-		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix())); // Transpose for HLSL!
-		shaderVert.SetMatrix4x4("world", matStore);
-		Vector3 color = (**it).getLightColor();
-		shaderFrag.SetFloat4("color", Vector4(color.x, color.y, color.z, 1));
-
-
-		shaderVert.CopyAllBufferData();
-		shaderFrag.CopyAllBufferData();
-
-
-		UINT stride = sizeof(VertexPosition);
-		UINT offset = 0;
-		context->IASetVertexBuffers(0, 1, &bufferVertices, &stride, &offset);
-		context->IASetIndexBuffer(bufferIndices, DXGI_FORMAT_R32_UINT, 0);
-		context->DrawIndexed(
-			3 * 2 * 6,
-			//cube.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
-			0,     // Offset to the first index we want to use
-			0);    // Offset to add to each index when looking up vertices
-		it->get()->setScale(lightScale);
-	}
-
 	DirectX::XMStoreFloat4x4(&matStore, Matrix::Identity); // Transpose for HLSL!
 	shaderVert.SetMatrix4x4("world", matStore);
 	shaderVert.SetMatrix4x4("view", matStore);
@@ -281,14 +265,16 @@ void RenderInstruction::RENDER_DEBUG(
 
 	float randomSeed = 0;
 
-	for (auto it = m_frustum.m_clusters.begin(); it != m_frustum.m_clusters.end(); it++, index++) {
+	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
+	if(true)for (auto it = m_frustum.m_clusters.begin(); it != m_frustum.m_clusters.end(); it++, index++) {
 		randomSeed++;
 		if (it->light.size()) {
 			auto frustum = asset.m_frustums[index];
 			bufferVertices = frustum->getBufferVertices();
 			bufferIndices = frustum->getBufferIndices();
 			auto color = asset.getRandomColor(randomSeed);
-			shaderFrag.SetFloat4("color", Vector4(color.x, color.y, color.z, 0.5f));
+			shaderFrag.SetFloat3("color", Vector3(color.x, color.y, color.z));
+			shaderFrag.SetFloat("transparent", 0.5f);
 
 
 			shaderVert.CopyAllBufferData();
@@ -311,33 +297,6 @@ void RenderInstruction::RENDER_DEBUG(
 
 
 
-	//context->RSSetState(asset.RASTR_WIREFRAME);
-
-	if (false)for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
-		bufferVertices = line.getBufferVertices();
-		bufferIndices = line.getBufferIndices();
-		Vector3 lightScale = it->get()->m_scale;
-		it->get()->setScale(Vector3::One);
-
-		DirectX::XMStoreFloat4x4(&matStore, XMMatrixTranspose((**it).getModelMatrix())); // Transpose for HLSL!
-		shaderVert.SetMatrix4x4("world", matStore);
-		shaderFrag.SetFloat3("color", Vector3((**it).getLightColor()));
-
-
-		shaderVert.CopyAllBufferData();
-		shaderFrag.CopyAllBufferData();
-
-
-		UINT stride = sizeof(VertexPosition);
-		UINT offset = 0;
-		context->IASetVertexBuffers(0, 1, &bufferVertices, &stride, &offset);
-		context->IASetIndexBuffer(bufferIndices, DXGI_FORMAT_R32_UINT, 0);
-		context->DrawIndexed(
-			line.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
-			0,     // Offset to the first index we want to use
-			0);    // Offset to add to each index when looking up vertices
-		it->get()->setScale(lightScale);
-	}
 
 	shaderFrag.SetShaderResourceView("textureEyeDepth", 0);
 

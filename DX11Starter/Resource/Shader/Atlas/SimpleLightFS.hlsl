@@ -317,7 +317,6 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 		color += saturate(colorAdd) ;
 		
-		
 	}
 	
 	return float4(color,1);

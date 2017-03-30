@@ -106,7 +106,7 @@ void GraphicMain::updateBufferLightPrameter(
 
 void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights)
 {
-	float size = 3;
+	float size = 1;
 	
 	m_atlasSlicer->clear();
 	for (auto it = lights.begin(); it != lights.end(); it++) {
@@ -198,7 +198,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 {
 	float 
 		NEAR_DISTANCE(0.1),
-		FAR_DISTANCE(100),
+		FAR_DISTANCE(500),
 		X_DIIVIDE(10),
 		Y_DIVIDE(10),
 		Z_DIVIDE(10),
@@ -231,35 +231,14 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 	int index =0;
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++, index++) {
 		auto &light = **it;
-
-
-
-		//DirectX::XMFLOAT4X4 MAT_TEMP;
-		//DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(scene.m_camMain.getViewMatrix()));
-
-
-
-
 		Vector3 pos = XMVector3Transform(light.m_pos, scene.m_camMain.getViewMatrix());
 		Vector3 posDirLook = XMVector3Transform(light.m_pos + light.m_dirLook, scene.m_camMain.getViewMatrix());
 		Vector3 dir = posDirLook - pos;
+
 		dir.Normalize();
-		//std::cout << index << " pos : " << pos.x << " " << pos.y << " " << pos.z << "\n";
-		//std::cout << index << " dir : " << dir.x << " " << dir.y << " " << dir.z << "\n";
-
-		//Vector3 pos = light.m_pos;
-		//Vector3 posDirLook = posDirLook4;
-		//Vector3 dir = light.m_dirLook;
-
-
-
-		//Vector3 pos = light.m_pos;
-		//Vector3 posDirLook = XMVector3Transform(light.m_pos + light.m_dirLook, scene.m_camMain.getViewMatrix());
-		//Vector3 dir = light.m_dirLook;
 
 		switch (light.m_lightType) {
 		case NScene::POINTLIGHT:
-			//m_frustum.testPointlight(index, light.m_pos, light.m_lightDistance);
 			m_frustum.testPointlight(index, pos, light.m_lightDistance);
 			break;
 		case NScene::SPOTLIGHT:
@@ -515,7 +494,7 @@ void NGraphic::GraphicMain::render(
 		}
 
 	}
-	if (false) {
+	if (true) {
 		beginRendering(context);
 		m_depthTextures[DEPTH_FINAL]->clear(context);
 		RenderInstruction::RENDER_DEBUG(

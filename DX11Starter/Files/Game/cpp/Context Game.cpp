@@ -62,26 +62,29 @@ void Context::init(NGraphic::NScene::Scene * scene)
 {
 	m_scene = scene;
 	//return;
+	int lightType = 1;
 	float X_MAX = 5.0f, Y_MAX = 3.0f, Z_MAX = 2.0f;
-	for (int i = 0; i < 10 ; i++) {
+	for (int i = 0; i < 20 ; i++) {
 		Vector3 lightPosition(-5 + X_MAX *	 hprRandomFloat(),2+ Y_MAX * hprRandomFloat(), -1+Z_MAX * hprRandomFloat());
 		Vector3 lightColor = hprGetRandomColor(hprRandomFloat() * 100);
-		auto objSolidPointLight = Light::GET_POINTLIGHT(Vector4(lightColor.x, lightColor.y, lightColor.z, 1), 5.0f);
-		int lightType = (int)(100 * hprRandomFloat()) ;
+		auto objSolidPointLight = Light::GET_POINTLIGHT(Vector4(lightColor.x, lightColor.y, lightColor.z, 1),5.0f);
 		float e = hprRandomFloat();
-		if (lightType%2 == 0) {
-			auto sphereLight = scene->getPointLight(lightColor, 5.0f);
+		if (lightType++%2 == 0) {
+			auto sphereLight = scene->getPointLight(lightColor, 13.0f);
 			objSolidPointLight->m_graphicObjects.push_back(sphereLight);
 			m_lights.push_back(objSolidPointLight);
 
 		}
 		else {
 
-			auto spotLight = scene->getSpotLight(3.14f/2 * (0.5f + hprRandomFloat() * 0.5f),lightColor, 10.0f);
+			auto spotLight = scene->getSpotLight(3.14f/2,lightColor, 13);
 			spotLight->setLightColor(lightColor);
 			objSolidPointLight->m_graphicObjects.push_back(spotLight);
 			m_lights.push_back(objSolidPointLight);
 		}
+		Vector3 randAxis(rand(), rand(), rand());
+		randAxis.Normalize();
+		objSolidPointLight->setRotation(Quaternion::CreateFromAxisAngle(randAxis, rand() )  );
 		objSolidPointLight->setPos(lightPosition.x, lightPosition.y, lightPosition.z);
 	}
 	//auto sphereLight = scene->getPointLight(Vector3(1, 1, 1), 5.0f);
