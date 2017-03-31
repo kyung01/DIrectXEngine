@@ -139,7 +139,7 @@ void NGraphic::RenderInstruction::RENDER_LIGHTSHAFT_SPOTLIGHT(
 	shaderFrag.SetShaderResourceView("textureWorld", 0);
 }
 
-
+float pointLightDebugAnimation = 0;
 void RenderInstruction::RENDER_DEBUG(
 	ID3D11Device * device, ID3D11DeviceContext * context,
 	Asset& asset,
@@ -147,12 +147,15 @@ void RenderInstruction::RENDER_DEBUG(
 	NGame::Context& game, NScene::Scene& scene, NFrustum::Frustum& m_frustum,
 	DepthTexture& textureEyeDepth
 	 ) {
-	
+	pointLightDebugAnimation += 0.01f;
+	if (pointLightDebugAnimation > 1) {
+		pointLightDebugAnimation = -1;
+	}
 	DirectX::XMFLOAT4X4 matStore;
 	auto &shaderVert = *asset.m_shadersVert[RENDER_TRANSPARENT];
 	auto &shaderFrag = *asset.m_shadersFrag[RENDER_TRANSPARENT];
 	NGraphic::Mesh&		sphere = *asset.m_meshes[MESH_ID_SPHERE];
-	NGraphic::Mesh&		meshPointlight = *asset.m_meshes[MESH_POINTLIGHT];
+	NGraphic::Mesh&		meshPointlight = *asset.m_meshes[MESH_ID_SPHERE];
 	NGraphic::Mesh&		meshSpotlight = *asset.m_meshes[MESH_ID_CONE];
 	NGraphic::Mesh&		box = *asset.m_meshes[MESH_ID_CUBE];
 	NGraphic::MeshLine&	line = *asset.m_meshLine;
@@ -177,9 +180,9 @@ void RenderInstruction::RENDER_DEBUG(
 	shaderFrag.SetShader();
 
 	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
-	//renderTexture.clear(context, 1, 0, 0, 1);
+	//renderTexture.clear(context, 1, 0, 0, 1);SS
 	//depthTexture.clear(context);
-	context->RSSetState(asset.RASTR_STATE_CULL_BACK);
+	context->RSSetState(asset.RASTR_STATE_CULL_NONE);
 	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
 	//context->OMSetBlendState(asset.BLEND_STATE_ADDITIVE, 0, 0xffffffff);
 
@@ -189,19 +192,29 @@ void RenderInstruction::RENDER_DEBUG(
 		depthTexture.clear(context);
 		Vector3 pos = it->get()->m_pos;
 		Vector3 lightScale = it->get()->m_scale;
-		it->get()->setScale(Vector3(it->get()->m_lightDistance *2));
 
-		SET_MATRIX(&shaderVert, "world", 
-			DirectX::XMMatrixMultiply( 
+		SET_MATRIX(&shaderVert, "world",
+			DirectX::XMMatrixMultiply(
+				DirectX::XMMatrixMultiply(
 					DirectX::XMMatrixMultiply(
-						DirectX::XMMatrixScaling(it->get()->m_lightDistance, it->get()->m_lightDistance, it->get()->m_lightDistance),
-						DirectX::XMMatrixRotationX(-3.14 / 2)
+							DirectX::XMMatrixRotationX(-3.14 / 2),
+							DirectX::XMMatrixRotationQuaternion(it->get()->m_rotation)
+						)
+						,
+					((it->get()->m_lightType == NScene::LIGHT_TYPE::POINTLIGHT)?
+					DirectX::XMMatrixScaling(
+						abs(pointLightDebugAnimation)*it->get()->m_lightDistance * 2, 
+						abs(pointLightDebugAnimation)*it->get()->m_lightDistance * 2,
+						abs(pointLightDebugAnimation)*it->get()->m_lightDistance * 2
+					) :
+					DirectX::XMMatrixScaling(it->get()->m_lightDistance * 2, it->get()->m_lightDistance * 2, it->get()->m_lightDistance * 2) 
+						)
 					),
 				DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z)
 			) 
 		);
 		shaderFrag.SetFloat3("color", Vector3((**it).getLightColor()));
-		shaderFrag.SetFloat("transparent", 0.1f);
+		shaderFrag.SetFloat("transparent", (it->get()->m_lightType == NScene::LIGHT_TYPE::POINTLIGHT) ? 0.05f:0.1f );
 
 
 		shaderVert.CopyAllBufferData();
@@ -217,7 +230,22 @@ void RenderInstruction::RENDER_DEBUG(
 			lightMesh.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
 			0,     // Offset to the first index we want to use
 			0);    // Offset to add to each index when looking up vertices
-		it->get()->setScale(lightScale);
+		
+		depthTexture.clear(context);
+		SET_MATRIX(&shaderVert, "world", DirectX::XMMatrixMultiply( DirectX::XMMatrixScaling(0.1f,0.1f,0.1f) , DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z) ));
+		shaderFrag.SetFloat("transparent", 1);
+
+		shaderVert.CopyAllBufferData();
+		shaderFrag.CopyAllBufferData();
+
+		offset = 0;
+		context->IASetVertexBuffers(0, 1, &sphere.getBufferVertexRef(), &stride, &offset);
+		context->IASetIndexBuffer(sphere.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(
+			sphere.getBufferIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
+			0,     // Offset to the first index we want to use
+			0);    // Offset to add to each index when looking up vertices
+		
 	}
 	float red = 0;
 
@@ -266,7 +294,7 @@ void RenderInstruction::RENDER_DEBUG(
 	float randomSeed = 0;
 
 	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
-	if(true)for (auto it = m_frustum.m_clusters.begin(); it != m_frustum.m_clusters.end(); it++, index++) {
+	if(!true)for (auto it = m_frustum.m_clusters.begin(); it != m_frustum.m_clusters.end(); it++, index++) {
 		randomSeed++;
 		if (it->light.size()) {
 			auto frustum = asset.m_frustums[index];
