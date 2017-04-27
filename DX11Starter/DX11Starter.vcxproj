@@ -170,6 +170,7 @@
     <ClInclude Include="Files\Game\ContextExamples.h" />
     <ClInclude Include="Files\Game\Entity.h" />
     <ClInclude Include="Files\Game\Context.h" />
+    <ClInclude Include="Files\Game\Probe.h" />
     <ClInclude Include="Files\Graphic\BufferDataTranslator.h" />
     <ClInclude Include="Files\Graphic\Buffer\ClusterIndex.h" />
     <ClInclude Include="Files\Graphic\Buffer\ClusterItem.h" />

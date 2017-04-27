@@ -176,8 +176,8 @@ void KContext::Draw(float deltaTime, float totalTime)
 
 	
 	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
-		it->engine.renderClustteredForward(this->device, this->context, 
-			backBufferRTV,depthStencilView,viewport,
+		it->engine.renderClustteredForward(this->device, this->context,
+			backBufferRTV, depthStencilView, viewport,
 			m_asset, it->gameContext);
 	}
 	context->OMSetRenderTargets(1,&this-> backBufferRTV, depthStencilView);

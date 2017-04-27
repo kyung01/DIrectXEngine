@@ -127,7 +127,13 @@ void NImGui::UIMain::render()
 		ImGui::Checkbox("Range", &displayLightArea);
 	}
 
-	
+	if (ImGui::Button("Add Light")) {
+		m_settings.addNewLight = true;
+	}
+	if (ImGui::Button("Add Reflective Prove")) {
+		m_settings.addNewReflectiveProbe = true;
+	}
+
 	End();
 	//add lights and such in this controller
 	Begin("Scene Editor", 0, ImGuiWindowFlags_ShowBorders);

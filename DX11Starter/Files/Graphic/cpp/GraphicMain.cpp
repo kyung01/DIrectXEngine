@@ -408,15 +408,22 @@ void NGraphic::GraphicMain::renderClustteredForward(
 
 
 	return;
-	//now start rendering real stuff
 
-	//updateBufferLightPrameter(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0)   ,scene.objs_lights);
+}
 
-	
+void NGraphic::GraphicMain::renderDeffered(
 
+	ID3D11Device * device, ID3D11DeviceContext * context,
+	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
+	Asset& asset, NGame::Context &game){
 
-	//context->OMSetBlendState(asset.BLEND_STATE_, 0, 0xffffffff);
-	//context->RSSetState(asset.RASTR_STATE_CULL_BACK);
+	NScene::Scene & scene = *game.m_scene;
+
+	auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
+	auto worldMatrixFrustum = DirectX::SimpleMath::Matrix::CreateRotationX(3.14 / 2);
+	auto viewMatirx = scene.m_camMain.getViewMatrix();
+	auto projMatrix = scene.m_camMain.getProjectionMatrix(m_width, m_height);
+
 	RenderInstruction::RENDER_WORLD_NORMAL_DIFFUSE(
 		device, context, asset, scene,
 		*m_renderTextures[TARGET_WORLD],
@@ -425,14 +432,14 @@ void NGraphic::GraphicMain::renderClustteredForward(
 		*m_renderTextures[TARGET_PROPERTY],
 		*m_depthTextures[DEPTH_WORLD],
 		worldMatrix);
-	
+
 
 	m_renderTextures[TARGET_FINAL]->clear(context, 0, 0, 0, 1);
-	
 
-	
+
+
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
-	
+
 
 		NScene::Light& light = **it;
 		LightInfo& lightInfo = m_lightInfos[it->get()->m_id];
@@ -446,7 +453,7 @@ void NGraphic::GraphicMain::renderClustteredForward(
 			*lightInfo.position, *lightInfo.depth,
 			scene,
 			worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix(lightInfo.position->getWidth(), lightInfo.position->getHeight())
-			);
+		);
 		auto lightWorldMatirx = DirectX::XMMatrixMultiply(worldMatrixFrustum, it->get()->getModelMatrix());
 
 
@@ -455,19 +462,19 @@ void NGraphic::GraphicMain::renderClustteredForward(
 			m_depthTextureDummy.clear(context);
 			m_depthTextures[DEPTH_FINAL]->clear(context);
 			RenderInstruction::RENDER_DIRECT_LIGHT(
-				device, context,asset,
+				device, context, asset,
 				*m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL],
 				orthoMVP,
 				//m_renderTextureDummy, m_depthTextureDummy,
 				//m_renderTextureDummy, m_depthTextureDummy, 
-				
+
 				scene.m_camMain.m_pos,
 				light.m_pos, light.m_dirLook, light.getLightColor(), light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),
-				m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV(), 
+				m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV(),
 				*m_renderTextures[TARGET_WORLD],
 				*m_renderTextures[TARGET_NORMAL],
 				*m_renderTextures[TARGET_DIFFUSE]
-				);
+			);
 		}
 
 		if (true) {
@@ -489,13 +496,13 @@ void NGraphic::GraphicMain::renderClustteredForward(
 				*m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL],
 				orthoMVP,
 				scene.m_camMain.m_pos, scene.m_camMain.m_dirLook,
-				light.m_pos, light.m_dirLook, light.getLightColor(), light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(),1.0f,
+				light.m_pos, light.m_dirLook, light.getLightColor(), light.getFOV() * RATIO_LIGHT_INNER, light.getFOV(), 1.0f,
 				*m_renderTextures[TARGET_WORLD],
 				*m_renderTextures[TARGET_LIGHTSHAFT_FRONT],
 				*m_renderTextures[TARGET_LIGHTSHAFT_BACK],
 				*m_lightInfos[it->get()->m_id].position, lightMVP, light.getFOV());
 			endRendering(context);
-			
+
 		}
 
 		if (false) {
@@ -518,6 +525,6 @@ void NGraphic::GraphicMain::renderClustteredForward(
 			*m_depthTextures[DEPTH_WORLD]);
 		endRendering(context);
 	}
-
 }
+
 
