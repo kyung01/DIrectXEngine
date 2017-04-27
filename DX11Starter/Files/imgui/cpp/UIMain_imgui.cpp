@@ -1,5 +1,6 @@
 #include "imgui\DirectX\UIMain.h"
 #include "imgui\imgui.h"
+using namespace ImGui;
 using namespace NImGui;
 using namespace NGraphic;
 
@@ -106,6 +107,33 @@ void NImGui::UIMain::render()
 		ImGui::EndMenu();
 	}
 	ImGui::EndMainMenuBar();
+
+	//Here you change the settings forward or deferred
+	//	
+	Begin("Main Controller", 0, ImGuiWindowFlags_ShowBorders);
+
+	static bool debugLight = true;
+	static bool displayLightArea = true;
+
+	static int e = 0;
+	ImGui::Text("Render Mode");
+	ImGui::RadioButton("Forward Rendering (clustered frustum)", &e, 0); 
+	ImGui::RadioButton("Deferred Rendering (traditional)", &e, 1);
+	
+	if (ImGui::CollapsingHeader("Light Options"))
+	{
+		ImGui::Text("Debug Mode");
+		ImGui::Checkbox("Icons", &debugLight);
+		ImGui::Checkbox("Range", &displayLightArea);
+	}
+
+	
+	End();
+	//add lights and such in this controller
+	Begin("Scene Editor", 0, ImGuiWindowFlags_ShowBorders);
+	End();
+
+	ImGui::ShowTestWindow();
 
 	//render(graphicMain->m_renderTextures);
 	//render(graphicMain->m_depthTextures);

@@ -76,7 +76,7 @@ namespace NGraphic {
 		void renderClusterredForwardRendering(
 
 			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene,
-			RenderTexture & textureTarget, DepthTexture & depthTarget,
+			ID3D11RenderTargetView * renderTargetView, ID3D11DepthStencilView * depthStencilView, D3D11_VIEWPORT & viewport,
 			RenderTexture & textureAtlas, DepthTexture & depthAtlas,
 			Matrix & matWorld, Matrix& matView, Matrix & matProj,
 			bool isLightChanged,
@@ -98,7 +98,11 @@ namespace NGraphic {
 		
 
 
-		void render(
+		void renderClustteredForward(
+			ID3D11Device * device, ID3D11DeviceContext * context,
+			ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
+			Asset& asset, NGame::Context &game);
+		void renderDeffered(
 			ID3D11Device * device, ID3D11DeviceContext * context,
 			ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
 			Asset& asset, NGame::Context &game);

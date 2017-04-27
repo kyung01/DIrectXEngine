@@ -33,7 +33,7 @@ cbuffer global : register(b3)
 {
 	matrix eyeViewMatrix;
 	int frustumX, frustumY, frustumZ;
-	float frustumFov;
+	float frustumSizeRatio;
 	float frustumNear;
 	float frustumFar;
 	float dummy00;
@@ -232,11 +232,11 @@ float4 main(VertexToPixel input) : SV_TARGET
 	//return float4(length(posFromCamera.xyz), 0, 0, 1);
 
 
-	float x = cos(frustumFov / 2.0f) * (1 / sin(frustumFov/2) ) ;
-	float z = sin(frustumFov / 2.0f) * (1 / cos(frustumFov / 2));;
+	float x = cos(3.14f / 4.0f) * (1 / sin(3.14f /4.0f) ) ;
+	float z = sin(3.14f / 4.0f) * (1 / cos(3.14f / 4.0f));;
 	float3 inputNormal = normalize(input.normal);
 	float4 positionFromEyePerspective = mul(float4(input.worldPos.xyz, 1), eyeViewMatrix);
-	int clusterID = getClusterBelong(-x, x,  x, -x, frustumNear, frustumFar, frustumX, frustumY, frustumZ, positionFromEyePerspective.xyz);
+	int clusterID = getClusterBelong(-x*frustumSizeRatio, x*frustumSizeRatio,  x, -x, frustumNear, frustumFar, frustumX, frustumY, frustumZ, positionFromEyePerspective.xyz);
 	if (clusterID == -1) {
 		return float4(1, 0, 1, 1);
 

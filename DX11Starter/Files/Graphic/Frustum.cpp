@@ -24,9 +24,9 @@ bool Frustum::aabbArvo(Vector3 C1, Vector3 C2, Vector3 S, float R)
 	else if (S.z > C2.z) dist_squared -= squared(S.z - C2.z);
 	return dist_squared > 0;
 }
-void Frustum::init(float angle,float nearDistance, float farDistance, int divisionX,int divisionY, int divisionZ)
+void Frustum::init(float widthOverHeight,float nearDistance, float farDistance, int divisionX,int divisionY, int divisionZ)
 {
-	m_fov = angle;
+	m_fov = 3.14f/2.0f;
 	m_near = nearDistance;
 	m_far = farDistance;
 	m_cubes.resize(divisionX*divisionY*divisionZ);
@@ -36,35 +36,37 @@ void Frustum::init(float angle,float nearDistance, float farDistance, int divisi
 	planesY.resize(divisionY + 1);
 	planesZ.resize(divisionZ + 1);
 	m_clusters.resize(divisionX*divisionY*divisionZ);
-	float r = 3.14159 / 2 + angle/2 ;
-	float distance = angle / divisionX;
+	float r = 3.14159 / 2 + m_fov /2 ;
+	float distance = m_fov / divisionX;
 	float nearToFar = farDistance - nearDistance;
 	float distanceZ = (farDistance - nearDistance) / divisionZ;
 
 	//Cut off horiozon
 	for (int i = 0; i <= divisionX; i++) {
-		planesX[i] = DirectX::SimpleMath::Plane(Vector3(), Vector3(0, 1, 0), Vector3(cos(r), 0, sin(r)));
+		planesX[i] = DirectX::SimpleMath::Plane(Vector3(), Vector3(0, 1, 0), Vector3(cos(r)*widthOverHeight, 0, sin(r)));
 		r -= distance;
 	}
 	//Cut off ver
-	r = 3.14159 / 2 - angle / 2;
-	distance = angle / divisionY;
+	r = 3.14159 / 2 - m_fov / 2;
+	distance = m_fov / divisionY;
 	for (int i = 0; i <= divisionY; i++) {
 		planesY[i] = DirectX::SimpleMath::Plane(Vector3(), Vector3(0,cos(r),sin(r)),Vector3(-1, cos(r), sin(r) ));
 		r += distance;
 	}
 	//Cut off screen space 
-	r = 3.14159 / 2 + angle / 2;
-	distance = angle / divisionZ;
+	r = 3.14159 / 2 + m_fov / 2;
+	distance = m_fov / divisionZ;
 	for (int i = 0; i <= divisionZ; i++) {
 		planesZ[i] = DirectX::SimpleMath::Plane(Vector3(0,0, nearDistance+ distanceZ*i), Vector3(1,0, nearDistance + distanceZ*i), Vector3(0, 1, nearDistance + distanceZ*i));
 	}
 	
-	float scale = 1 / sin(3.14159 / 2 + angle / 2);
+	float scale = 1 / sin(3.14159 / 2 + m_fov / 2);
 	Vector3
-		dirTopLeft(cos(3.14159 / 2 + angle / 2),0, sin(3.14159 / 2 + angle / 2)), dirTopRight(-cos(3.14159 / 2 + angle / 2), 0, sin(3.14159 / 2 + angle / 2)),
-		dirBotLeft(cos(3.14159 / 2 + angle / 2), 0, sin(3.14159 / 2 + angle / 2)), dirBotRight(-cos(3.14159 / 2 + angle / 2), 0, sin(3.14159 / 2 + angle / 2));
-	float halfHeight = cos(3.14159 / 2 - angle / 2) *scale;
+		dirTopLeft(cos(3.14159 / 2 + m_fov / 2)*widthOverHeight,0, sin(3.14159 / 2 + m_fov / 2)), 
+		dirTopRight(-cos(3.14159 / 2 + m_fov / 2)*widthOverHeight, 0, sin(3.14159 / 2 + m_fov / 2)),
+		dirBotLeft(cos(3.14159 / 2 + m_fov / 2)*widthOverHeight, 0, sin(3.14159 / 2 + m_fov / 2)), 
+		dirBotRight(-cos(3.14159 / 2 + m_fov / 2)*widthOverHeight , 0, sin(3.14159 / 2 + m_fov / 2));
+	float halfHeight = cos(3.14159 / 2 - m_fov / 2) *scale;
 	dirTopLeft  *= scale;
 	dirTopRight *= scale;
 	dirBotLeft  *= scale;

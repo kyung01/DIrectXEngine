@@ -182,6 +182,10 @@ Mesh::Mesh(ID3D11Device * device, char* objFile) {
 				indices.push_back(vertCounter); vertCounter += 1;
 			}
 		}
+		else {
+			//std::cout << "Unknown line found"<< chars<<"\n";
+			//system("pause");
+		}
 	}
 
 	// Close the file and create the actual buffers

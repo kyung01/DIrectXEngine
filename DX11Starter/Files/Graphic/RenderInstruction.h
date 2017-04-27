@@ -30,8 +30,10 @@ namespace NGraphic {
 			matWorld, matView, matProj;
 		static void SET_MATRIX(ISimpleShader *shader, std::string name,  XMMATRIX matrix);
 		static void RENDER_LIGHTS(ID3D11DeviceContext * context, SimpleVertexShader& shaderVertSimpleColor, SimpleFragmentShader& DshaderFrag, Mesh& mesh, XMMATRIX& worldMatrix);
+	
 	public:
-		
+		static void setRenderTarget(ID3D11DeviceContext* deviceContext,
+			ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport);
 		static void RENDER_FRUSTUM(
 			ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
 			Vector3 eyePosition,
@@ -75,7 +77,7 @@ namespace NGraphic {
 		static void RENDER_TEST(
 			ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
 			NScene::Scene& scene,
-			RenderTexture & renderTexture, DepthTexture & depthTexture,
+			ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
 			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
 			DepthTexture & lightAtlas,
 			RenderTexture & lightAtlas2,

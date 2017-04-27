@@ -61,8 +61,9 @@ void KContext::Init()
 	//m_depth.init(device, this->width, this->height);
 
 	m_renderContexts.push_back({ "example00","Created for demo purpose.", NGame::Context(),GraphicMain(), Scene() });
+	float scale = 0.9f;
 	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
-		if (!it->engine.init(this->device, this->context, 700,700, 256, 256)) {
+		if (!it->engine.init(this->device, this->context, this->width * scale,this->height*scale, 256, 256)) {
 			std::cout << "GraphicMain failed to init" << std::endl;
 		}
 		it->gameContext.init(& it->scene);
@@ -175,7 +176,7 @@ void KContext::Draw(float deltaTime, float totalTime)
 
 	
 	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
-		it->engine.render(this->device, this->context, 
+		it->engine.renderClustteredForward(this->device, this->context, 
 			backBufferRTV,depthStencilView,viewport,
 			m_asset, it->gameContext);
 	}
@@ -215,6 +216,7 @@ void KContext::OnMouseUp(WPARAM buttonState, int x, int y)
 
 
 int mouseMoveXY[2] = {-1,-1};
+float mouseRotation[2] = { 0,0 };
 void KContext::OnMouseMove(WPARAM buttonState, int x, int y)
 {
 	
@@ -234,10 +236,18 @@ void KContext::OnMouseMove(WPARAM buttonState, int x, int y)
 	{
 		return;
 	}
+	mouseRotation[0] += xDis * power;
+	mouseRotation[1] += yDis * power;
 	cam.setRotation(cam.m_rotation * Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), xDis*power));
 	//	+ Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), yDis*power));
 	Vector3 dirAxis = -cam.m_dirLook.Cross(Vector3(0, 1, 0));
-	cam.setRotation(cam.m_rotation * Quaternion::CreateFromAxisAngle(dirAxis, yDis*power));
+	dirAxis.y = 0;
+	dirAxis.z = 0;
+	//dirAxis.Normalize();
+	cam.setRotation(
+		Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), mouseRotation[1]) *
+		Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), mouseRotation[0]));
+	//cam.setRotation(cam.m_rotation * Quaternion::CreateFromAxisAngle(dirAxis, yDis*power));
 	//std::cout << x<<"\n";
 }
 

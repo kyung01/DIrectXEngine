@@ -294,7 +294,7 @@ void RenderInstruction::RENDER_DEBUG(
 	float randomSeed = 0;
 
 	context->OMSetBlendState(asset.BLEND_STATE_TRANSPARENT, 0, 0xffffffff);
-	if(!true)for (auto it = m_frustum.m_clusters.begin(); it != m_frustum.m_clusters.end(); it++, index++) {
+	if(true)for (auto it = m_frustum.m_clusters.begin(); it != m_frustum.m_clusters.end(); it++, index++) {
 		randomSeed++;
 		if (it->light.size()) {
 			auto frustum = asset.m_frustums[index];
@@ -450,11 +450,19 @@ void NGraphic::RenderInstruction::RENDER_WORLD(
 
 
 }
+void RenderInstruction::setRenderTarget(ID3D11DeviceContext* deviceContext,
+	ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport)
+{
+	// Bind the render target view and depth stencil buffer to the output render pipeline.
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	deviceContext->RSSetViewports(1, &viewport);
 
+	return;
+}
 void RenderInstruction::RENDER_TEST(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
 	Asset & asset, NScene::Scene & scene, 
-	RenderTexture & renderTexture, DepthTexture & depthTexture, 
+	ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
 	DirectX::SimpleMath::Matrix & worldMatrix, DirectX::SimpleMath::Matrix & viewMatrix, DirectX::SimpleMath::Matrix & projMatrix, 
 	DepthTexture & lightAtlas,
 	RenderTexture & lightAtlas2,
@@ -484,7 +492,8 @@ void RenderInstruction::RENDER_TEST(
 	//renderTexture.clear(context, 0, 0, 0, 99999);
 
 	context->RSSetState(asset.RASTR_STATE_CULL_BACK);
-	renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
+	setRenderTarget(context, renderTargetView, depthStencilView, viewport);
+	//renderTexture.setRenderTarget(context, depthTexture.getDepthStencilView());
 	//depthTexture.clear(context);
 	//render the front face first
 

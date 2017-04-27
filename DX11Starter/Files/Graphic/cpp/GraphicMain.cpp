@@ -167,6 +167,7 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 			lightInfo.topLeftX, lightInfo.topLeftY, lightInfo.viewportWidth, lightInfo.viewportHeight);
 		else {
 			auto pointLight = static_cast<NScene::PointLight*>(&light);
+			//(**it).setFOV(3.14f / 2.0f + 0.11f);
 			RenderInstruction::RENDER_LIGHT_ATLAS_POINT(
 				device, context, asset,
 				*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
@@ -178,6 +179,7 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 				pointLight->getMatrixZPlus(), pointLight->getMatrixZMinus(), 
 				(**it).getProjectionMatrix(lightInfo.viewportWidth/6, lightInfo.viewportWidth / 6),
 				lightInfo.topLeftX, lightInfo.topLeftY, lightInfo.viewportWidth, lightInfo.viewportHeight);
+			//(**it).setFOV(3.14f / 2.0f);
 		}
 
 		
@@ -196,7 +198,8 @@ GraphicMain::GraphicMain()
 bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context, 
 	int width, int height, int textureIndirectLightWidth, int textureIndirectLightHeight)
 {
-	float 
+	float
+		fov = 3.14f / 2.0f, // *((float)width / height),
 		NEAR_DISTANCE(0.1),
 		FAR_DISTANCE(500),
 		X_DIIVIDE(10),
@@ -207,7 +210,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	this->m_height = height;
 	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
 	m_rsm_flux_eye_perspective_height = textureIndirectLightHeight;
-	m_frustum.init(3.14 / 2, NEAR_DISTANCE, FAR_DISTANCE, X_DIIVIDE, Y_DIVIDE, Z_DIVIDE);
+	m_frustum.init((float)m_width/ m_height, NEAR_DISTANCE, FAR_DISTANCE, X_DIIVIDE, Y_DIVIDE, Z_DIVIDE);
 	m_bufferDataTranslator = std::make_shared<BufferDataTranslator>(X_DIIVIDE* Y_DIVIDE* Z_DIVIDE, CLUSTER_ITEM_SIZE,256,256,256);
 	//m_lightBuffer = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(10);
 
@@ -257,7 +260,7 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 
 void GraphicMain::renderClusterredForwardRendering(
 	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene,
-	RenderTexture & textureTarget, DepthTexture & depthTarget,
+	ID3D11RenderTargetView * renderTargetView, ID3D11DepthStencilView * depthStencilView, D3D11_VIEWPORT & viewport,
 	RenderTexture & textureAtlas, DepthTexture & depthAtlas,
 	Matrix & matWorld, Matrix& matView, Matrix & matProj,
 	bool isLightChanged,
@@ -283,7 +286,7 @@ void GraphicMain::renderClusterredForwardRendering(
 		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumX", frustumSizeX);
 		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumY", frustumSizeY);
 		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumZ", frustumSizeZ);
-		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumFov", frustumFov);
+		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumSizeRatio",(float)m_width/m_height);
 		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumNear",frustumNear );
 		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumFar", frustumFar);
 		asset.m_shadersFrag[RENDER_TEST]->CopyAllBufferData();
@@ -293,12 +296,13 @@ void GraphicMain::renderClusterredForwardRendering(
 	m_depthTextures[DEPTH_TEST]->clear(context);
 	//Render
 	renderLightAtlas(device, context, asset, scene);
-	RenderInstruction::RENDER_TEST(device, context, asset, scene, textureTarget,depthTarget,
+	RenderInstruction::RENDER_TEST(device, context, asset, scene,
+		renderTargetView, depthStencilView, viewport,
 		matWorld,matView,matProj , depthAtlas, textureAtlas, 0);
 
 }
 
-void NGraphic::GraphicMain::render(
+void NGraphic::GraphicMain::renderClustteredForward(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
 	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
 	Asset& asset, NGame::Context &game	
@@ -322,12 +326,15 @@ void NGraphic::GraphicMain::render(
 	auto projMatrix = scene.m_camMain.getProjectionMatrix(m_width, m_height);
 
 
+
+
 	beginRendering(context);
-	
+
 	renderClusterredForwardRendering(device, context, asset, *game.m_scene,
-		*m_renderTextures[TARGET_TEST], *m_depthTextures[DEPTH_TEST],
-		*m_renderTextures[TARGET_LIGHT_ATLAS] ,*m_depthTextures[DEPTH_LIGHT_ATLAS],
-		worldMatrix,viewMatirx,projMatrix,
+		target, targetDepth, viewport,
+		//*m_renderTextures[TARGET_TEST], *m_depthTextures[DEPTH_TEST],
+		*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
+		worldMatrix, viewMatirx, projMatrix,
 
 		newLightInfo,
 		(int)m_frustum.m_size.x,
@@ -338,24 +345,21 @@ void NGraphic::GraphicMain::render(
 		m_frustum.m_far
 	);
 	endRendering(context);
-	//now start rendering real stuff
 
-	//updateBufferLightPrameter(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0)   ,scene.objs_lights);
 
 	m_renderTextureDummy.setRenderTargetView(target, viewport);
 	m_depthTextureDummy.setDepthStencilView(targetDepth);
-	m_renderTextureDummy.clear(context, 0, 0, 0, 0);
-	m_depthTextureDummy.clear(context);
-	DirectX::SimpleMath::Matrix matSceneMvpFirstPerson = 
+	//m_renderTextureDummy.clear(context, 0, 0, 0, 0);
+	//m_depthTextureDummy.clear(context);
+	DirectX::SimpleMath::Matrix matSceneMvpFirstPerson =
 		scene.m_camMain.getProjectionMatrix(viewport.Width, viewport.Height) *
 		scene.m_camMain.getViewMatrix() * scene.m_camMain.getModelMatrix();
 
-	
 
-	if(true){
+	if (true) {
 		beginRendering(context);
-		m_renderTextureDummy.clear(context, 0, 0, 0, 0);
-		m_depthTextureDummy.clear(context);
+		//m_renderTextureDummy.clear(context, 0, 0, 0, 0);
+		//m_depthTextureDummy.clear(context);
 		m_renderTextureDummy.setRenderTarget(context, m_depthTextureDummy.getDepthStencilView());
 		//context->ClearDepthStencilView(targetDepth, D3D11_CLEAR_DEPTH, 1.0f, 0.0f);
 		auto skyVS = asset.m_shadersVert[RENDER_SKYBOX].get();
@@ -370,7 +374,7 @@ void NGraphic::GraphicMain::render(
 
 
 																																		// Set up shaders
-		skyVS->SetMatrix4x4("view", view);	
+		skyVS->SetMatrix4x4("view", view);
 		skyVS->SetMatrix4x4("projection", projection);
 		skyVS->CopyAllBufferData();
 		skyVS->SetShader();
@@ -400,6 +404,16 @@ void NGraphic::GraphicMain::render(
 			0);    // Offset to add to each index when looking up vertices
 		endRendering(context);
 	}
+
+
+
+	return;
+	//now start rendering real stuff
+
+	//updateBufferLightPrameter(context, asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0)   ,scene.objs_lights);
+
+	
+
 
 	//context->OMSetBlendState(asset.BLEND_STATE_, 0, 0xffffffff);
 	//context->RSSetState(asset.RASTR_STATE_CULL_BACK);

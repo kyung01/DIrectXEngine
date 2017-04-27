@@ -36,7 +36,7 @@ namespace NGraphic {
 			std::vector<DirectX::SimpleMath::Plane> planesX, planesY, planesZ;
 			std::vector<Cluster> m_clusters;
 
-			void init(float fov, float nearDistance, float farDistance, int divisionX, int divisionY, int divisionZ);
+			void init(float widthOverHeight, float nearDistance, float farDistance, int divisionX, int divisionY, int divisionZ);
 
 			void testBegin();
 			void testPointlight(int lightIndex, Vector3 center, float radius);
