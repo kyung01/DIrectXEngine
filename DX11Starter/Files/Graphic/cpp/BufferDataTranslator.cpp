@@ -46,13 +46,13 @@ void BufferDataTranslator::constrcut()
 	}
 	delete myCounts;
 }
-void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& lights, std::map<int, LightInfo> &lightInfos)
+void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& lights)
 {
 	int index = 0;
 	NBuffer::LightParameter parameter;
 	for (auto it = lights.begin(); it != lights.end(); it++) {
 		auto &light = **it;
-		auto &info = lightInfos[it->get()->m_id];
+		
 		parameter.angle = light.getFOV();
 		parameter.axis = light.m_dirLook;
 		parameter.color = light.getLightColor();
@@ -60,10 +60,10 @@ void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& 
 		std::cout <<"translate " << parameter.isSpotlight << "\n";
 		//system("pause");
 		parameter.position = light.m_pos;
-		parameter.topLeftX = info.topLeftX;
-		parameter.topLeftY = info.topLeftY;
-		parameter.viewPortWidth = info.viewportWidth;
-		parameter.viewPortHeight = info.viewportHeight;
+		parameter.topLeftX = light.m_atlasTopLeftX;
+		parameter.topLeftY = light.m_atlastopLeftY;
+		parameter.viewPortWidth = light.m_atlasViewportWidth;
+		parameter.viewPortHeight = light.m_atlasViewportHeight;
 		//std::cout << "LIGHT POS " << light.m_pos.x << " , " << light.m_pos.y << " , " << light.m_pos.z << "\n";
 		//std::cout << "LIGHT ViewPort TIOP" << info.topLeftX << " , " << info.topLeftY << "\n";
 		//std::cout << "LIGHT ViewPort " << info.viewportWidth << " , " << info.viewportHeight << "\n";
@@ -72,12 +72,12 @@ void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& 
 		if (light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT) {
 			auto matViewProj = DirectX::XMMatrixMultiply(
 				light.getViewMatrix(),
-				light.getProjectionMatrix(info.viewportWidth, info.viewportHeight));
+				light.getProjectionMatrix(light.m_atlasViewportWidth, light.m_atlasViewportHeight));
 			DirectX::XMStoreFloat4x4(&parameter.matLight, XMMatrixTranspose(matViewProj));
 
 		}
 		if (light.m_lightType == NScene::LIGHT_TYPE::POINTLIGHT) {
-			auto matProj = light.getProjectionMatrix(info.viewportWidth/6.0, info.viewportHeight);
+			auto matProj = light.getProjectionMatrix(light.m_atlasViewportWidth /6.0, light.m_atlasViewportHeight);
 			DirectX::XMStoreFloat4x4(&parameter.matLight, XMMatrixTranspose(matProj));
 
 		}

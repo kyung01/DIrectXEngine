@@ -141,8 +141,11 @@ void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &li
 				//success
 
 			}
-
 		}
+		light.m_atlasTopLeftX = info.topLeftX;
+		light.m_atlastopLeftY = info.topLeftY;
+		light.m_atlasViewportWidth = info.viewportWidth;
+		light.m_atlasViewportHeight = info.viewportHeight;
 	}
 }
 void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene)
@@ -233,20 +236,19 @@ void GraphicMain::update(
 	//m_bufferDataTranslator->constrcut();
 	m_frustum.testBegin();
 	int index =0;
-	bool newLightInfo = false;
 	if (!scene.objs_lightsNotReady.empty()) {
 
 		for (auto it = scene.objs_lightsNotReady.begin(); it != scene.objs_lightsNotReady.end(); it++) {
-			//if (m_lightInfos.find(it->get()->m_id) != m_lightInfos.end()) continue;
-			m_lightInfos[it->get()->m_id] = getLightInfo(device);
-			newLightInfo = true;
+			(**it).m_deferredTexture = std::shared_ptr<RenderTexture>(new RenderTexture());
+			(**it).m_deferredDepth = std::shared_ptr<DepthTexture>(new DepthTexture());
+			(**it).m_deferredTexture->init(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE);
+			(**it).m_deferredDepth->init(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE);
 		}
 		scene.objs_lights.insert(scene.objs_lights.begin(), scene.objs_lightsNotReady.begin(), scene.objs_lightsNotReady.end());
 		scene.objs_lightsNotReady.clear();
 
 
 
-		m_bufferDataTranslator->translate(scene.objs_lights, m_lightInfos);
 	}
 
 
@@ -268,11 +270,13 @@ void GraphicMain::update(
 		}
 	}
 
+	m_bufferDataTranslator->translate(scene.objs_lights);
 	m_bufferDataTranslator->translate(m_frustum.m_clusters);
 	m_bufferDataTranslator->transfer(
 		context,
 		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1),
 		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2), 0, 0);
+	updateLightAtlas(scene.objs_lights);
 }
 
 
@@ -511,11 +515,6 @@ void NGraphic::GraphicMain::renderDeffered(
 
 		if (false) {
 			m_depthTextureDummy.clear(context);
-			//renderSkyboxReflection(device, context, m_renderTextureDummy, m_depthTextureDummy, asset,
-			//	scene.m_camMain.m_pos,
-			//
-			//	asset.m_texturesCubeMap[TEXTURE_ID_SKYBOX_SUNNY], m_renderTextures[TARGET_WORLD]->getShaderResourceView(), m_renderTextures[TARGET_NORMAL]->getShaderResourceView());
-
 		}
 
 	}
