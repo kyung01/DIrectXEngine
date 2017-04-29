@@ -152,6 +152,7 @@ Light::Light()
 	setScale(Vector3(1, 1, 1));
 }
 
+
 void Light::setLightColor(Vector3 color)
 {
 	m_isLightDirty = true;
@@ -161,7 +162,7 @@ void Light::setLightColor(Vector3 color)
 void Light::setLightColor(float r, float g, float b)
 {
 	m_isLightDirty = true;
-	m_lightColor = Vector3(r,g,b);
+	m_lightColor = Vector3(r, g, b);
 }
 
 Vector3 Light::getLightColor()
@@ -173,12 +174,12 @@ Vector3 Light::getLightColor()
 void PointLight::updatePointLightViewMatrixs()
 {
 	Light::getViewMatrix();
-	m_matLookXPlus	= DirectX::XMMatrixLookToLH(m_pos,  Vector3(1, 0, 0), Vector3(0, 1, 0));
-	m_matLookXMinus = DirectX::XMMatrixLookToLH(m_pos,  Vector3(-1, 0, 0), Vector3(0, 1, 0));
-	m_matLookYPlus  = DirectX::XMMatrixLookToLH(m_pos,  Vector3(0, 1, 0), Vector3(0, 0, -1));
-	m_matLookYMinus = DirectX::XMMatrixLookToLH(m_pos,  Vector3(0, -1, 0), Vector3(0, 0,1));
-	m_matLookZPlus  = DirectX::XMMatrixLookToLH(m_pos,  Vector3(0, 0, 1), Vector3(0, 1, 0));
-	m_matLookZMinus = DirectX::XMMatrixLookToLH(m_pos,  Vector3(0, 0, -1), Vector3(0, 1, 0));
+	m_matLookXPlus = DirectX::XMMatrixLookToLH(m_pos, Vector3(1, 0, 0), Vector3(0, 1, 0));
+	m_matLookXMinus = DirectX::XMMatrixLookToLH(m_pos, Vector3(-1, 0, 0), Vector3(0, 1, 0));
+	m_matLookYPlus = DirectX::XMMatrixLookToLH(m_pos, Vector3(0, 1, 0), Vector3(0, 0, -1));
+	m_matLookYMinus = DirectX::XMMatrixLookToLH(m_pos, Vector3(0, -1, 0), Vector3(0, 0, 1));
+	m_matLookZPlus = DirectX::XMMatrixLookToLH(m_pos, Vector3(0, 0, 1), Vector3(0, 1, 0));
+	m_matLookZMinus = DirectX::XMMatrixLookToLH(m_pos, Vector3(0, 0, -1), Vector3(0, 1, 0));
 }
 
 NGraphic::NScene::PointLight::PointLight()

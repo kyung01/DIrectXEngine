@@ -122,7 +122,7 @@ void KContext::Update(float deltaTime, float totalTime)
 	world.update(deltaTime);
 	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
 		it->gameContext.update(deltaTime);
-		it->engine.update(device, context, deltaTime, totalTime,it->scene);
+		it->engine.update(device, context, deltaTime, totalTime,m_asset, it->scene);
 	}
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))

@@ -144,8 +144,8 @@
     <ClCompile Include="Files\Graphic\cpp\RenderStateStack.cpp" />
     <ClCompile Include="Files\Graphic\Mesh\Meshes.cpp" />
     <ClCompile Include="Files\Graphic\RenderInstruction.cpp" />
-    <ClCompile Include="Files\Graphic\Scene\_GraphicScene.cpp" />
-    <ClCompile Include="Files\Graphic\Scene\Scene Graphic.cpp" />
+    <ClCompile Include="Files\Graphic\Scene\cpp\Scene Graphic.cpp" />
+    <ClCompile Include="Files\Graphic\Scene\cpp\_GraphicScene.cpp" />
     <ClCompile Include="Files\Graphic\cpp\TextureAtlasSlicer.cpp" />
     <ClCompile Include="Files\imgui\cpp\Context_imgui.cpp" />
     <ClCompile Include="Files\imgui\cpp\UIMain_imgui.cpp" />
@@ -196,7 +196,9 @@
     <ClInclude Include="Files\Graphic\Mesh\VertexPosition.h" />
     <ClInclude Include="Files\Graphic\RenderInstruction.h" />
     <ClInclude Include="Files\Graphic\RenderStateStack.h" />
+    <ClInclude Include="Files\Graphic\Scene\AtlasInformation.h" />
     <ClInclude Include="Files\Graphic\Scene\Camera.h" />
+    <ClInclude Include="Files\Graphic\Scene\DefferedRenderTetures.h" />
     <ClInclude Include="Files\Graphic\Scene\Light.h" />
     <ClInclude Include="Files\Graphic\Scene\Object.h" />
     <ClInclude Include="Files\Graphic\Scene\PointLight.h" />

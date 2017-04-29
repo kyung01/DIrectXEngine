@@ -8,7 +8,7 @@ namespace NGraphic {
 
 	//TODO hlsl files are stroed in debug folder once they are built with extention .cso You need grasp them
 	struct LightInfo {
-		DirectX::SimpleMath::Vector3 color; //color of the light
+		//DirectX::SimpleMath::Vector3 color; //color of the light
 
 											//This is for deferred rendering process
 		std::shared_ptr<RenderTexture>	position;

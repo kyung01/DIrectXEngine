@@ -79,7 +79,6 @@ namespace NGraphic {
 			ID3D11RenderTargetView * renderTargetView, ID3D11DepthStencilView * depthStencilView, D3D11_VIEWPORT & viewport,
 			RenderTexture & textureAtlas, DepthTexture & depthAtlas,
 			Matrix & matWorld, Matrix& matView, Matrix & matProj,
-			bool isLightChanged,
 			int frustumSizeX, int frustumSizeY, int frustumSizeZ,
 			float frustumFov, float frustumNear, float frustumFar
 		);
@@ -94,7 +93,7 @@ namespace NGraphic {
 		// Width and hieght is for the resolution in wihich this graphic main will adjust to render things onto
 		GraphicMain();
 		bool init(ID3D11Device *device, ID3D11DeviceContext *context, int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight);
-		void update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene);
+		void update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene);
 		
 
 

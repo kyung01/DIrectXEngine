@@ -227,11 +227,29 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	return true;
 }
 
-void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, NScene::Scene & scene)
+void GraphicMain::update(
+	ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene)
 {
 	//m_bufferDataTranslator->constrcut();
 	m_frustum.testBegin();
 	int index =0;
+	bool newLightInfo = false;
+	if (!scene.objs_lightsNotReady.empty()) {
+
+		for (auto it = scene.objs_lightsNotReady.begin(); it != scene.objs_lightsNotReady.end(); it++) {
+			//if (m_lightInfos.find(it->get()->m_id) != m_lightInfos.end()) continue;
+			m_lightInfos[it->get()->m_id] = getLightInfo(device);
+			newLightInfo = true;
+		}
+		scene.objs_lights.insert(scene.objs_lights.begin(), scene.objs_lightsNotReady.begin(), scene.objs_lightsNotReady.end());
+		scene.objs_lightsNotReady.clear();
+
+
+
+		m_bufferDataTranslator->translate(scene.objs_lights, m_lightInfos);
+	}
+
+
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++, index++) {
 		auto &light = **it;
 		Vector3 pos = XMVector3Transform(light.m_pos, scene.m_camMain.getViewMatrix());
@@ -249,6 +267,12 @@ void GraphicMain::update(ID3D11Device * device, ID3D11DeviceContext * context, f
 			break;
 		}
 	}
+
+	m_bufferDataTranslator->translate(m_frustum.m_clusters);
+	m_bufferDataTranslator->transfer(
+		context,
+		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1),
+		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2), 0, 0);
 }
 
 
@@ -263,22 +287,10 @@ void GraphicMain::renderClusterredForwardRendering(
 	ID3D11RenderTargetView * renderTargetView, ID3D11DepthStencilView * depthStencilView, D3D11_VIEWPORT & viewport,
 	RenderTexture & textureAtlas, DepthTexture & depthAtlas,
 	Matrix & matWorld, Matrix& matView, Matrix & matProj,
-	bool isLightChanged,
 	int frustumSizeX, int frustumSizeY, int frustumSizeZ,
 	float frustumFov, float frustumNear, float frustumFar
 )
 {
-	//std::cout << "renderClusterredForwardRendering " << frustumFov << " \n";
-	if (isLightChanged)
-		updateLightAtlas(scene.objs_lights);
-	//m_bufferDataTranslator transfer buffer data
-	m_bufferDataTranslator->translate(m_frustum.m_clusters);
-	m_bufferDataTranslator->translate(scene.objs_lights, m_lightInfos);
-	m_bufferDataTranslator->transfer(
-		context,
-		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1),
-		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2), 0, 0);
-	//Transfer other datas that dataTranslator doesn't handle
 	{
 		DirectX::XMFLOAT4X4 MAT_TEMP;
 		DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(matView));
@@ -310,14 +322,7 @@ void NGraphic::GraphicMain::renderClustteredForward(
 {
 
 	NScene::Scene & scene = *game.m_scene;
-	//std::cout << "HOW MANY LIGHTS " << scene.objs_lights.size() << std::endl;
-
-	bool newLightInfo = false;
-	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
-		if (m_lightInfos.find(it->get()->m_id) != m_lightInfos.end()) continue;
-		m_lightInfos[it->get()->m_id] = getLightInfo(device);
-		newLightInfo = true;
-	}
+	
 	
 
 	auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -336,7 +341,6 @@ void NGraphic::GraphicMain::renderClustteredForward(
 		*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
 		worldMatrix, viewMatirx, projMatrix,
 
-		newLightInfo,
 		(int)m_frustum.m_size.x,
 		(int)m_frustum.m_size.y,
 		(int)m_frustum.m_size.z,
