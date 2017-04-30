@@ -111,26 +111,32 @@ void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &li
 	m_atlasSlicer->clear();
 	for (auto it = lights.begin(); it != lights.end(); it++) {
 		auto &light = **it;
-		auto &info =  m_lightInfos[light.m_id];
+		//auto &info =  m_lightInfos[light.m_id];
 		//0 spotlight
 		//1 pointlight
 		if (light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT) {
 
-			if (!m_atlasSlicer->getRoom(info.topLeftX, info.topLeftY, info.viewportWidth, info.viewportHeight, (int)size, (int)size)) {
+			if (!m_atlasSlicer->getRoom(
+				light.m_atlasTopLeftX, light.m_atlasTopLeftY, 
+				light.m_atlasViewportWidth, light.m_atlasViewportHeight, (int)size, (int)size)) {
 				std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
 				system("pause");
 			}
 			else {
 				//size += 1.9f;
 				//std::cout << "GraphicMain::updateLightAtlas-> Received available space\n";
-				std::cout <<"CREATED VIEWPORT : " << info.topLeftX << " , " << info.topLeftY<< " , " << info.viewportWidth << " , " << info.viewportHeight<<"\n";
+				//std::cout <<"CREATED VIEWPORT : " << info.topLeftX << " , " << info.topLeftY<< " , " << info.viewportWidth << " , " << info.viewportHeight<<"\n";
 
 				//success
 
 			}
 		}
 		else {
-			if (!m_atlasSlicer->getRoom(info.topLeftX, info.topLeftY, info.viewportWidth, info.viewportHeight, size * 6, size)) {
+			if (!m_atlasSlicer->getRoom(
+
+				light.m_atlasTopLeftX, light.m_atlasTopLeftY,
+				light.m_atlasViewportWidth, light.m_atlasViewportHeight, 
+				size * 6, size)) {
 				std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
 				system("pause");
 			}
@@ -142,10 +148,6 @@ void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &li
 
 			}
 		}
-		light.m_atlasTopLeftX = info.topLeftX;
-		light.m_atlastopLeftY = info.topLeftY;
-		light.m_atlasViewportWidth = info.viewportWidth;
-		light.m_atlasViewportHeight = info.viewportHeight;
 	}
 }
 void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene)
@@ -156,18 +158,17 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 	m_depthTextures[DEPTH_LIGHT_ATLAS]->clear(context);
 	//m_depthTextures[DEPTH_LIGHT_ATLAS]->clear(context);
 
-
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 		auto &light = **it;
-		auto &lightInfo = m_lightInfos[light.m_id];
+		//auto &lightInfo = m_lightInfos[light.m_id];
 		if(light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT)
 			RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
 			device, context, asset,
 			*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
 			scene,
 
-			worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix(lightInfo.viewportWidth, lightInfo.viewportHeight ), 
-			lightInfo.topLeftX, lightInfo.topLeftY, lightInfo.viewportWidth, lightInfo.viewportHeight);
+			worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix((**it).m_atlasViewportWidth, (**it).m_atlasViewportHeight),
+			(**it).m_atlasTopLeftX, (**it).m_atlasTopLeftY, (**it).m_atlasViewportWidth, (**it).m_atlasViewportHeight);
 		else {
 			auto pointLight = static_cast<NScene::PointLight*>(&light);
 			//(**it).setFOV(3.14f / 2.0f + 0.11f);
@@ -180,8 +181,8 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 				pointLight->getMatrixXPlus(), pointLight->getMatrixXMinus(),
 				pointLight->getMatrixYPlus(), pointLight->getMatrixYMinus(), 
 				pointLight->getMatrixZPlus(), pointLight->getMatrixZMinus(), 
-				(**it).getProjectionMatrix(lightInfo.viewportWidth/6, lightInfo.viewportWidth / 6),
-				lightInfo.topLeftX, lightInfo.topLeftY, lightInfo.viewportWidth, lightInfo.viewportHeight);
+				(**it).getProjectionMatrix((**it).m_atlasViewportWidth /6, (**it).m_atlasViewportWidth / 6),
+				(**it).m_atlasTopLeftX, (**it).m_atlasTopLeftY, (**it).m_atlasViewportWidth, (**it).m_atlasViewportHeight);
 			//(**it).setFOV(3.14f / 2.0f);
 		}
 
@@ -191,6 +192,27 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 		//	*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
 		//	light,
 		//	m_lightInfos[light.m_id].topLeftX, m_lightInfos[light.m_id].topLeftY, m_lightInfos[light.m_id].viewportWidth, m_lightInfos[light.m_id].viewportHeight);
+	}
+
+
+
+
+	for (auto it = scene.m_probes.begin(); it != scene.m_probes.end(); it++) {
+		auto &probe = **it;
+
+		probe.m_deferredTexture->clear(context, 0, 0, 0, 1);
+		probe.m_deferredDepth->clear(context);
+		RenderInstruction::RENDER_LIGHT_ATLAS_POINT(
+			device, context, asset,
+			*probe.m_deferredTexture, *probe.m_deferredDepth,
+			scene,
+
+			worldMatrix,
+			probe.getMatrixXPlus(), probe.getMatrixXMinus(),
+			probe.getMatrixYPlus(), probe.getMatrixYMinus(),
+			probe.getMatrixZPlus(), probe.getMatrixZMinus(),
+			(**it).getProjectionMatrix(probe.m_deferredTexture->getWidth() / 6, probe.m_deferredTexture->getHeight() / 6),
+			0, 0, probe.m_deferredTexture->getViewport().Width, probe.m_deferredTexture->getViewport().Height);
 	}
 	endRendering(context);
 }
@@ -213,7 +235,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	this->m_height = height;
 	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
 	m_rsm_flux_eye_perspective_height = textureIndirectLightHeight;
-	m_frustum.init((float)m_width/ m_height, NEAR_DISTANCE, FAR_DISTANCE, X_DIIVIDE, Y_DIVIDE, Z_DIVIDE);
+	m_frustumLight.init((float)m_width / m_height, NEAR_DISTANCE, FAR_DISTANCE, X_DIIVIDE, Y_DIVIDE, Z_DIVIDE);
 	m_bufferDataTranslator = std::make_shared<BufferDataTranslator>(X_DIIVIDE* Y_DIVIDE* Z_DIVIDE, CLUSTER_ITEM_SIZE,256,256,256);
 	//m_lightBuffer = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(10);
 
@@ -234,10 +256,8 @@ void GraphicMain::update(
 	ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene)
 {
 	//m_bufferDataTranslator->constrcut();
-	m_frustum.testBegin();
-	int index =0;
 	if (!scene.objs_lightsNotReady.empty()) {
-
+	
 		for (auto it = scene.objs_lightsNotReady.begin(); it != scene.objs_lightsNotReady.end(); it++) {
 			(**it).m_deferredTexture = std::shared_ptr<RenderTexture>(new RenderTexture());
 			(**it).m_deferredDepth = std::shared_ptr<DepthTexture>(new DepthTexture());
@@ -246,12 +266,22 @@ void GraphicMain::update(
 		}
 		scene.objs_lights.insert(scene.objs_lights.begin(), scene.objs_lightsNotReady.begin(), scene.objs_lightsNotReady.end());
 		scene.objs_lightsNotReady.clear();
-
-
-
+	}
+	if (!scene.m_probesNotReady.empty()) {
+	
+		for (auto it = scene.m_probesNotReady.begin(); it != scene.m_probesNotReady.end(); it++) {
+			(**it).m_deferredTexture = std::shared_ptr<RenderTexture>(new RenderTexture());
+			(**it).m_deferredTexture->init(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE);
+			(**it).m_deferredDepth = std::shared_ptr<DepthTexture>(new DepthTexture());
+			(**it).m_deferredDepth->init(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE);
+		}
+		scene.m_probes.insert(scene.m_probes.begin(), scene.m_probesNotReady.begin(), scene.m_probesNotReady.end());
+		scene.m_probesNotReady.clear();
 	}
 
 
+	m_frustumLight.testBegin();
+	int index = 0;
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++, index++) {
 		auto &light = **it;
 		Vector3 pos = XMVector3Transform(light.m_pos, scene.m_camMain.getViewMatrix());
@@ -262,20 +292,22 @@ void GraphicMain::update(
 
 		switch (light.m_lightType) {
 		case NScene::POINTLIGHT:
-			m_frustum.testPointlight(index, pos, light.m_lightDistance);
+			m_frustumLight.testPointlight(index, pos, light.m_lightDistance);
 			break;
 		case NScene::SPOTLIGHT:
-			m_frustum.testSpotlight(index, pos, dir, light.m_lightDistance,light.getFOV());
+			m_frustumLight.testSpotlight(index, pos, dir, light.m_lightDistance, light.getFOV());
 			break;
 		}
 	}
 
 	m_bufferDataTranslator->translate(scene.objs_lights);
-	m_bufferDataTranslator->translate(m_frustum.m_clusters);
+	m_bufferDataTranslator->translate(m_frustumLight.m_clusters);
 	m_bufferDataTranslator->transfer(
 		context,
 		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1),
 		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2), 0, 0);
+
+
 	updateLightAtlas(scene.objs_lights);
 }
 
@@ -345,12 +377,12 @@ void NGraphic::GraphicMain::renderClustteredForward(
 		*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
 		worldMatrix, viewMatirx, projMatrix,
 
-		(int)m_frustum.m_size.x,
-		(int)m_frustum.m_size.y,
-		(int)m_frustum.m_size.z,
-		m_frustum.m_fov,
-		m_frustum.m_near,
-		m_frustum.m_far
+		(int)m_frustumLight.m_size.x,
+		(int)m_frustumLight.m_size.y,
+		(int)m_frustumLight.m_size.z,
+		m_frustumLight.m_fov,
+		m_frustumLight.m_near,
+		m_frustumLight.m_far
 	);
 	endRendering(context);
 
@@ -524,7 +556,7 @@ void NGraphic::GraphicMain::renderDeffered(
 		RenderInstruction::RENDER_DEBUG(
 			device, context, asset,
 			*m_renderTextures[TARGET_FINAL], *m_depthTextures[DEPTH_FINAL],
-			game, scene, m_frustum,
+			game, scene, m_frustumLight,
 			*m_depthTextures[DEPTH_WORLD]);
 		endRendering(context);
 	}

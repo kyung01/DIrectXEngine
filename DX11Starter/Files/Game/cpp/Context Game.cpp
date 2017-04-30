@@ -58,34 +58,43 @@ void NGame::Context::update(float timeElapsed)
 
 
 }
+//
 void Context::init(NGraphic::NScene::Scene * scene)
 {
 	m_scene = scene;
-	//return;
+	return;
 	int lightType = 1;
 	float X_MAX = 5.0f, Y_MAX = 3.0f, Z_MAX = 2.0f;
+	//return;
 	for (int i = 0; i < 20 ; i++) {
 		Vector3 lightPosition(-5 + X_MAX *	 hprRandomFloat(),2+ Y_MAX * hprRandomFloat(), -1+Z_MAX * hprRandomFloat());
 		Vector3 lightColor = hprGetRandomColor(hprRandomFloat() * 100);
-		auto objSolidPointLight = Light::GET_POINTLIGHT(Vector4(lightColor.x, lightColor.y, lightColor.z, 1),5.0f);
+		//auto objSolidPointLight = Light::GET_POINTLIGHT(Vector4(lightColor.x, lightColor.y, lightColor.z, 1),5.0f);
 		float e = hprRandomFloat();
+
+		Vector3 randAxis(rand(), rand(), rand());
+		randAxis.Normalize();
+
 		if (lightType++%2 == 0) {
+			auto gamePointLight = Light::GET_POINTLIGHT(Vector4(lightColor.x, lightColor.y, lightColor.z, 1),0.1f);
 			auto sphereLight = scene->getPointLight(lightColor, 13.0f);
-			objSolidPointLight->m_graphicObjects.push_back(sphereLight);
-			m_lights.push_back(objSolidPointLight);
+			gamePointLight->m_graphicObjects.push_back(sphereLight);
+			m_lights.push_back(gamePointLight);
+			
+			gamePointLight->setRotation(Quaternion::CreateFromAxisAngle(randAxis, rand() )  );
+			gamePointLight->setPos(lightPosition.x, lightPosition.y, lightPosition.z);
 
 		}
 		else {
-
+			auto gameSpotLight = Light::GET_SPOTLIGHT(3.14f/2,Vector4(lightColor.x, lightColor.y, lightColor.z, 1), 0.1f);
 			auto spotLight = scene->getSpotLight(3.14f/2,lightColor, 13);
 			spotLight->setLightColor(lightColor);
-			objSolidPointLight->m_graphicObjects.push_back(spotLight);
-			m_lights.push_back(objSolidPointLight);
+			gameSpotLight->m_graphicObjects.push_back(spotLight);
+			m_lights.push_back(gameSpotLight);
+			
+			gameSpotLight->setRotation(Quaternion::CreateFromAxisAngle(randAxis, rand()));
+			gameSpotLight->setPos(lightPosition.x, lightPosition.y, lightPosition.z);
 		}
-		Vector3 randAxis(rand(), rand(), rand());
-		randAxis.Normalize();
-		objSolidPointLight->setRotation(Quaternion::CreateFromAxisAngle(randAxis, rand() )  );
-		objSolidPointLight->setPos(lightPosition.x, lightPosition.y, lightPosition.z);
 	}
 	//auto sphereLight = scene->getPointLight(Vector3(1, 1, 1), 5.0f);
 	//auto objSolidPointLight = Light::GET_POINTLIGHT(Vector4(1, 1, 1, 1), 5.0f);
@@ -115,4 +124,54 @@ void Context::init(NGraphic::NScene::Scene * scene)
 }
 void Context::addEntity(std::shared_ptr<Entity> entity) {
 	m_entities.push_back(entity);
+}
+
+int lightType = 0;
+void NGame::Context::addLight(NGraphic::NScene::Scene & scene)
+{
+	float X_MAX = 5.0f, Y_MAX = 10.0f, Z_MAX = 5.0f;
+
+	Vector3 lightPosition(-X_MAX + (2*X_MAX) *	 hprRandomFloat(),Y_MAX * hprRandomFloat(), -Z_MAX +2* Z_MAX * hprRandomFloat());
+	Vector3 lightColor = hprGetRandomColor(hprRandomFloat() * 100);
+	Vector3 randAxis(rand(), rand(), rand());
+	randAxis.Normalize();
+
+	if (lightType++ % 2 == 0) {
+		auto gamePointLight = Light::GET_POINTLIGHT(Vector4(lightColor.x, lightColor.y, lightColor.z, 1), 0.1f);
+		auto sphereLight = scene.getPointLight(lightColor, 13.0f);
+		gamePointLight->m_graphicObjects.push_back(sphereLight);
+		m_lights.push_back(gamePointLight);
+
+		gamePointLight->setRotation(Quaternion::CreateFromAxisAngle(randAxis, rand()));
+		gamePointLight->setPos(lightPosition.x, lightPosition.y, lightPosition.z);
+
+	}
+	else {
+		auto gameSpotLight = Light::GET_SPOTLIGHT(3.14f / 2, Vector4(lightColor.x, lightColor.y, lightColor.z, 1), 0.1f);
+		auto spotLight = scene.getSpotLight(3.14f / 2, lightColor, 13);
+		spotLight->setLightColor(lightColor);
+		gameSpotLight->m_graphicObjects.push_back(spotLight);
+		m_lights.push_back(gameSpotLight);
+
+		gameSpotLight->setRotation(Quaternion::CreateFromAxisAngle(randAxis, rand()));
+		gameSpotLight->setPos(lightPosition.x, lightPosition.y, lightPosition.z);
+	}
+}
+
+void NGame::Context::addProbe(NGraphic::NScene::Scene & scene)
+{
+
+	float X_MAX = 5.0f, Y_MAX = 10.0f, Z_MAX = 5.0f;
+
+	Vector3 lightPosition(-X_MAX + (2 * X_MAX) *	 hprRandomFloat(), Y_MAX * hprRandomFloat(), -Z_MAX + 2 * Z_MAX * hprRandomFloat());
+	Vector3 randAxis(rand(), rand(), rand());
+	randAxis.Normalize();
+	//auto probe = scene.getProbe();
+	auto probeGame = std::make_shared<Probe>();
+	probeGame->m_graphicProbe = scene.getProbe();
+	m_probes.push_back(probeGame);
+
+	probeGame->setRotation(Quaternion::CreateFromAxisAngle(randAxis, rand()));
+	probeGame->setPos(lightPosition.x, lightPosition.y, lightPosition.z);
+	
 }

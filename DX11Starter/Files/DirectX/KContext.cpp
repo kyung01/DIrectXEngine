@@ -77,12 +77,12 @@ void KContext::Init()
 
 
 	m_ui.init(hInstance, hWnd, device, context, swapChain, backBufferRTV);
-	m_ui.m_uiMain.init(&m_renderContexts.begin()->engine);//TODO delete this line
+	m_ui.m_uiMain.init(&m_renderContexts.begin()->engine, &m_renderContexts.begin()->scene);//TODO delete this line
 	if (!m_asset.init(device, context)) {
 		std::cout << "Failed crucial steps.\n";
 		system("pause");
 	}
-	m_asset.loadDebug_frustums(device, m_renderContexts.begin()->engine.m_frustum.m_cubes);
+	m_asset.loadDebug_frustums(device, m_renderContexts.begin()->engine.m_frustumLight.m_cubes);
 	world.objs.push_back(World::Object());
 	world.objs.push_back(World::Object());
 	world.objs.push_back(World::Object());
@@ -123,6 +123,18 @@ void KContext::Update(float deltaTime, float totalTime)
 	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
 		it->gameContext.update(deltaTime);
 		it->engine.update(device, context, deltaTime, totalTime,m_asset, it->scene);
+	}
+
+
+	if (m_ui.m_uiMain.m_settings.addNewLight) {
+		m_ui.m_uiMain.m_settings.addNewLight = false;
+		m_renderContexts.begin()->gameContext.addLight(m_renderContexts.begin()->scene);
+		std::cout << "ADDING NEW LIGHT\n";
+	}
+	if (m_ui.m_uiMain.m_settings.addNewReflectiveProbe) {
+		m_ui.m_uiMain.m_settings.addNewReflectiveProbe = false;
+		m_renderContexts.begin()->gameContext.addProbe(m_renderContexts.begin()->scene);
+		std::cout << "ADDING NEW PROBE\n";
 	}
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))

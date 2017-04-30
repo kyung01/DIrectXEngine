@@ -5,8 +5,9 @@ using namespace NImGui;
 using namespace NGraphic;
 
 
-void NImGui::UIMain::init(GraphicMain * graphicMain)
+void NImGui::UIMain::init(GraphicMain * graphicMain, NGraphic::NScene::Scene *scene)
 {
+	m_scene = scene;
 	this->graphicMain = graphicMain;
 }
 void NImGui::UIMain::render(std::map<KEnum, std::shared_ptr<RenderTexture>> renderTexutres)
@@ -84,6 +85,17 @@ void NImGui::UIMain::render()
 		ImGui::Image(tex_id, ImVec2(800, 800), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
 		ImGui::End();
 	}
+	{
+		ImGui::Begin("Probes", 0, ImGuiWindowFlags_ShowBorders);
+		for each (auto probe in m_scene->m_probes)
+		{
+			ImTextureID tex_id = probe->m_deferredTexture->getShaderResourceView();
+			ImGui::Image(tex_id, ImVec2(800, 800), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+
+		}
+		ImGui::End();
+	}
+	/*
 
 	{
 		ImGui::Begin("Test Screen", 0, ImGuiWindowFlags_ShowBorders);
@@ -91,6 +103,7 @@ void NImGui::UIMain::render()
 		ImGui::Image(tex_id, ImVec2(800, 800), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
 		ImGui::End();
 	}
+	*/
 
 	ImGui::BeginMainMenuBar();
 	if (ImGui::BeginMenu("File"))

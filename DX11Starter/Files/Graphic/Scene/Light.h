@@ -22,7 +22,7 @@ namespace NGraphic {
 
 			//this is for forward rendering
 			float 
-				m_atlasTopLeftX, m_atlastopLeftY,
+				m_atlasTopLeftX, m_atlasTopLeftY,
 				m_atlasViewportWidth, m_atlasViewportHeight;
 
 

@@ -65,3 +65,11 @@ std::shared_ptr<Light> NGraphic::NScene::Scene::getSpotLight(
 
 	return light;
 }
+
+std::shared_ptr<Probe> NGraphic::NScene::Scene::getProbe()
+{
+	std::shared_ptr<Probe> probe = std::make_shared<Probe>();
+	m_probesNotReady.push_back(probe);
+
+	return probe;
+}

@@ -83,7 +83,10 @@ namespace NGraphic {
 			float frustumFov, float frustumNear, float frustumFar
 		);
 	public:
-		NFrustum::Frustum				m_frustum; // Eventually move to private or protected access level but for now, put it in a public for debug purpose
+		// Eventually move to private or protected access level but for now, put it in a public for debug purpose
+		NFrustum::Frustum				
+			m_frustumLight
+			;
 		std::shared_ptr<TextureAtlasSlicer> m_atlasSlicer;
 
 		std::map<int, LightInfo> m_lightInfos;

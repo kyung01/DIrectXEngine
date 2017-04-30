@@ -61,7 +61,7 @@ void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& 
 		//system("pause");
 		parameter.position = light.m_pos;
 		parameter.topLeftX = light.m_atlasTopLeftX;
-		parameter.topLeftY = light.m_atlastopLeftY;
+		parameter.topLeftY = light.m_atlasTopLeftY;
 		parameter.viewPortWidth = light.m_atlasViewportWidth;
 		parameter.viewPortHeight = light.m_atlasViewportHeight;
 		//std::cout << "LIGHT POS " << light.m_pos.x << " , " << light.m_pos.y << " , " << light.m_pos.z << "\n";
@@ -159,7 +159,7 @@ void NGraphic::BufferDataTranslator::translate(std::vector<NFrustum::Cluster>& c
 		//system("pause");
 		
 	}
-	std::cout << "OFFSET ENDED AT " << offset <<std::endl ;;// " MX AT " << m_arrClusterItemSize << std::endl << "BECAUSE" << indexLight << " , " << indexDecal << " , " << indexProbe << std::endl;
+	//std::cout << "OFFSET ENDED AT " << offset <<std::endl ;;// " MX AT " << m_arrClusterItemSize << std::endl << "BECAUSE" << indexLight << " , " << indexDecal << " , " << indexProbe << std::endl;
 
 	int lightValue = 0 ;
 	/*

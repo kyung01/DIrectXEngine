@@ -1,7 +1,7 @@
 #pragma once
 #include "Graphic\GraphicMain.h"
 #include "Graphic\RenderTexture.h"
-
+#include "Graphic\Scene\Scene.h"
 //UI for the graphic engine
 namespace NImGui {
 	struct SettingValues {
@@ -23,7 +23,8 @@ namespace NImGui {
 	protected:
 	public:
 		SettingValues m_settings;
-		void init(NGraphic::GraphicMain * graphicMain);
+		NGraphic::NScene::Scene *m_scene;
+		void init(NGraphic::GraphicMain * graphicMain, NGraphic::NScene::Scene *scene);
 		void render();
 	};
 }
