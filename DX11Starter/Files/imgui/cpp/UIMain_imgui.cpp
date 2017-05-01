@@ -132,6 +132,7 @@ void NImGui::UIMain::render()
 	ImGui::Text("Render Mode");
 	ImGui::RadioButton("Forward Rendering (clustered frustum)", &e, 0); 
 	ImGui::RadioButton("Deferred Rendering (traditional)", &e, 1);
+	ImGui::Checkbox("Debug Mode On/Off", &debugLight);
 	
 	if (ImGui::CollapsingHeader("Light Options"))
 	{

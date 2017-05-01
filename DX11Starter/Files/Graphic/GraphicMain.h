@@ -73,7 +73,7 @@ namespace NGraphic {
 		
 
 		void renderDeferred();
-		void renderClusterredForwardRendering(
+		void renderClusteredForwardRendering(
 
 			ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene,
 			ID3D11RenderTargetView * renderTargetView, ID3D11DepthStencilView * depthStencilView, D3D11_VIEWPORT & viewport,
@@ -97,13 +97,17 @@ namespace NGraphic {
 		GraphicMain();
 		bool init(ID3D11Device *device, ID3D11DeviceContext *context, int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight);
 		void update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene);
-		
+		void updateLights(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene);
+		void updateFrustum(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset,
+			DirectX::SimpleMath::Matrix camViewMatrix,
+			std::list < std::shared_ptr< NScene::Light> > lights);
 
 
-		void renderClustteredForward(
+
+		void renderClusteredForward(
 			ID3D11Device * device, ID3D11DeviceContext * context,
 			ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
-			Asset& asset, NGame::Context &game);
+			Asset& asset, NScene::Scene& scene);
 		void renderDeffered(
 			ID3D11Device * device, ID3D11DeviceContext * context,
 			ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,

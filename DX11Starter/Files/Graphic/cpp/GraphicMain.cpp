@@ -195,25 +195,6 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 	}
 
 
-
-
-	for (auto it = scene.m_probes.begin(); it != scene.m_probes.end(); it++) {
-		auto &probe = **it;
-
-		probe.m_deferredTexture->clear(context, 0, 0, 0, 1);
-		probe.m_deferredDepth->clear(context);
-		RenderInstruction::RENDER_LIGHT_ATLAS_POINT(
-			device, context, asset,
-			*probe.m_deferredTexture, *probe.m_deferredDepth,
-			scene,
-
-			worldMatrix,
-			probe.getMatrixXPlus(), probe.getMatrixXMinus(),
-			probe.getMatrixYPlus(), probe.getMatrixYMinus(),
-			probe.getMatrixZPlus(), probe.getMatrixZMinus(),
-			(**it).getProjectionMatrix(probe.m_deferredTexture->getWidth() / 6, probe.m_deferredTexture->getHeight() / 6),
-			0, 0, probe.m_deferredTexture->getViewport().Width, probe.m_deferredTexture->getViewport().Height);
-	}
 	endRendering(context);
 }
 
@@ -252,12 +233,47 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	return true;
 }
 
+//If there are new lights probes, then process them; make them ready for rendering process
+//for lights, recalculate light boundaries according to the changed view projection
 void GraphicMain::update(
 	ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene)
 {
-	//m_bufferDataTranslator->constrcut();
+	updateLights(device, context, deltaTime, totalTime, asset, scene);
+	updateFrustum(device,context,deltaTime,totalTime,asset,
+		scene.m_camMain.getViewMatrix(),scene.objs_lights);
+
+
+
+	beginRendering(context);
+	renderLightAtlas(device, context, asset, scene);
+
+
+	/*
+
+	for (auto it = scene.m_probes.begin(); it != scene.m_probes.end(); it++) {
+		auto &probe = **it;
+
+		probe.m_deferredTexture->clear(context, 0, 0, 0, 1);
+		probe.m_deferredDepth->clear(context);
+		renderClusteredForward(device, context,
+			backBufferRTV, depthStencilView, viewport,
+			m_asset, it->scene);
+	}
+		*/
+
+
+	endRendering(context);
+
+}
+/*
+renderClusteredForward(this->device, this->context,
+backBufferRTV, depthStencilView, viewport,
+m_asset, it->scene);
+*/
+void GraphicMain::updateLights(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene)
+{
 	if (!scene.objs_lightsNotReady.empty()) {
-	
+
 		for (auto it = scene.objs_lightsNotReady.begin(); it != scene.objs_lightsNotReady.end(); it++) {
 			(**it).m_deferredTexture = std::shared_ptr<RenderTexture>(new RenderTexture());
 			(**it).m_deferredDepth = std::shared_ptr<DepthTexture>(new DepthTexture());
@@ -268,7 +284,7 @@ void GraphicMain::update(
 		scene.objs_lightsNotReady.clear();
 	}
 	if (!scene.m_probesNotReady.empty()) {
-	
+
 		for (auto it = scene.m_probesNotReady.begin(); it != scene.m_probesNotReady.end(); it++) {
 			(**it).m_deferredTexture = std::shared_ptr<RenderTexture>(new RenderTexture());
 			(**it).m_deferredTexture->init(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE);
@@ -278,14 +294,17 @@ void GraphicMain::update(
 		scene.m_probes.insert(scene.m_probes.begin(), scene.m_probesNotReady.begin(), scene.m_probesNotReady.end());
 		scene.m_probesNotReady.clear();
 	}
-
-
+}
+void GraphicMain::updateFrustum(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, 
+	DirectX::SimpleMath::Matrix camViewMatrix,
+	std::list < std::shared_ptr< NScene::Light> > lights)
+{
 	m_frustumLight.testBegin();
 	int index = 0;
-	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++, index++) {
+	for (auto it = lights.begin(); it != lights.end(); it++, index++) {
 		auto &light = **it;
-		Vector3 pos = XMVector3Transform(light.m_pos, scene.m_camMain.getViewMatrix());
-		Vector3 posDirLook = XMVector3Transform(light.m_pos + light.m_dirLook, scene.m_camMain.getViewMatrix());
+		Vector3 pos = XMVector3Transform(light.m_pos, camViewMatrix);
+		Vector3 posDirLook = XMVector3Transform(light.m_pos + light.m_dirLook, camViewMatrix);
 		Vector3 dir = posDirLook - pos;
 
 		dir.Normalize();
@@ -300,7 +319,7 @@ void GraphicMain::update(
 		}
 	}
 
-	m_bufferDataTranslator->translate(scene.objs_lights);
+	m_bufferDataTranslator->translate(lights);
 	m_bufferDataTranslator->translate(m_frustumLight.m_clusters);
 	m_bufferDataTranslator->transfer(
 		context,
@@ -308,7 +327,7 @@ void GraphicMain::update(
 		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(2), 0, 0);
 
 
-	updateLightAtlas(scene.objs_lights);
+	updateLightAtlas(lights);
 }
 
 
@@ -318,7 +337,7 @@ void GraphicMain::update(
 
 
 
-void GraphicMain::renderClusterredForwardRendering(
+void GraphicMain::renderClusteredForwardRendering(
 	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene,
 	ID3D11RenderTargetView * renderTargetView, ID3D11DepthStencilView * depthStencilView, D3D11_VIEWPORT & viewport,
 	RenderTexture & textureAtlas, DepthTexture & depthAtlas,
@@ -343,21 +362,19 @@ void GraphicMain::renderClusterredForwardRendering(
 	m_renderTextures[TARGET_TEST]->clear(context, 0, 0, 0, 0);
 	m_depthTextures[DEPTH_TEST]->clear(context);
 	//Render
-	renderLightAtlas(device, context, asset, scene);
 	RenderInstruction::RENDER_TEST(device, context, asset, scene,
 		renderTargetView, depthStencilView, viewport,
 		matWorld,matView,matProj , depthAtlas, textureAtlas, 0);
 
 }
 
-void NGraphic::GraphicMain::renderClustteredForward(
+void NGraphic::GraphicMain::renderClusteredForward(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
 	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
-	Asset& asset, NGame::Context &game	
+	Asset& asset, NScene::Scene& scene
 	)
 {
 
-	NScene::Scene & scene = *game.m_scene;
 	
 	
 
@@ -371,7 +388,8 @@ void NGraphic::GraphicMain::renderClustteredForward(
 
 	beginRendering(context);
 
-	renderClusterredForwardRendering(device, context, asset, *game.m_scene,
+	//renderLightAtlas(device, context, asset, scene);
+	renderClusteredForwardRendering(device, context, asset, scene,
 		target, targetDepth, viewport,
 		//*m_renderTextures[TARGET_TEST], *m_depthTextures[DEPTH_TEST],
 		*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
