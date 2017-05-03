@@ -30,6 +30,7 @@ namespace NGraphic {
 			float m_fov;
 			float m_near;
 			float m_far;
+			float m_widthOverHeight;
 			Vector3 m_size;
 			float m_division;
 			std::vector<ClusterAABB> m_cubes;

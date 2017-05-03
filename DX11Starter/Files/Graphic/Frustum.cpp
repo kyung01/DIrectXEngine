@@ -26,6 +26,7 @@ bool Frustum::aabbArvo(Vector3 C1, Vector3 C2, Vector3 S, float R)
 }
 void Frustum::init(float widthOverHeight,float nearDistance, float farDistance, int divisionX,int divisionY, int divisionZ)
 {
+	m_widthOverHeight = widthOverHeight;
 	m_fov = 3.14f/2.0f;
 	m_near = nearDistance;
 	m_far = farDistance;

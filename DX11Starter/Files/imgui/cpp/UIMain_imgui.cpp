@@ -147,6 +147,9 @@ void NImGui::UIMain::render()
 	if (ImGui::Button("Add Reflective Prove")) {
 		m_settings.addNewReflectiveProbe = true;
 	}
+	if (ImGui::Button("Bake Reflective Prove")) {
+		m_settings.bakeReflectiveProbe = true;
+	}
 
 	End();
 	//add lights and such in this controller

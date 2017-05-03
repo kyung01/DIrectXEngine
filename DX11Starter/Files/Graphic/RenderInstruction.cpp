@@ -461,7 +461,7 @@ void RenderInstruction::setRenderTarget(ID3D11DeviceContext* deviceContext,
 }
 void RenderInstruction::RENDER_TEST(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
-	Asset & asset, NScene::Scene & scene, 
+	Asset & asset, std::list<std::shared_ptr<NScene::Object> >  objs, 
 	ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
 	DirectX::SimpleMath::Matrix & worldMatrix, DirectX::SimpleMath::Matrix & viewMatrix, DirectX::SimpleMath::Matrix & projMatrix, 
 	DepthTexture & lightAtlas,
@@ -469,7 +469,7 @@ void RenderInstruction::RENDER_TEST(
 	ID3D11Buffer * lightParameters)
 {
 
-#define RENDER_OBJS for (auto it = scene.objs_solid.begin(); it != scene.objs_solid.end(); it++) {\
+#define RENDER_OBJS for (auto it = objs.begin(); it != objs.end(); it++) {\
 		NGraphic::NScene::Object& light = **it; \
 		NGraphic::Mesh& mesh = *asset.m_meshes[light.m_meshId]; \
 		DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(light.getModelMatrix())); \
@@ -511,7 +511,7 @@ void RenderInstruction::RENDER_TEST(
 
 	shaderVert.SetShader();
 	shaderFrag.SetShader();
-	for (auto it = scene.objs_solid.begin(); it != scene.objs_solid.end(); it++) {
+	for (auto it = objs.begin(); it != objs.end(); it++) {
 		\
 			NGraphic::NScene::Object& solidObj = **it; \
 			NGraphic::Mesh& mesh = *asset.m_meshes[solidObj.m_meshId]; 

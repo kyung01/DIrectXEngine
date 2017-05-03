@@ -50,7 +50,7 @@ KContext::~KContext()
 	Mesh classes destroy themselves
 	*/
 }
-
+float scale = 0.9f;
 // --------------------------------------------------------
 // Called once per program, after DirectX and the window
 // are initialized but before the game loop.
@@ -61,7 +61,7 @@ void KContext::Init()
 	//m_depth.init(device, this->width, this->height);
 
 	m_renderContexts.push_back({ "example00","Created for demo purpose.", NGame::Context(),GraphicMain(), Scene() });
-	float scale = 0.9f;
+	
 	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
 		if (!it->engine.init(this->device, this->context, this->width * scale,this->height*scale, 256, 256)) {
 			std::cout << "GraphicMain failed to init" << std::endl;
@@ -136,6 +136,11 @@ void KContext::Update(float deltaTime, float totalTime)
 		m_renderContexts.begin()->gameContext.addProbe(m_renderContexts.begin()->scene);
 		std::cout << "ADDING NEW PROBE\n";
 	}
+	if (m_ui.m_uiMain.m_settings.bakeReflectiveProbe) {
+		m_ui.m_uiMain.m_settings.bakeReflectiveProbe = false;
+		m_renderContexts.begin()->engine.updateProbes(device, context, deltaTime, totalTime, m_asset, m_renderContexts.begin()->scene);
+		std::cout << "ADDING NEW PROBE\n";
+	}
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
 		Quit();
@@ -185,12 +190,22 @@ void KContext::Draw(float deltaTime, float totalTime)
 		1.0f,
 		0);
 
-
-	
 	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
+
+
+		auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
+		auto viewMatirx = it->scene.m_camMain.getViewMatrix();
+		auto projMatrix = it->scene.m_camMain.getProjectionMatrix(this->width * scale, this->height*scale);
+
+
+
 		it->engine.renderClusteredForward(this->device, this->context,
 			backBufferRTV, depthStencilView, viewport,
-			m_asset, it->scene);
+			m_asset, it->engine.m_frustumLight,
+			worldMatrix,
+			viewMatirx,
+			projMatrix,
+			it->scene);
 	}
 	context->OMSetRenderTargets(1,&this-> backBufferRTV, depthStencilView);
 	m_ui.render();

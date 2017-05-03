@@ -163,12 +163,13 @@ void NGame::Context::addProbe(NGraphic::NScene::Scene & scene)
 
 	float X_MAX = 5.0f, Y_MAX = 10.0f, Z_MAX = 5.0f;
 
-	Vector3 lightPosition(-X_MAX + (2 * X_MAX) *	 hprRandomFloat(), Y_MAX * hprRandomFloat(), -Z_MAX + 2 * Z_MAX * hprRandomFloat());
+	Vector3 lightPosition(-X_MAX + (2 * X_MAX) *	 hprRandomFloat(),1+ Y_MAX * hprRandomFloat(), -Z_MAX + 2 * Z_MAX * hprRandomFloat());
 	Vector3 randAxis(rand(), rand(), rand());
 	randAxis.Normalize();
 	//auto probe = scene.getProbe();
 	auto probeGame = std::make_shared<Probe>();
 	probeGame->m_graphicProbe = scene.getProbe();
+	probeGame->m_graphicObjects.push_back(probeGame->m_graphicProbe);
 	m_probes.push_back(probeGame);
 
 	probeGame->setRotation(Quaternion::CreateFromAxisAngle(randAxis, rand()));

@@ -217,6 +217,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 	m_rsm_flux_eye_perspective_width = textureIndirectLightWidth;
 	m_rsm_flux_eye_perspective_height = textureIndirectLightHeight;
 	m_frustumLight.init((float)m_width / m_height, NEAR_DISTANCE, FAR_DISTANCE, X_DIIVIDE, Y_DIVIDE, Z_DIVIDE);
+	m_frustumProbe.init(1.0f, NEAR_DISTANCE, FAR_DISTANCE, X_DIIVIDE, Y_DIVIDE, Z_DIVIDE);
 	m_bufferDataTranslator = std::make_shared<BufferDataTranslator>(X_DIIVIDE* Y_DIVIDE* Z_DIVIDE, CLUSTER_ITEM_SIZE,256,256,256);
 	//m_lightBuffer = std::make_shared<NBuffer::KDynamicBuffer<NBuffer::LightParameter>>(10);
 
@@ -239,8 +240,9 @@ void GraphicMain::update(
 	ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene)
 {
 	updateLights(device, context, deltaTime, totalTime, asset, scene);
-	updateFrustum(device,context,deltaTime,totalTime,asset,
-		scene.m_camMain.getViewMatrix(),scene.objs_lights);
+	updateFrustum(device, context, deltaTime, totalTime, asset,
+		m_frustumLight,
+		scene.m_camMain.getViewMatrix(), scene.objs_lights);
 
 
 
@@ -248,21 +250,115 @@ void GraphicMain::update(
 	renderLightAtlas(device, context, asset, scene);
 
 
-	/*
+	endRendering(context);
 
+
+
+
+}
+void GraphicMain::updateProbes(
+	ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene)
+{
+	
+
+	//beginRendering(context);
+	float depthMin = 0;
+	float depthMax = 1.0f;
 	for (auto it = scene.m_probes.begin(); it != scene.m_probes.end(); it++) {
 		auto &probe = **it;
+		float textureWidth = probe.m_deferredTexture->getWidth() / 6.0f;
+		float textureHeight = textureWidth;
+
+		auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
+		auto viewMatirx = probe.getMatrixXMinus();
+
+		DirectX::SimpleMath::Matrix projMatrix = DirectX::XMMatrixPerspectiveFovLH(
+			3.14f / 2,		// Field of View Angle
+			1.0f,		// Aspect ratio
+			0.001, 1000.0f);
+		//auto projMatrix = scene.m_camMain.getProjectionMatrix();
 
 		probe.m_deferredTexture->clear(context, 0, 0, 0, 1);
 		probe.m_deferredDepth->clear(context);
+		/*
+		updateFrustum(device, context, deltaTime, totalTime, asset,
+			m_frustumProbe,
+			probe.getMatrixXPlus(), scene.objs_lights);
 		renderClusteredForward(device, context,
-			backBufferRTV, depthStencilView, viewport,
-			m_asset, it->scene);
-	}
+			probe.m_deferredTexture->getRenderTargetView(),
+			probe.m_deferredDepth->getDepthStencilView(),
+			{ 0.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
+			asset, m_frustumProbe,
+			worldMatrix,
+			probe.getMatrixXPlus(),
+			projMatrix,
+			scene);
+		updateFrustum(device, context, deltaTime, totalTime, asset,
+			m_frustumProbe,
+			probe.getMatrixXMinus(), scene.objs_lights);
+		renderClusteredForward(device, context,
+			probe.m_deferredTexture->getRenderTargetView(),
+			probe.m_deferredDepth->getDepthStencilView(),
+			{ textureWidth*1.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
+			asset, m_frustumProbe,
+			worldMatrix,
+			probe.getMatrixXMinus(),
+			projMatrix,
+			scene);
 		*/
+		updateFrustum(device, context, deltaTime, totalTime, asset,
+			m_frustumProbe,
+			probe.getMatrixYPlus(), scene.objs_lights);
+		renderClusteredForward(device, context,
+			probe.m_deferredTexture->getRenderTargetView(),
+			probe.m_deferredDepth->getDepthStencilView(),
+			{ textureWidth*2.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
+			asset, m_frustumProbe,
+			worldMatrix,
+			probe.getMatrixYPlus(),
+			projMatrix,
+			scene);
+		updateFrustum(device, context, deltaTime, totalTime, asset,
+			m_frustumProbe,
+			probe.getMatrixYMinus(), scene.objs_lights);
+		renderClusteredForward(device, context,
+			probe.m_deferredTexture->getRenderTargetView(),
+			probe.m_deferredDepth->getDepthStencilView(),
+			{ textureWidth*3.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
+			asset, m_frustumProbe,
+			worldMatrix,
+			probe.getMatrixYMinus(),
+			projMatrix,
+			scene);
+		updateFrustum(device, context, deltaTime, totalTime, asset,
+			m_frustumProbe,
+			probe.getMatrixZPlus(), scene.objs_lights);
+		renderClusteredForward(device, context,
+			probe.m_deferredTexture->getRenderTargetView(),
+			probe.m_deferredDepth->getDepthStencilView(),
+			{ textureWidth*4.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
+			asset, m_frustumProbe,
+			worldMatrix,
+			probe.getMatrixZPlus(),
+			projMatrix,
+			scene);
 
+		updateFrustum(device, context, deltaTime, totalTime, asset,
+			m_frustumProbe,
+			probe.getMatrixZMinus(), scene.objs_lights);
+		renderClusteredForward(device, context,
+			probe.m_deferredTexture->getRenderTargetView(),
+			probe.m_deferredDepth->getDepthStencilView(),
+			{ textureWidth*5.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
+			asset, m_frustumProbe,
+			worldMatrix,
+			probe.getMatrixZMinus(),
+			projMatrix,
+			scene);
+	}
 
-	endRendering(context);
+	//endRendering(context);
+
 
 }
 /*
@@ -295,11 +391,14 @@ void GraphicMain::updateLights(ID3D11Device * device, ID3D11DeviceContext * cont
 		scene.m_probesNotReady.clear();
 	}
 }
-void GraphicMain::updateFrustum(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, 
+void GraphicMain::updateFrustum(
+	ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, 
+	Asset & asset,
+	NGraphic::NFrustum::Frustum &frustum,
 	DirectX::SimpleMath::Matrix camViewMatrix,
 	std::list < std::shared_ptr< NScene::Light> > lights)
 {
-	m_frustumLight.testBegin();
+	frustum.testBegin();
 	int index = 0;
 	for (auto it = lights.begin(); it != lights.end(); it++, index++) {
 		auto &light = **it;
@@ -311,16 +410,16 @@ void GraphicMain::updateFrustum(ID3D11Device * device, ID3D11DeviceContext * con
 
 		switch (light.m_lightType) {
 		case NScene::POINTLIGHT:
-			m_frustumLight.testPointlight(index, pos, light.m_lightDistance);
+			frustum.testPointlight(index, pos, light.m_lightDistance);
 			break;
 		case NScene::SPOTLIGHT:
-			m_frustumLight.testSpotlight(index, pos, dir, light.m_lightDistance, light.getFOV());
+			frustum.testSpotlight(index, pos, dir, light.m_lightDistance, light.getFOV());
 			break;
 		}
 	}
 
 	m_bufferDataTranslator->translate(lights);
-	m_bufferDataTranslator->translate(m_frustumLight.m_clusters);
+	m_bufferDataTranslator->translate(frustum.m_clusters);
 	m_bufferDataTranslator->transfer(
 		context,
 		asset.m_shadersFrag[RENDER_TEST]->GetBuffer(0), asset.m_shadersFrag[RENDER_TEST]->GetBuffer(1),
@@ -343,7 +442,7 @@ void GraphicMain::renderClusteredForwardRendering(
 	RenderTexture & textureAtlas, DepthTexture & depthAtlas,
 	Matrix & matWorld, Matrix& matView, Matrix & matProj,
 	int frustumSizeX, int frustumSizeY, int frustumSizeZ,
-	float frustumFov, float frustumNear, float frustumFar
+	float frustumFov, float frustumNear, float frustumFar,float frustumWidthOverHeight
 )
 {
 	{
@@ -353,7 +452,7 @@ void GraphicMain::renderClusteredForwardRendering(
 		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumX", frustumSizeX);
 		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumY", frustumSizeY);
 		asset.m_shadersFrag[RENDER_TEST]->SetInt("frustumZ", frustumSizeZ);
-		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumSizeRatio",(float)m_width/m_height);
+		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumSizeRatio", frustumWidthOverHeight);
 		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumNear",frustumNear );
 		asset.m_shadersFrag[RENDER_TEST]->SetFloat("frustumFar", frustumFar);
 		asset.m_shadersFrag[RENDER_TEST]->CopyAllBufferData();
@@ -362,7 +461,7 @@ void GraphicMain::renderClusteredForwardRendering(
 	m_renderTextures[TARGET_TEST]->clear(context, 0, 0, 0, 0);
 	m_depthTextures[DEPTH_TEST]->clear(context);
 	//Render
-	RenderInstruction::RENDER_TEST(device, context, asset, scene,
+	RenderInstruction::RENDER_TEST(device, context, asset, scene.objs_solid,
 		renderTargetView, depthStencilView, viewport,
 		matWorld,matView,matProj , depthAtlas, textureAtlas, 0);
 
@@ -370,54 +469,45 @@ void GraphicMain::renderClusteredForwardRendering(
 
 void NGraphic::GraphicMain::renderClusteredForward(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
-	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
-	Asset& asset, NScene::Scene& scene
-	)
-{
-
-	
-	
-
-	auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
-	auto worldMatrixFrustum = DirectX::SimpleMath::Matrix::CreateRotationX(3.14 / 2);
-	auto viewMatirx = scene.m_camMain.getViewMatrix();
-	auto projMatrix = scene.m_camMain.getProjectionMatrix(m_width, m_height);
-
-
-
-
+	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT viewport,
+	Asset& asset,
+	NGraphic::NFrustum::Frustum &frustum,
+	SimpleMath::Matrix worldMatrix,
+	SimpleMath::Matrix viewMatirx,
+	SimpleMath::Matrix projMatrix,
+	NScene::Scene& scene
+	){
+	//auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
+	//auto viewMatirx = scene.m_camMain.getViewMatrix();
+	//auto projMatrix = scene.m_camMain.getProjectionMatrix(m_width,m_height);
+		
 	beginRendering(context);
-
 	//renderLightAtlas(device, context, asset, scene);
-	renderClusteredForwardRendering(device, context, asset, scene,
+	renderClusteredForwardRendering(
+		device, context, asset, scene,
 		target, targetDepth, viewport,
-		//*m_renderTextures[TARGET_TEST], *m_depthTextures[DEPTH_TEST],
-		*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
+		*m_renderTextures[TARGET_LIGHT_ATLAS], 
+		*m_depthTextures[DEPTH_LIGHT_ATLAS],
 		worldMatrix, viewMatirx, projMatrix,
 
-		(int)m_frustumLight.m_size.x,
-		(int)m_frustumLight.m_size.y,
-		(int)m_frustumLight.m_size.z,
-		m_frustumLight.m_fov,
-		m_frustumLight.m_near,
-		m_frustumLight.m_far
+		(int)frustum.m_size.x,
+		(int)frustum.m_size.y,
+		(int)frustum.m_size.z,
+		frustum.m_fov,
+		frustum.m_near,
+		frustum.m_far,
+		frustum.m_widthOverHeight
 	);
 	endRendering(context);
 
-
 	m_renderTextureDummy.setRenderTargetView(target, viewport);
 	m_depthTextureDummy.setDepthStencilView(targetDepth);
-	//m_renderTextureDummy.clear(context, 0, 0, 0, 0);
-	//m_depthTextureDummy.clear(context);
-	DirectX::SimpleMath::Matrix matSceneMvpFirstPerson =
-		scene.m_camMain.getProjectionMatrix(viewport.Width, viewport.Height) *
-		scene.m_camMain.getViewMatrix() * scene.m_camMain.getModelMatrix();
+	DirectX::SimpleMath::Matrix matSceneMvpFirstPerson = projMatrix *
+		viewMatirx * worldMatrix;
 
 
 	if (true) {
 		beginRendering(context);
-		//m_renderTextureDummy.clear(context, 0, 0, 0, 0);
-		//m_depthTextureDummy.clear(context);
 		m_renderTextureDummy.setRenderTarget(context, m_depthTextureDummy.getDepthStencilView());
 		//context->ClearDepthStencilView(targetDepth, D3D11_CLEAR_DEPTH, 1.0f, 0.0f);
 		auto skyVS = asset.m_shadersVert[RENDER_SKYBOX].get();
@@ -427,8 +517,8 @@ void NGraphic::GraphicMain::renderClusteredForward(
 
 		//DirectX::XMStoreFloat4x4(&mvp, XMMatrixTranspose(matSceneMvpFirstPerson)); // Transpose for HLSL!
 		//DirectX::XMStoreFloat4x4(&world, XMMatrixTranspose(scene.m_camMain.getModelMatrix())); // Transpose for HLSL!
-		DirectX::XMStoreFloat4x4(&view, XMMatrixTranspose(scene.m_camMain.getViewMatrix())); // Transpose for HLSL!
-		DirectX::XMStoreFloat4x4(&projection, XMMatrixTranspose(scene.m_camMain.getProjectionMatrix(viewport.Width, viewport.Height))); // Transpose for HLSL!
+		DirectX::XMStoreFloat4x4(&view, XMMatrixTranspose(viewMatirx)); // Transpose for HLSL!
+		DirectX::XMStoreFloat4x4(&projection, XMMatrixTranspose(projMatrix)); // Transpose for HLSL!
 
 
 																																		// Set up shaders

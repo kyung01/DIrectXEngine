@@ -11,7 +11,7 @@ namespace NImGui {
 
 		bool addNewLight; //true if the 
 		bool addNewReflectiveProbe;
-
+		bool bakeReflectiveProbe;
 	};
 	class UIMain {
 	private:

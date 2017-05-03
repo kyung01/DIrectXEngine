@@ -238,19 +238,19 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float4 positionFromEyePerspective = mul(float4(input.worldPos.xyz, 1), eyeViewMatrix);
 	int clusterID = getClusterBelong(-x*frustumSizeRatio, x*frustumSizeRatio,  x, -x, frustumNear, frustumFar, frustumX, frustumY, frustumZ, positionFromEyePerspective.xyz);
 	if (clusterID == -1) {
-		return float4(1, 0, 1, 1);
+		return float4(1, 0, 1, 0.3f);
 
 	}
 	if (clusterID == -2) {
-		return float4(0, 1, 1, 1);
+		return float4(0, 1, 1, 0.3f);
 
 	}
 	if (clusterID == -3) {
-		return float4(1, 1, 0, 1);
+		return float4(1, 1, 0, 0.3f);
 
 	}
 	if (clusterID == -4) {
-		return float4(1, 0.5f, 1, 1);
+		return float4(1, 0.5f, 1, 0.3f);
 
 	}
 	ClusterIndex clusterIndex = clusterIndexs[clusterID];

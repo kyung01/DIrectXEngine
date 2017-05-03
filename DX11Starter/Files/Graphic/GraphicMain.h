@@ -80,12 +80,13 @@ namespace NGraphic {
 			RenderTexture & textureAtlas, DepthTexture & depthAtlas,
 			Matrix & matWorld, Matrix& matView, Matrix & matProj,
 			int frustumSizeX, int frustumSizeY, int frustumSizeZ,
-			float frustumFov, float frustumNear, float frustumFar
+			float frustumFov, float frustumNear, float frustumFar, float frustumWidthOverHeight
 		);
 	public:
 		// Eventually move to private or protected access level but for now, put it in a public for debug purpose
 		NFrustum::Frustum				
-			m_frustumLight
+			m_frustumLight,
+			m_frustumProbe
 			;
 		std::shared_ptr<TextureAtlasSlicer> m_atlasSlicer;
 
@@ -97,8 +98,11 @@ namespace NGraphic {
 		GraphicMain();
 		bool init(ID3D11Device *device, ID3D11DeviceContext *context, int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight);
 		void update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene);
+		void updateProbes(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene);
 		void updateLights(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene);
-		void updateFrustum(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset,
+		void updateFrustum(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, 
+			Asset & asset,
+			NGraphic::NFrustum::Frustum &frustum,
 			DirectX::SimpleMath::Matrix camViewMatrix,
 			std::list < std::shared_ptr< NScene::Light> > lights);
 
@@ -106,8 +110,14 @@ namespace NGraphic {
 
 		void renderClusteredForward(
 			ID3D11Device * device, ID3D11DeviceContext * context,
-			ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,
-			Asset& asset, NScene::Scene& scene);
+			ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT  viewport,
+			Asset& asset,
+			NGraphic::NFrustum::Frustum &frustum,
+			
+	SimpleMath::Matrix worldMatrix,
+	SimpleMath::Matrix viewMatirx,
+	SimpleMath::Matrix projMatrix,
+			NScene::Scene& scene);
 		void renderDeffered(
 			ID3D11Device * device, ID3D11DeviceContext * context,
 			ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT & viewport,

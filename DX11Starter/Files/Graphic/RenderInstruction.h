@@ -76,7 +76,7 @@ namespace NGraphic {
 		//test atals light map
 		static void RENDER_TEST(
 			ID3D11Device * device, ID3D11DeviceContext *context, Asset& asset,
-			NScene::Scene& scene,
+			std::list<std::shared_ptr<NScene::Object> >  objs,
 			ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
 			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
 			DepthTexture & lightAtlas,
