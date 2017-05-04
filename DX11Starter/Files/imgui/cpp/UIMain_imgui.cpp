@@ -90,7 +90,7 @@ void NImGui::UIMain::render()
 		for each (auto probe in m_scene->m_probes)
 		{
 			ImTextureID tex_id = probe->m_deferredTexture->getShaderResourceView();
-			ImGui::Image(tex_id, ImVec2(800, 800), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+			ImGui::Image(tex_id, ImVec2(6*100,2*100), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
 
 		}
 		ImGui::End();

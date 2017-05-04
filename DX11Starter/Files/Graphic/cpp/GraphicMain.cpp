@@ -3,7 +3,7 @@
 #include "Graphic\RenderInstruction.h"
 using namespace NGraphic;
 
-static int SIZE_LIGHT_TEXTURE = 512*2;
+static int SIZE_LIGHT_TEXTURE = 512;
 float GraphicMain::RATIO_LIGHT_INNER = 0.5f;
 void GraphicMain::processObject(NScene::Object obj) {
 }
@@ -280,7 +280,7 @@ void GraphicMain::updateProbes(
 
 		probe.m_deferredTexture->clear(context, 0, 0, 0, 1);
 		probe.m_deferredDepth->clear(context);
-		/*
+		
 		updateFrustum(device, context, deltaTime, totalTime, asset,
 			m_frustumProbe,
 			probe.getMatrixXPlus(), scene.objs_lights);
@@ -305,7 +305,7 @@ void GraphicMain::updateProbes(
 			probe.getMatrixXMinus(),
 			projMatrix,
 			scene);
-		*/
+		
 		updateFrustum(device, context, deltaTime, totalTime, asset,
 			m_frustumProbe,
 			probe.getMatrixYPlus(), scene.objs_lights);
@@ -383,9 +383,9 @@ void GraphicMain::updateLights(ID3D11Device * device, ID3D11DeviceContext * cont
 
 		for (auto it = scene.m_probesNotReady.begin(); it != scene.m_probesNotReady.end(); it++) {
 			(**it).m_deferredTexture = std::shared_ptr<RenderTexture>(new RenderTexture());
-			(**it).m_deferredTexture->init(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE);
+			(**it).m_deferredTexture->init(device, SIZE_LIGHT_TEXTURE*6, SIZE_LIGHT_TEXTURE*2);
 			(**it).m_deferredDepth = std::shared_ptr<DepthTexture>(new DepthTexture());
-			(**it).m_deferredDepth->init(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE);
+			(**it).m_deferredDepth->init(device, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE * 2);
 		}
 		scene.m_probes.insert(scene.m_probes.begin(), scene.m_probesNotReady.begin(), scene.m_probesNotReady.end());
 		scene.m_probesNotReady.clear();
