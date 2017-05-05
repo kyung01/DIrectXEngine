@@ -1,6 +1,13 @@
 #include "Graphic\GraphicMain.h"
 #include <string>
 #include "Graphic\RenderInstruction.h"
+//trying to save the texture
+
+#include <ScreenGrab.h>
+
+#include <wincodec.h>
+
+//end
 using namespace NGraphic;
 
 static int SIZE_LIGHT_TEXTURE = 512;
@@ -451,10 +458,12 @@ void GraphicMain::updateProbes(
 			float gamma = 2.2f;
 			HRESULT h;
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
-			context->CopyResource(m_probeStagingTexutre.getShaderResource(), probe.m_deferredTexture->getShaderResource());
-			h = context->Map(m_probeStagingTexutre.getShaderResource(), 0, D3D11_MAP_READ, 0, &mappedResource);
+			ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+			//don't copy resources for now
+			//context->CopyResource(m_probeStagingTexutre.getShaderResource(), probe.m_deferredTexture->getShaderResource());
+			h = context->Map(m_probeStagingTexutre.getShaderResource(), 0, D3D11_MAP_READ_WRITE, 0, &mappedResource);
 			float* pointer = (float*)mappedResource.pData;
-
+			//DirectX::D3DX11SaveTextureToFile
 			for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
 				for (float j = 0; j < SIZE_LIGHT_TEXTURE; j++)
 					for (float i = 0; i < SIZE_LIGHT_TEXTURE; i ++)
@@ -480,11 +489,30 @@ void GraphicMain::updateProbes(
 				std::cout << "BEFORE " << i << " : " << coefficients[i].x << " , " << coefficients[i].y << " , " << coefficients[i].z << "\n";
 				coefficients[i] *= (4 * 3.14f) / solidAngleTotal;
 				std::cout << "AFTER "<<i << " : " << coefficients[i].x << " , " << coefficients[i].y << " , " << coefficients[i].z << "\n";
-			} 
-			system("pause");
+			}
+			//float colorRed[] = { pow(0.5f,2.2),0,0,0.5f };
+			int8_t  colorRed[] = { 50,100,0,255 };
+			for (float j = SIZE_LIGHT_TEXTURE; j < SIZE_LIGHT_TEXTURE*2; j++)
+				for (float i = 0; i < SIZE_LIGHT_TEXTURE*6; i++)
+				{
+					int index = ((j)*(SIZE_LIGHT_TEXTURE * 6) + i) * 4;
+					//int index = i*4;
+					colorRed[2] = i/(SIZE_LIGHT_TEXTURE * 6) * 255;
+					//colorRed[0] = i/(SIZE_LIGHT_TEXTURE * 6.0f);
+					memcpy((int8_t *)mappedResource.pData+ index, colorRed, sizeof(colorRed));
+
+					//i++;
+
+				}
+			//system("pause");
 			context->Unmap(m_probeStagingTexutre.getShaderResource(), 0);
+			//SaveDDSTextureToFile(context, m_probeStagingTexutre.getShaderResource(),  L"SCREENSHOT.dds");
+			//GUID_WICPixelFormat64bppRGBA
+			SaveWICTextureToFile(context, m_probeStagingTexutre.getShaderResource(), GUID_ContainerFormatPng, L"SCREENSHOT.png");
+			//SaveWICTextureToFile(context, m_probeStagingTexutre.getShaderResource(), GUID_ContainerFormatJpeg, L"SCREENSHOT.jpg");
 			//std::cout << "RESULT \n";
 			delete coefficients;
+			//delete colorRed;
 			DirectXUtility::HRESULT_CHECK(h);
 			//system("pause");
 		}

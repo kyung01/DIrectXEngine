@@ -21,7 +21,8 @@ std::list<LoadInfoMesh> Asset::getLoadListMesh()
 std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 {
 	std::list<LoadInfoShader> lst({
-		LoadInfoShader( RENDER_SKYBOX,							L"Resource/Shader/SkyVS.hlsl" ),
+		LoadInfoShader(RENDER_SPHERICAL_HARMONIC_DIFFUSE_MAP,							L"Resource/Shader/Atlas/DiffuseCubeMapVS.hlsl"),
+		LoadInfoShader(RENDER_SKYBOX,							L"Resource/Shader/SkyVS.hlsl"),
 		LoadInfoShader( RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY,			L"Resource/Shader/defferedVS.hlsl" ),
 		LoadInfoShader( RENDER_WORLD,			L"Resource/Shader/worldSpaceVS.hlsl" ),
 		LoadInfoShader( RENDER_DIRECT_LIGHT,			L"Resource/Shader/directLightVS.hlsl" ),
@@ -38,6 +39,7 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 {
 	std::list<LoadInfoShader> lst({
+		LoadInfoShader(RENDER_SPHERICAL_HARMONIC_DIFFUSE_MAP,							L"Resource/Shader/Atlas/DiffuseCubeMapFS.hlsl"),
 		LoadInfoShader( RENDER_SKYBOX,						L"Resource/Shader/SkyFS.hlsl" ),
 		LoadInfoShader( RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY,			L"Resource/Shader/defferedFS.hlsl" ),
 		LoadInfoShader( RENDER_WORLD,			L"Resource/Shader/worldSpaceFS.hlsl" ),
