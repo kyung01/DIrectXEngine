@@ -4,7 +4,6 @@
 #include "Camera.h"
 
 #include "SimpleShader.h"
-#include "RenderTexture.h"
 #include "DepthTexture.h"
 #include "Graphic\Scene\Light.h"
 #include <list>
@@ -14,6 +13,8 @@
 
 #include <SimpleMath.h>
 #include <WICTextureLoader.h>
+//#include <Graphic\RenderTexture.h>
+#include <Graphic\StagingTexture.h>
 #include <Graphic\Scene\Scene.h>
 #include <Graphic\LightInfo.h>
 #include <Graphic\Asset\Asset.h>
@@ -24,6 +25,7 @@
 #include <Graphic\BufferDataTranslator.h>
 #include <Graphic\Buffer\KDynamicBuffer.h>
 #include <Graphic\Buffer\LightParameter.h>
+#include <Graphic\StagingTexture.h>
 #include <Game\Context.h>
 
 
@@ -35,6 +37,7 @@ namespace NGraphic {
 		int m_width, m_height;
 		DirectX::XMMATRIX	orthoView, orthoMVP;
 		RenderStateStack	m_renderStackStack;
+		StagingTexture		m_probeStagingTexutre;
 		RenderTexture		m_renderTextureDummy;
 		DepthTexture		m_depthTextureDummy;
 		int					m_rsm_flux_eye_perspective_width, 
@@ -56,6 +59,7 @@ namespace NGraphic {
 		void renderLightAtlas(
 			ID3D11Device * device, ID3D11DeviceContext * context, Asset& asset, NScene::Scene &scene);
 		
+		Vector3 getSpearNormal(int face, float pixelSize, float u, float v);
 	protected:
 		LightInfo getLightInfo(ID3D11Device *device);
 		bool initTextures(ID3D11Device* device, ID3D11DeviceContext *context, int width, int height, int textureIndirectLightWidth, int textureIndirectLightHeight);
@@ -99,7 +103,7 @@ namespace NGraphic {
 		bool init(ID3D11Device *device, ID3D11DeviceContext *context, int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight);
 		void update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene);
 		void updateProbes(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene);
-		void updateLights(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene);
+		void updateUnInitializedObjects(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene);
 		void updateFrustum(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, 
 			Asset & asset,
 			NGraphic::NFrustum::Frustum &frustum,

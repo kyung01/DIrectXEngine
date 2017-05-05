@@ -86,7 +86,6 @@ bool RenderTexture::init(ID3D11Device* device, int textureWidth, int textureHeig
 	D3D11_TEXTURE2D_DESC textureDesc;
 	HRESULT result;
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-	ID3D11Texture2D* m_renderTargetTexture;
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
 	viewport.Width = textureWidth;
@@ -146,7 +145,7 @@ bool RenderTexture::init(ID3D11Device* device, int textureWidth, int textureHeig
 		m_renderTargetTexture->Release();
 		return false;
 	}
-	m_renderTargetTexture->Release();
+	//m_renderTargetTexture->Release();
 
 	return true;
 }
@@ -199,6 +198,11 @@ void RenderTexture::clear(ID3D11DeviceContext* deviceContext,
 	// Clear the depth buffer.
 
 	return;
+}
+
+ID3D11Texture2D * NGraphic::RenderTexture::getShaderResource()
+{
+	return m_renderTargetTexture;
 }
 
 ID3D11RenderTargetView * RenderTexture::getRenderTargetView() {

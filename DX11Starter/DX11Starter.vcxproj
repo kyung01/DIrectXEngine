@@ -148,6 +148,7 @@
     <ClCompile Include="Files\Graphic\Scene\cpp\_GraphicScene.cpp" />
     <ClCompile Include="Files\Graphic\cpp\TextureAtlasSlicer.cpp" />
     <ClCompile Include="Files\Graphic\Scene\Probe.cpp" />
+    <ClCompile Include="Files\Graphic\cpp\StagingTexture.cpp" />
     <ClCompile Include="Files\imgui\cpp\Context_imgui.cpp" />
     <ClCompile Include="Files\imgui\cpp\UIMain_imgui.cpp" />
     <ClCompile Include="Files\imgui\cpp\dx11_imgui.cpp" />
@@ -206,6 +207,7 @@
     <ClInclude Include="Files\Graphic\Scene\Probe.h" />
     <ClInclude Include="Files\Graphic\Scene\Scene.h" />
     <ClInclude Include="Files\Graphic\Scene\SceneEnums.h" />
+    <ClInclude Include="Files\Graphic\StagingTexture.h" />
     <ClInclude Include="Files\Graphic\TextureAtlasSlicer.h" />
     <ClInclude Include="Files\imgui\DirectX\Context.h" />
     <ClInclude Include="Files\imgui\DirectX\imgui_impl_dx11.h" />

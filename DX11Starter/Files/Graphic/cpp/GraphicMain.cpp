@@ -25,6 +25,7 @@ void GraphicMain::endRendering(ID3D11DeviceContext* context)
 	context->RSSetState(0);
 	context->OMSetDepthStencilState(0, 0);
 	context->OMSetBlendState(0, 0, 0xffffffff);
+	context->OMSetRenderTargets(0,NULL, NULL);
 
 }
 
@@ -95,7 +96,7 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 		TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE,
 		TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_SIZE);
 	//m_depthTextures[TARGET_LIGHTSHAFT_BACK] = m_depthTextures[TARGET_LIGHTSHAFT_FRONT];
-
+	m_probeStagingTexutre.init(device, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE * 2);
 	return true;
 }
 void GraphicMain::updateBufferLightPrameter(
@@ -239,7 +240,7 @@ bool GraphicMain::init(ID3D11Device *device, ID3D11DeviceContext *context,
 void GraphicMain::update(
 	ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene)
 {
-	updateLights(device, context, deltaTime, totalTime, asset, scene);
+	updateUnInitializedObjects(device, context, deltaTime, totalTime, asset, scene);
 	updateFrustum(device, context, deltaTime, totalTime, asset,
 		m_frustumLight,
 		scene.m_camMain.getViewMatrix(), scene.objs_lights);
@@ -256,6 +257,94 @@ void GraphicMain::update(
 
 
 }
+
+void GraphicMain::updateUnInitializedObjects(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene)
+{
+	if (!scene.objs_lightsNotReady.empty()) {
+
+		for (auto it = scene.objs_lightsNotReady.begin(); it != scene.objs_lightsNotReady.end(); it++) {
+			(**it).m_deferredTexture = std::shared_ptr<RenderTexture>(new RenderTexture());
+			(**it).m_deferredDepth = std::shared_ptr<DepthTexture>(new DepthTexture());
+			(**it).m_deferredTexture->init(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE);
+			(**it).m_deferredDepth->init(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE);
+		}
+		scene.objs_lights.insert(scene.objs_lights.begin(), scene.objs_lightsNotReady.begin(), scene.objs_lightsNotReady.end());
+		scene.objs_lightsNotReady.clear();
+	}
+	if (!scene.m_probesNotReady.empty()) {
+
+		for (auto it = scene.m_probesNotReady.begin(); it != scene.m_probesNotReady.end(); it++) {
+			(**it).m_deferredTexture = std::shared_ptr<RenderTexture>(new RenderTexture());
+			(**it).m_deferredTexture->init(device, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE * 2);
+			(**it).m_deferredDepth = std::shared_ptr<DepthTexture>(new DepthTexture());
+			(**it).m_deferredDepth->init(device, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE * 2 );
+		}
+		scene.m_probes.insert(scene.m_probes.begin(), scene.m_probesNotReady.begin(), scene.m_probesNotReady.end());
+		scene.m_probesNotReady.clear();
+	}
+}
+Vector3 GraphicMain::getSpearNormal(int face, float pixelSize,float u, float v)
+{
+	Vector3 normal;
+	float
+		xDir = -1 + (u * 2) + pixelSize,
+		yDir = -1 + (v * 2) + pixelSize;
+	
+	switch (face)
+	{
+	case 0: normal = Vector3(+1, +yDir, -xDir); break; // +X
+	case 1: normal = Vector3(-1, +yDir, +xDir); break; // -X
+	case 2: normal = Vector3(+xDir, +1, -yDir); break; // +Y
+	case 3: normal = Vector3(+xDir, -1, +yDir); break; // -Y
+	case 4: normal = Vector3(+xDir, yDir, +1); break; // +Z
+	case 5: normal = Vector3(-xDir, yDir, -1); break; // -Z
+	}
+	normal.Normalize();
+	return normal;
+}
+float AreaElement(float x, float y)
+{
+	return atan2(x * y,sqrt(x * x + y * y + 1));
+}
+float getSolidAngle(float U, float V, int a_Size)
+{
+	//scale up to [-1, 1] range (inclusive), offset by 0.5 to point to texel center.
+	//float U = (2.0f * ((float)a_U + 0.5f) / (float)a_Size) - 1.0f;
+	//float V = (2.0f * ((float)a_V + 0.5f) / (float)a_Size) - 1.0f;
+
+	float InvResolution = (2.0f / a_Size) * 0.5f;
+
+	float x0 = U - InvResolution;
+	float y0 = V - InvResolution;
+	float x1 = U + InvResolution;
+	float y1 = V + InvResolution;
+	float SolidAngle = AreaElement(x0, y0) - AreaElement(x1, y0) + AreaElement(x1, y1) - AreaElement(x0, y1);
+
+	return SolidAngle;
+}
+void addColor(Vector3 *coefficients, float &solidAngleTotal, float u, float v, int faceDivisionCount, Vector3 normal ,Vector3 color ) {
+
+	const float A0 = 1.0f;// 3.141593f;
+	const float A1 = 1.0f;// 2.095395f; // Stick with 1.0 for all of these!!!
+	const float A2 = 1.0f; //0.785398f;
+	float domega = getSolidAngle(u, v, faceDivisionCount);
+	solidAngleTotal += domega;
+	coefficients[0] += 0.282095f * A0 * domega * color;
+
+	// Band 1
+	coefficients[1] += 0.488603f * normal.y * A1 * domega * color;
+	coefficients[2] += 0.488603f * normal.z * A1 * domega * color;
+	coefficients[3] += 0.488603f * normal.x * A1 * domega * color;
+
+	// Band 2
+	coefficients[4] += 1.092548f * normal.x * normal.y * A2 * domega * color;
+	coefficients[5] += 1.092548f * normal.y * normal.z * A2 * domega * color;
+	coefficients[6] += 0.315392f * (3.0f * normal.z * normal.z - 1.0f) * A2 * domega * color;
+	coefficients[7] += 1.092548f * normal.x * normal.z * A2 * domega * color;
+	coefficients[8] += 0.546274f * (normal.x * normal.x - normal.y * normal.y) * A2 * domega * color;
+}
+
+int test = 0;
 void GraphicMain::updateProbes(
 	ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene)
 {
@@ -280,7 +369,7 @@ void GraphicMain::updateProbes(
 
 		probe.m_deferredTexture->clear(context, 0, 0, 0, 1);
 		probe.m_deferredDepth->clear(context);
-		
+
 		updateFrustum(device, context, deltaTime, totalTime, asset,
 			m_frustumProbe,
 			probe.getMatrixXPlus(), scene.objs_lights);
@@ -293,6 +382,7 @@ void GraphicMain::updateProbes(
 			probe.getMatrixXPlus(),
 			projMatrix,
 			scene);
+		
 		updateFrustum(device, context, deltaTime, totalTime, asset,
 			m_frustumProbe,
 			probe.getMatrixXMinus(), scene.objs_lights);
@@ -355,6 +445,49 @@ void GraphicMain::updateProbes(
 			probe.getMatrixZMinus(),
 			projMatrix,
 			scene);
+		{
+			Vector3* coefficients = new Vector3[9];
+			float solidAngleTotal = 0;
+			float gamma = 2.2f;
+			HRESULT h;
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+			context->CopyResource(m_probeStagingTexutre.getShaderResource(), probe.m_deferredTexture->getShaderResource());
+			h = context->Map(m_probeStagingTexutre.getShaderResource(), 0, D3D11_MAP_READ, 0, &mappedResource);
+			float* pointer = (float*)mappedResource.pData;
+
+			for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
+				for (float j = 0; j < SIZE_LIGHT_TEXTURE; j++)
+					for (float i = 0; i < SIZE_LIGHT_TEXTURE; i ++)
+					{
+						int index  = j*SIZE_LIGHT_TEXTURE + i;
+						float u = i / SIZE_LIGHT_TEXTURE;
+						float v = j / SIZE_LIGHT_TEXTURE;
+						//index++;
+						Vector3 normal = getSpearNormal(faceIndex, 1.0f / SIZE_LIGHT_TEXTURE,u,v);
+						Vector3 color(pow(pointer[index * 4],gamma), pow(pointer[index * 4+1],gamma), pow(pointer[index * 4+2],gamma));
+
+						//std::cout << i << " Noraml " << j << " : " << normal.x << " , " << normal.y << " , " << normal.z << "\n";
+						//std::cout << i << " Color " << j << " : " << color.x << " , " << color.y << " , " << color.z << "\n";
+						addColor(coefficients, solidAngleTotal,u,v, SIZE_LIGHT_TEXTURE, normal, color);
+						
+						//i++;
+
+					}
+			}
+				std::cout << "SOLID ANGLE " << solidAngleTotal << "\n";
+			for (int i = 0; i < 9; i++) {
+
+				std::cout << "BEFORE " << i << " : " << coefficients[i].x << " , " << coefficients[i].y << " , " << coefficients[i].z << "\n";
+				coefficients[i] *= (4 * 3.14f) / solidAngleTotal;
+				std::cout << "AFTER "<<i << " : " << coefficients[i].x << " , " << coefficients[i].y << " , " << coefficients[i].z << "\n";
+			} 
+			system("pause");
+			context->Unmap(m_probeStagingTexutre.getShaderResource(), 0);
+			//std::cout << "RESULT \n";
+			delete coefficients;
+			DirectXUtility::HRESULT_CHECK(h);
+			//system("pause");
+		}
 	}
 
 	//endRendering(context);
@@ -366,31 +499,6 @@ renderClusteredForward(this->device, this->context,
 backBufferRTV, depthStencilView, viewport,
 m_asset, it->scene);
 */
-void GraphicMain::updateLights(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene)
-{
-	if (!scene.objs_lightsNotReady.empty()) {
-
-		for (auto it = scene.objs_lightsNotReady.begin(); it != scene.objs_lightsNotReady.end(); it++) {
-			(**it).m_deferredTexture = std::shared_ptr<RenderTexture>(new RenderTexture());
-			(**it).m_deferredDepth = std::shared_ptr<DepthTexture>(new DepthTexture());
-			(**it).m_deferredTexture->init(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE);
-			(**it).m_deferredDepth->init(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE);
-		}
-		scene.objs_lights.insert(scene.objs_lights.begin(), scene.objs_lightsNotReady.begin(), scene.objs_lightsNotReady.end());
-		scene.objs_lightsNotReady.clear();
-	}
-	if (!scene.m_probesNotReady.empty()) {
-
-		for (auto it = scene.m_probesNotReady.begin(); it != scene.m_probesNotReady.end(); it++) {
-			(**it).m_deferredTexture = std::shared_ptr<RenderTexture>(new RenderTexture());
-			(**it).m_deferredTexture->init(device, SIZE_LIGHT_TEXTURE*6, SIZE_LIGHT_TEXTURE*2);
-			(**it).m_deferredDepth = std::shared_ptr<DepthTexture>(new DepthTexture());
-			(**it).m_deferredDepth->init(device, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE * 2);
-		}
-		scene.m_probes.insert(scene.m_probes.begin(), scene.m_probesNotReady.begin(), scene.m_probesNotReady.end());
-		scene.m_probesNotReady.clear();
-	}
-}
 void GraphicMain::updateFrustum(
 	ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, 
 	Asset & asset,
