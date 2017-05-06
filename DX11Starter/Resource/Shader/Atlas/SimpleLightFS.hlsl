@@ -318,6 +318,6 @@ float4 main(VertexToPixel input) : SV_TARGET
 		color += saturate(colorAdd) ;
 		
 	}
-	color.x = color.x*0.001f + input.position.x / (512 * 6.0f);
+	//color.x = color.x*0.001f + input.position.x / (512 * 6.0f);
 	return float4(color,1);
 }

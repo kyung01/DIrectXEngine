@@ -22,7 +22,7 @@ namespace NGraphic {
 		StagingTexture();
 		~StagingTexture();
 
-		bool init(ID3D11Device*, int, int);
+		bool init(ID3D11Device*, DXGI_FORMAT format, int, int);
 		void release();
 
 		ID3D11Texture2D* getShaderResource();

@@ -12,7 +12,7 @@ StagingTexture::~StagingTexture()
 	release();
 }
 
-bool StagingTexture::init(ID3D11Device* device, int textureWidth, int textureHeight)
+bool StagingTexture::init(ID3D11Device* device, DXGI_FORMAT format, int textureWidth, int textureHeight)
 {
 	release();
 	m_isInitialized = true;
@@ -21,7 +21,6 @@ bool StagingTexture::init(ID3D11Device* device, int textureWidth, int textureHei
 	D3D11_TEXTURE2D_DESC textureDesc;
 	HRESULT result;
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-
 
 
 	// Initialize the render target texture description.
@@ -33,7 +32,8 @@ bool StagingTexture::init(ID3D11Device* device, int textureWidth, int textureHei
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
 	//textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.Format = format;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.Usage = D3D11_USAGE_STAGING;
 	textureDesc.BindFlags = 0;

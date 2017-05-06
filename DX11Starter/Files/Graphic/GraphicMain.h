@@ -37,7 +37,8 @@ namespace NGraphic {
 		int m_width, m_height;
 		DirectX::XMMATRIX	orthoView, orthoMVP;
 		RenderStateStack	m_renderStackStack;
-		StagingTexture		m_probeStagingTexutre;
+		StagingTexture		m_probePrebake;
+		StagingTexture		m_probeBaked;
 		RenderTexture		m_renderTextureDummy;
 		DepthTexture		m_depthTextureDummy;
 		int					m_rsm_flux_eye_perspective_width, 

@@ -103,7 +103,8 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 		TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE,
 		TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_SIZE);
 	//m_depthTextures[TARGET_LIGHTSHAFT_BACK] = m_depthTextures[TARGET_LIGHTSHAFT_FRONT];
-	m_probeStagingTexutre.init(device, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE * 2);
+	m_probePrebake.init(device, DXGI_FORMAT_R32G32B32A32_FLOAT, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE * 1);
+	m_probeBaked.init(device, DXGI_FORMAT_R8G8B8A8_UNORM, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE * 2);
 	return true;
 }
 void GraphicMain::updateBufferLightPrameter(
@@ -282,9 +283,9 @@ void GraphicMain::updateUnInitializedObjects(ID3D11Device * device, ID3D11Device
 
 		for (auto it = scene.m_probesNotReady.begin(); it != scene.m_probesNotReady.end(); it++) {
 			(**it).m_deferredTexture = std::shared_ptr<RenderTexture>(new RenderTexture());
-			(**it).m_deferredTexture->init(device, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE * 2);
+			(**it).m_deferredTexture->init(device, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE );
 			(**it).m_deferredDepth = std::shared_ptr<DepthTexture>(new DepthTexture());
-			(**it).m_deferredDepth->init(device, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE * 2 );
+			(**it).m_deferredDepth->init(device, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE  );
 		}
 		scene.m_probes.insert(scene.m_probes.begin(), scene.m_probesNotReady.begin(), scene.m_probesNotReady.end());
 		scene.m_probesNotReady.clear();
@@ -350,7 +351,102 @@ void addColor(Vector3 *coefficients, float &solidAngleTotal, float u, float v, i
 	coefficients[7] += 1.092548f * normal.x * normal.z * A2 * domega * color;
 	coefficients[8] += 0.546274f * (normal.x * normal.x - normal.y * normal.y) * A2 * domega * color;
 }
+void getSH(float* HS, Vector3 normal)
+{
+	float Y00 = 0.282095f;
+	float Y11 = 0.488603f * normal.x;
+	float Y10 = 0.488603f * normal.z;
+	float Y1_1 = 0.488603f * normal.y;
+	float Y21 = 1.092548f * normal.x * normal.z;
+	float Y2_1 = 1.092548f * normal.y * normal.z;
+	float Y2_2 = 1.092548f * normal.y * normal.x;
+	//float Y20 = 0.946176f * normal.z * normal.z - 0.315392f;
+	float Y20 = 0.315392f * (3 * normal.z * normal.z - 1);// - 0.315392f;
+	float Y22 = 0.546274f * (normal.x * normal.x - normal.y * normal.y);
+	HS[0]=(Y00);
+	HS[1]= (Y1_1);
+	HS[2] =(Y10);
+	HS[3] =(Y11);
 
+	HS[4]=(Y2_2);
+	HS[5] =(Y2_1);
+	HS[6] =(Y20);
+	HS[7]=(Y21);
+	HS[8]=(Y22);
+}
+Vector3 getColor(Vector3* coef, float *vertexSH, Vector3 N )
+{
+	float gamma = 2.2;
+	/*
+	*
+	var vertexSH = vertex.getSH();
+	float a0 = 3.141593f;
+	float a1 = 2.094395f;
+	float a2 = 0.785398f;
+
+	Vector3 color =
+	a0 * vertexSH[0] * coefficients[0] +
+	a1 * vertexSH[1] * coefficients[1] +
+	a1 * vertexSH[2] * coefficients[2] +
+	a1 * vertexSH[3] * coefficients[3] +
+	a2 * vertexSH[4] * coefficients[4] +
+	a2 * vertexSH[5] * coefficients[5] +
+	a2 * vertexSH[6] * coefficients[6] +
+	a2 * vertexSH[7] * coefficients[7] +
+	a2 * vertexSH[8] * coefficients[8];
+	vertex.setColor(new Color(color.x, color.y, color.z));
+	* */
+	float C1 = 0.429043f;
+	float C2 = 0.511665f;
+	float C3 = 0.743125f;
+	float C4 = 0.886227f;
+	float C5 = 0.247708f;
+
+	auto L00 = coef[0];
+	auto L1_1 = coef[1];
+	auto L10 = coef[2];
+	auto L11 = coef[3];
+	auto L2_2 = coef[4];
+	auto L2_1 = coef[5];
+	auto L20 = coef[6];
+	auto L21 = coef[7];
+	auto L22 = coef[8];
+
+	// constant term, lowest frequency //////
+	Vector3 color = C4 * coef[0] +
+
+		// axis aligned terms ///////////////////
+		2.0f * C2 * coef[1] * N.y +
+		2.0f * C2 * coef[2] * N.z +
+		2.0f * C2 * coef[3] * N.x +
+
+		// band 2 terms /////////////////////////
+		2.0f * C1 * coef[4] * N.x * N.y +
+		2.0f * C1 * coef[5] * N.y * N.z +
+		C3 * coef[6] * N.z * N.z - C5 * coef[6] +
+		2.0f * C1 * coef[7] * N.x * N.z +
+		C1 * coef[8] * (N.x * N.x - N.y * N.y);
+
+
+	//Debug.Log("Color " + color.x + " , " + color.y + " , " + color.z + "->  ");
+	color.x = pow(color.x, 1.0f / gamma);
+	color.y = pow(color.y, 1.0f / gamma);
+	color.z = pow(color.z, 1.0f / gamma);
+	//Debug.Log("Color " + color.x + " , " + color.y + " , " + color.z);
+
+	/*
+	Vector3 irradianceColor =
+	c1 * L22 * (N.x * N.x - N.y * N.y) +
+	c3 * L20 * (N.z * N.z) +
+	c4 * L00 -
+	c5 * L20 +
+	2 * c1 * (L2_2 * N.x * N.y + L21 * N.x * N.z + L2_1 * N.y * N.z) +
+	2 * c2 * (L11 * N.x + L1_1 * N.y + L10 * N.z);
+
+	* */
+	return color;
+
+}
 int test = 0;
 void GraphicMain::updateProbes(
 	ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene)
@@ -453,22 +549,27 @@ void GraphicMain::updateProbes(
 			projMatrix,
 			scene);
 		{
-			Vector3* coefficients = new Vector3[9];
+			Vector3* coefficientsChannels = new Vector3[9];
+			int8_t* pixels = new int8_t[SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE*6 *4];
+			float* coefficientsVertex = new float[9];
 			float solidAngleTotal = 0;
 			float gamma = 2.2f;
 			HRESULT h;
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 			ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 			//don't copy resources for now
-			//context->CopyResource(m_probeStagingTexutre.getShaderResource(), probe.m_deferredTexture->getShaderResource());
-			h = context->Map(m_probeStagingTexutre.getShaderResource(), 0, D3D11_MAP_READ_WRITE, 0, &mappedResource);
+			context->CopyResource(m_probePrebake.getShaderResource(), probe.m_deferredTexture->getShaderResource());
+			h = context->Map(m_probePrebake.getShaderResource(), 0, D3D11_MAP_READ_WRITE, 0, &mappedResource);
 			float* pointer = (float*)mappedResource.pData;
 			//DirectX::D3DX11SaveTextureToFile
+			for (int i = 0; i < SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE * 6 * 4; i++) {
+				pixels[i] = pointer[i]*255;
+			}
 			for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
 				for (float j = 0; j < SIZE_LIGHT_TEXTURE; j++)
 					for (float i = 0; i < SIZE_LIGHT_TEXTURE; i ++)
 					{
-						int index  = j*SIZE_LIGHT_TEXTURE + i;
+						int index  = j* (SIZE_LIGHT_TEXTURE * 6) + (SIZE_LIGHT_TEXTURE*faceIndex + i);
 						float u = i / SIZE_LIGHT_TEXTURE;
 						float v = j / SIZE_LIGHT_TEXTURE;
 						//index++;
@@ -477,41 +578,61 @@ void GraphicMain::updateProbes(
 
 						//std::cout << i << " Noraml " << j << " : " << normal.x << " , " << normal.y << " , " << normal.z << "\n";
 						//std::cout << i << " Color " << j << " : " << color.x << " , " << color.y << " , " << color.z << "\n";
-						addColor(coefficients, solidAngleTotal,u,v, SIZE_LIGHT_TEXTURE, normal, color);
+						addColor(coefficientsChannels, solidAngleTotal,u,v, SIZE_LIGHT_TEXTURE, normal, color);
 						
 						//i++;
 
 					}
 			}
+			context->Unmap(m_probePrebake.getShaderResource(), 0);
+			ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+			h = context->Map(m_probeBaked.getShaderResource(), 0, D3D11_MAP_READ_WRITE, 0, &mappedResource);
 				std::cout << "SOLID ANGLE " << solidAngleTotal << "\n";
 			for (int i = 0; i < 9; i++) {
 
-				std::cout << "BEFORE " << i << " : " << coefficients[i].x << " , " << coefficients[i].y << " , " << coefficients[i].z << "\n";
-				coefficients[i] *= (4 * 3.14f) / solidAngleTotal;
-				std::cout << "AFTER "<<i << " : " << coefficients[i].x << " , " << coefficients[i].y << " , " << coefficients[i].z << "\n";
+				std::cout << "BEFORE " << i << " : " << coefficientsChannels[i].x << " , " << coefficientsChannels[i].y << " , " << coefficientsChannels[i].z << "\n";
+				coefficientsChannels[i] *= (4 * 3.14f) / solidAngleTotal;
+				std::cout << "AFTER "<<i << " : " << coefficientsChannels[i].x << " , " << coefficientsChannels[i].y << " , " << coefficientsChannels[i].z << "\n";
 			}
+			//system("pause");
 			//float colorRed[] = { pow(0.5f,2.2),0,0,0.5f };
 			int8_t  colorRed[] = { 50,100,0,255 };
-			for (float j = SIZE_LIGHT_TEXTURE; j < SIZE_LIGHT_TEXTURE*2; j++)
-				for (float i = 0; i < SIZE_LIGHT_TEXTURE*6; i++)
-				{
-					int index = ((j)*(SIZE_LIGHT_TEXTURE * 6) + i) * 4;
-					//int index = i*4;
-					colorRed[2] = i/(SIZE_LIGHT_TEXTURE * 6) * 255;
-					//colorRed[0] = i/(SIZE_LIGHT_TEXTURE * 6.0f);
-					memcpy((int8_t *)mappedResource.pData+ index, colorRed, sizeof(colorRed));
+			memcpy((int8_t *)mappedResource.pData, pixels, sizeof(int8_t) *SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE * 6 * 4);
 
-					//i++;
+			for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
 
-				}
+				for (float j = 0; j < SIZE_LIGHT_TEXTURE ; j++)
+					for (float i = 0; i < SIZE_LIGHT_TEXTURE ; i++) {
+						float u = i / SIZE_LIGHT_TEXTURE;
+						float v = j / SIZE_LIGHT_TEXTURE;
+						auto normal = getSpearNormal(faceIndex, 1.0f / SIZE_LIGHT_TEXTURE, u, v);
+						getSH(coefficientsVertex, normal);
+						//std::cout << "indexs" << "\n";
+						for (int shIndex = 0; shIndex < 9; shIndex++) {
+							//std::cout << coefficientsVertex[shIndex] << "\n";
+						}
+						Vector3 color = getColor(coefficientsChannels, coefficientsVertex, normal);
+						colorRed[0] = color.x*255;
+						colorRed[1] = color.y * 255;
+						colorRed[2] = color.z * 255;
+						//std::cout << " NORMAL " << normal.x << " , " << normal.y << " , " << normal.z << " \n";
+						//std::cout << "COLOR HERE " << faceIndex << " : " << i << " , " << j << " : " << color.x << " , " << color.y << " , " << color.z << " \n";
+						int index = (SIZE_LIGHT_TEXTURE + j) * (SIZE_LIGHT_TEXTURE*6) + (SIZE_LIGHT_TEXTURE*faceIndex+ i);
+						index *= 4;
+						memcpy((int8_t *)mappedResource.pData + index, colorRed, sizeof(colorRed));
+					}
+			}
+
+			context->Unmap(m_probeBaked.getShaderResource(), 0);
 			//system("pause");
-			context->Unmap(m_probeStagingTexutre.getShaderResource(), 0);
 			//SaveDDSTextureToFile(context, m_probeStagingTexutre.getShaderResource(),  L"SCREENSHOT.dds");
 			//GUID_WICPixelFormat64bppRGBA
-			SaveWICTextureToFile(context, m_probeStagingTexutre.getShaderResource(), GUID_ContainerFormatPng, L"SCREENSHOT.png");
+			SaveWICTextureToFile(context, m_probeBaked.getShaderResource(), GUID_ContainerFormatPng, L"SCREENSHOT.png");
 			//SaveWICTextureToFile(context, m_probeStagingTexutre.getShaderResource(), GUID_ContainerFormatJpeg, L"SCREENSHOT.jpg");
 			//std::cout << "RESULT \n";
-			delete coefficients;
+			delete coefficientsChannels;
+			delete coefficientsVertex;
+			delete pixels;
 			//delete colorRed;
 			DirectXUtility::HRESULT_CHECK(h);
 			//system("pause");
