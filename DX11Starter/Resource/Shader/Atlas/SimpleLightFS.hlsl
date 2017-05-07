@@ -3,6 +3,7 @@
 SamplerState sampler_default	: register(s0);
 
 Texture2D textureLightAtlas		: register(t0);
+Texture2D textureProbe		: register(t1);
 
 cbuffer ClusterList : register(b0)
 {
@@ -38,6 +39,9 @@ cbuffer global : register(b3)
 	float frustumFar;
 	float dummy00;
 	float dummy01;
+
+	float probeSliceSize;
+	int renderSetting;
 	//LightParameter lightParameter[10];
 };
 // Defines the input to this pixel shader
@@ -47,6 +51,7 @@ struct VertexToPixel
 	float4 position		: SV_POSITION;
 	float4 worldPos		: POSITION;
 	float3 normal			: NORMAL0;
+	float3 reflectedViewVector : NORMAL1;
 };
 
 int getClusterBelong(
@@ -227,16 +232,17 @@ float pointLight(
 	return light *isShadow;
 }
 // Entry point for this pixel shader
-float4 main(VertexToPixel input) : SV_TARGET
-{
+
+float3 getColor(VertexToPixel input) {
+
 	//return float4(length(posFromCamera.xyz), 0, 0, 1);
 
 
-	float x = cos(3.14f / 4.0f) * (1 / sin(3.14f /4.0f) ) ;
+	float x = cos(3.14f / 4.0f) * (1 / sin(3.14f / 4.0f));
 	float z = sin(3.14f / 4.0f) * (1 / cos(3.14f / 4.0f));;
 	float3 inputNormal = normalize(input.normal);
 	float4 positionFromEyePerspective = mul(float4(input.worldPos.xyz, 1), eyeViewMatrix);
-	int clusterID = getClusterBelong(-x*frustumSizeRatio, x*frustumSizeRatio,  x, -x, frustumNear, frustumFar, frustumX, frustumY, frustumZ, positionFromEyePerspective.xyz);
+	int clusterID = getClusterBelong(-x*frustumSizeRatio, x*frustumSizeRatio, x, -x, frustumNear, frustumFar, frustumX, frustumY, frustumZ, positionFromEyePerspective.xyz);
 	if (clusterID == -1) {
 		return float4(1, 0, 1, 0.3f);
 
@@ -254,31 +260,31 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 	}
 	ClusterIndex clusterIndex = clusterIndexs[clusterID];
-	
-		
+
+
 	uint clusterItemOffset = clusterIndex.offset;
 	uint clusterItemLightCount = (clusterIndex.lightDecalProbeCount >> (8 * 0)) & 0xff;
 	uint clusterItemDecalCount = (clusterIndex.lightDecalProbeCount >> (8 * 1)) & 0xff;
 	uint clusterItemProbeCount = (clusterIndex.lightDecalProbeCount >> (8 * 2)) & 0xff;
 
-	float3 color = float3(0,0,0);
+	float3 color = float3(0, 0, 0);
 
 	[loop]
-	for (int i = 0; i < clusterItemLightCount; i++) 
+	for (int i = 0; i < clusterItemLightCount; i++)
 	{
 		float3 colorAdd = float3(0, 0, 0);
-		int lightIndex2222 = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex ) & 0xff);	
+		int lightIndex2222 = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex) & 0xff);
 
 		LightParameter light = lightParameter[lightIndex2222];
 		//float4x4 worldViewProj = mul(light.matLight, light.matLightProjection);
 		//float4 posFromLight = mul(float4(input.worldPos.xyz, 1.0f), light.matLight);
 		float4 posFromLightPerspective2 = mul(float4(input.worldPos.xyz, 1.0f), light.matLight);
 		float lightDepth = posFromLightPerspective2.w;
-		posFromLightPerspective2 /=0.00001f + posFromLightPerspective2.w;
+		posFromLightPerspective2 /= 0.00001f + posFromLightPerspective2.w;
 		//LightParameter light1 = lightParameter[lightIndex+1];
 
-		
-		
+
+
 
 		if (light.isSpotlight) {
 			float3 uv_depth = float3(-1, -1, 1);
@@ -288,7 +294,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 			uv_depth = getPointlight_UVDepth(
 				light.matLight,
 				light.topLeftX, light.topLeftY,
-				light.viewPortHeight,  light.viewPortWidth, 
+				light.viewPortHeight, light.viewPortWidth,
 				1280.0f, 1280.0f,
 				input.worldPos.xyz
 			);
@@ -306,18 +312,42 @@ float4 main(VertexToPixel input) : SV_TARGET
 				light.topLeftX, light.topLeftY,
 				light.viewPortWidth, light.viewPortHeight,
 				1280.0f, 1280.0f,
-			
+
 				light.position,
 				input.worldPos, inputNormal);
 			//if (lightPointLight == -1) return float4(1, 0, 0, 1);
 			//if (lightPointLight == -2) return float4(1, 0, 1, 1);
 			colorAdd += light.color * lightPointLight;
 		}
-		
 
-		color += saturate(colorAdd) ;
+
+		color += saturate(colorAdd);
+
+	}
+	return color;
+}
+float4 main(VertexToPixel input) : SV_TARGET
+{
+	//color.x = color.x*0.001f + input.position.x / (512 * 6.0f);
+	float3 color = getColor(input);
+	float3 normal = normalize(input.reflectedViewVector);
+	if (renderSetting == 1) {
+		int faceIndex = -1;
+		faceIndex = getPointLightTextureIndex(normal);
+		if (faceIndex == 4) {
+			//float s = 1;// / sqrt(2);
+			float s = 1 / sqrt(2);
+			float u = (normal.x + s) / (s * 2);
+			float v = (-(normal.y - s)) / (s * 2);
+			u *= 1 / 6.0f;
+			v *= 0.5f;
+			u += 1 / 6.0f* faceIndex;
+			float4 colorCubeMap = textureProbe.Sample(sampler_default, float2(u,v) );
+			return float4(colorCubeMap.xyz, 1);
+		}
+		return float4(1, 0, 0, 1);
 		
 	}
-	//color.x = color.x*0.001f + input.position.x / (512 * 6.0f);
+
 	return float4(color,1);
 }

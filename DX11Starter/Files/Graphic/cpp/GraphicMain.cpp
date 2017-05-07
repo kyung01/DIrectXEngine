@@ -332,9 +332,9 @@ float getSolidAngle(float U, float V, int a_Size)
 }
 void addColor(Vector3 *coefficients, float &solidAngleTotal, float u, float v, int faceDivisionCount, Vector3 normal ,Vector3 color ) {
 
-	const float A0 = 1.0f;// 3.141593f;
-	const float A1 = 1.0f;// 2.095395f; // Stick with 1.0 for all of these!!!
-	const float A2 = 1.0f; //0.785398f;
+	const float A0 =  1;//3.141593f;
+	const float A1 =  1;//2.095395f; // Stick with 1.0 for all of these!!!
+	const float A2 =  1;//0.785398f;
 	float domega = getSolidAngle(u, v, faceDivisionCount);
 	solidAngleTotal += domega;
 	coefficients[0] += 0.282095f * A0 * domega * color;
@@ -428,22 +428,9 @@ Vector3 getColor(Vector3* coef, float *vertexSH, Vector3 N )
 		C1 * coef[8] * (N.x * N.x - N.y * N.y);
 
 
-	//Debug.Log("Color " + color.x + " , " + color.y + " , " + color.z + "->  ");
 	color.x = pow(color.x, 1.0f / gamma);
 	color.y = pow(color.y, 1.0f / gamma);
 	color.z = pow(color.z, 1.0f / gamma);
-	//Debug.Log("Color " + color.x + " , " + color.y + " , " + color.z);
-
-	/*
-	Vector3 irradianceColor =
-	c1 * L22 * (N.x * N.x - N.y * N.y) +
-	c3 * L20 * (N.z * N.z) +
-	c4 * L00 -
-	c5 * L20 +
-	2 * c1 * (L2_2 * N.x * N.y + L21 * N.x * N.z + L2_1 * N.y * N.z) +
-	2 * c2 * (L11 * N.x + L1_1 * N.y + L10 * N.z);
-
-	* */
 	return color;
 
 }
@@ -574,7 +561,8 @@ void GraphicMain::updateProbes(
 						float v = j / SIZE_LIGHT_TEXTURE;
 						//index++;
 						Vector3 normal = getSpearNormal(faceIndex, 1.0f / SIZE_LIGHT_TEXTURE,u,v);
-						Vector3 color(pow(pointer[index * 4],gamma), pow(pointer[index * 4+1],gamma), pow(pointer[index * 4+2],gamma));
+						//Vector3 color(pointer[index * 4], pointer[index * 4 + 1], pointer[index * 4 + 2]);
+						Vector3 color(pow(pointer[index * 4], gamma), pow(pointer[index * 4 + 1], gamma), pow(pointer[index * 4 + 2], gamma));
 
 						//std::cout << i << " Noraml " << j << " : " << normal.x << " , " << normal.y << " , " << normal.z << "\n";
 						//std::cout << i << " Color " << j << " : " << color.x << " , " << color.y << " , " << color.z << "\n";
@@ -718,9 +706,13 @@ void GraphicMain::renderClusteredForwardRendering(
 	m_renderTextures[TARGET_TEST]->clear(context, 0, 0, 0, 0);
 	m_depthTextures[DEPTH_TEST]->clear(context);
 	//Render
-	RenderInstruction::RENDER_TEST(device, context, asset, scene.objs_solid,
+	RenderInstruction::RENDER_TEST(device, context, asset, 
 		renderTargetView, depthStencilView, viewport,
-		matWorld,matView,matProj , depthAtlas, textureAtlas, 0);
+		matWorld,matView,matProj , depthAtlas, textureAtlas, 0,
+		scene.m_camMain.m_pos,
+		SIZE_LIGHT_TEXTURE,
+		scene.objs_solid, 
+		scene.objs_lights);
 
 }
 

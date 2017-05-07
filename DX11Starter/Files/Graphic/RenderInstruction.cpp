@@ -52,14 +52,14 @@ void RenderInstruction::RENDER_FRUSTUM(ID3D11Device * device,
 	//shaderFrag.SetSamplerState("samplerWrap", asset.m_samplers[SAMPLER_ID_WRAP]);
 	shaderVert.SetShader();
 	shaderFrag.SetShader();
-	RENDER_LIGHTS(context, shaderVert, shaderFrag, *asset.m_meshes[MESH_POINTLIGHT],worldMatrix);
+	RENDER_LIGHTS(context, shaderVert, shaderFrag, *asset.m_meshes[MESH_SPOTLIGHT],worldMatrix);
 
 	context->RSSetState(asset.RASTR_STATE_CULL_FRONT);
 	renderTexture2.clear(context, 0, 0, 0, 0);
 	depthTexture2.clear(context);
 	renderTexture2.setRenderTarget(context, depthTexture2.getDepthStencilView());
 
-	RENDER_LIGHTS(context, shaderVert, shaderFrag, *asset.m_meshes[MESH_POINTLIGHT], worldMatrix);
+	RENDER_LIGHTS(context, shaderVert, shaderFrag, *asset.m_meshes[MESH_SPOTLIGHT], worldMatrix);
 	//context->OMSetDepthStencilState(asset.DEPTH_STATE_SKYBOX, 0);
 	{
 
@@ -71,7 +71,7 @@ void RenderInstruction::RENDER_FRUSTUM(ID3D11Device * device,
 
 		shaderVertSimpleColor.SetShader();
 		shaderFragSimpleColor.SetShader();
-		RENDER_LIGHTS(context, shaderVertSimpleColor, shaderFragSimpleColor, *asset.m_meshes[MESH_POINTLIGHT], worldMatrix);
+		RENDER_LIGHTS(context, shaderVertSimpleColor, shaderFragSimpleColor, *asset.m_meshes[MESH_SPOTLIGHT], worldMatrix);
 	}
 
 }
@@ -461,12 +461,16 @@ void RenderInstruction::setRenderTarget(ID3D11DeviceContext* deviceContext,
 }
 void RenderInstruction::RENDER_TEST(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
-	Asset & asset, std::list<std::shared_ptr<NScene::Object> >  objs, 
+	Asset & asset, 
 	ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
 	DirectX::SimpleMath::Matrix & worldMatrix, DirectX::SimpleMath::Matrix & viewMatrix, DirectX::SimpleMath::Matrix & projMatrix, 
 	DepthTexture & lightAtlas,
 	RenderTexture & lightAtlas2,
-	ID3D11Buffer * lightParameters)
+	ID3D11Buffer * lightParameters,
+	Vector3 cameraPosition,
+	float probeSliceSize,
+	std::list<std::shared_ptr<NScene::Object> >  objs,
+	std::list<std::shared_ptr<NScene::Light> >  objLights)
 {
 
 #define RENDER_OBJS for (auto it = objs.begin(); it != objs.end(); it++) {\
@@ -501,12 +505,15 @@ void RenderInstruction::RENDER_TEST(
 
 	SET_MATRIX(&shaderVert, "view", viewMatrix);
 	SET_MATRIX(&shaderVert, "proj", projMatrix);
-
+	shaderVert.SetFloat3("cameraPosition", cameraPosition);
 	//DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(viewMatrix)); // Transpose for HLSL!
 	//shaderVert.SetMatrix4x4("view", matrixStore);
 	//DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(projMatrix)); // Transpose for HLSL!
 	//shaderVert.SetMatrix4x4("proj", matrixStore);
+	shaderFrag.SetFloat("probeSliceSize", probeSliceSize);
+	shaderFrag.SetInt("renderSetting", 0);
 	shaderFrag.SetShaderResourceView("textureLightAtlas", lightAtlas.getShaderResourceView());
+	shaderFrag.SetShaderResourceView("textureProbe", asset.m_textures[KEnum::TEXTURE_ID_PROBE0]);
 	shaderFrag.SetSamplerState("sampler_default", asset.m_samplers[SAMPLER_ID_BORDER_ONE]);
 
 	shaderVert.SetShader();
@@ -514,9 +521,9 @@ void RenderInstruction::RENDER_TEST(
 	for (auto it = objs.begin(); it != objs.end(); it++) {
 		\
 			NGraphic::NScene::Object& solidObj = **it; \
-			NGraphic::Mesh& mesh = *asset.m_meshes[solidObj.m_meshId]; 
-			SET_MATRIX(&shaderVert, "world", solidObj.getModelMatrix());
-			shaderVert.CopyAllBufferData(); \
+			NGraphic::Mesh& mesh = *asset.m_meshes[solidObj.m_meshId];
+		SET_MATRIX(&shaderVert, "world", solidObj.getModelMatrix());
+		shaderVert.CopyAllBufferData(); \
 			shaderFrag.CopyAllBufferData(); \
 			//context->VSSetConstantBuffers(0, 1, &lightParameters);
 			UINT stride = sizeof(Vertex); \
@@ -527,6 +534,37 @@ void RenderInstruction::RENDER_TEST(
 				mesh.getBufferIndexCount(), \
 				0, \
 				0); \
+	}
+
+	shaderFrag.SetInt("renderSetting", 1);
+	for (auto it = objLights.begin(); it != objLights.end(); it++) {
+		NGraphic::NScene::Light& lightObj = **it; 
+		NGraphic::Mesh& mesh =  (lightObj.m_lightType == NScene::LIGHT_TYPE::POINTLIGHT)?
+			*asset.m_meshes[MESH_ID_SPHERE] :*asset.m_meshes[MESH_ID_CONE];
+		SET_MATRIX(&shaderVert, "world", 
+
+			DirectX::XMMatrixMultiply(
+				DirectX::XMMatrixMultiply(
+					DirectX::XMMatrixMultiply(
+						DirectX::XMMatrixRotationX(-3.14 / 2),
+						DirectX::XMMatrixRotationQuaternion(it->get()->m_rotation)
+					),DirectX::XMMatrixScaling(1.1f,1.1f,1.1f) ),
+
+				
+				DirectX::XMMatrixTranslation(lightObj.m_pos.x, lightObj.m_pos.y, lightObj.m_pos.z)
+			
+			));
+		shaderVert.CopyAllBufferData(); 
+		shaderFrag.CopyAllBufferData(); 
+	
+		UINT stride = sizeof(Vertex); 
+			UINT offset = 0; 
+			context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset); 
+			context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0); 
+			context->DrawIndexed(
+				mesh.getBufferIndexCount(), 
+				0, 
+				0); 
 	}
 	shaderFrag.SetShaderResourceView("textureLightAtlas", 0);
 }

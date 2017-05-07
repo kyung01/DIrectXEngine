@@ -13,7 +13,7 @@ std::list<LoadInfoMesh> Asset::getLoadListMesh()
 		{ KEnum::MESH_ID_TORUS, "Resource/Mesh/torus.obj" },
 		{ KEnum::MESH_ID_PLANE, "Resource/Mesh/plane.obj" },
 		{ KEnum::MESH_ID_FRUSTUM, "Resource/Mesh/frustum.obj" },
-		{ KEnum::MESH_POINTLIGHT, "Resource/Mesh/pointlight.obj" }
+		{ KEnum::MESH_SPOTLIGHT, "Resource/Mesh/spotlight.obj" }
 	});
 	return lst;
 }
@@ -72,6 +72,7 @@ std::list<LoadInfoTexture> Asset::getLoadListTexture()
 		{ TEXTURE_ID_WHITE,		L"Resource/Texture/white.png" },
 		{ TEXTURE_ID_RED,		L"Resource/Texture/red.png" },
 		{ TEXTURE_ID_NORMAL_DEFAULT,		L"Resource/Texture/normal_default.jpg" },
+		{ TEXTURE_ID_PROBE0,		L"Resource/Texture/Probe0.png" },
 	});
 	return lst;
 }
