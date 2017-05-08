@@ -24,7 +24,7 @@ struct VertexToPixel
 	float4 position		: SV_POSITION;
 	float4 worldPos		: POSITION;
 	float3 normal			: NORMAL0;
-	float3 reflectedViewVector: NORMAL1;
+	//float3 reflectedViewVector: NORMAL1;
 };
 
 // --------------------------------------------------------
@@ -43,8 +43,9 @@ VertexToPixel main(VertexShaderInput input)
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);
 	output.worldPos = float4(worldPos.xyz, output.position.w);
 	output.normal = mul(input.normal, (float3x3)world); // ASSUMING UNIFORM SCALE HERE!!!  If not, use inverse transpose of world matrix
-	float3 reflectedViewVector = worldPos.xyz - cameraPosition;
-	output.reflectedViewVector = reflect(reflectedViewVector, output.normal);
+	//float3 reflectedViewVector = worldPos.xyz - cameraPosition;
+	//output.reflectedViewVector = reflect(reflectedViewVector, output.normal);
+	
 	//output.worldPos = float4(worldPos.xyz, output.position.w);
 	//output.worldPos = float4(worldPos.xyz, output.position.w);
 
