@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d11.h>
+#include <iostream>
 #include <string>
 namespace DirectX {
 	struct DirectXUtility {

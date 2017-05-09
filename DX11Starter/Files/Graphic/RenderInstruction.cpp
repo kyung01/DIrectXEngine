@@ -466,6 +466,7 @@ void RenderInstruction::RENDER_TEST(
 	DirectX::SimpleMath::Matrix & worldMatrix, DirectX::SimpleMath::Matrix & viewMatrix, DirectX::SimpleMath::Matrix & projMatrix, 
 	DepthTexture & lightAtlas,
 	RenderTexture & lightAtlas2,
+	RenderTexture & reflectionTexture,
 	ID3D11Buffer * lightParameters,
 	Vector3 cameraPosition,
 	float probeSliceSize,
@@ -505,7 +506,7 @@ void RenderInstruction::RENDER_TEST(
 
 	SET_MATRIX(&shaderVert, "view", viewMatrix);
 	SET_MATRIX(&shaderVert, "proj", projMatrix);
-	shaderFrag.SetFloat3("cameraPosition", cameraPosition);
+	shaderVert.SetFloat3("cameraPosition", cameraPosition);
 	//DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(viewMatrix)); // Transpose for HLSL!
 	//shaderVert.SetMatrix4x4("view", matrixStore);
 	//DirectX::XMStoreFloat4x4(&matrixStore, XMMatrixTranspose(projMatrix)); // Transpose for HLSL!
@@ -514,7 +515,9 @@ void RenderInstruction::RENDER_TEST(
 	shaderFrag.SetInt("renderSetting", 0);
 	shaderFrag.SetShaderResourceView("textureLightAtlas", lightAtlas.getShaderResourceView());
 	shaderFrag.SetShaderResourceView("textureProbe", asset.m_textures[KEnum::TEXTURE_ID_PROBE0]);
-	shaderFrag.SetSamplerState("sampler_default", asset.m_samplers[SAMPLER_ID_POINT]);
+	//if(reflectionTexture.getShaderResourceView() != 0)
+		shaderFrag.SetShaderResourceView("textureProbeCubemap", reflectionTexture.getShaderResourceView());
+	shaderFrag.SetSamplerState("sampler_default", asset.m_samplers[SAMPLER_ID_BORDER_ONE]);
 
 	shaderVert.SetShader();
 	shaderFrag.SetShader();
@@ -548,7 +551,7 @@ void RenderInstruction::RENDER_TEST(
 					DirectX::XMMatrixMultiply(
 						DirectX::XMMatrixRotationX(-3.14 / 2),
 						DirectX::XMMatrixRotationQuaternion(it->get()->m_rotation)
-					),DirectX::XMMatrixScaling(1.0f,1.0f,1.0f) ),
+					),DirectX::XMMatrixScaling(1.1f,1.1f,1.1f) ),
 
 				
 				DirectX::XMMatrixTranslation(lightObj.m_pos.x, lightObj.m_pos.y, lightObj.m_pos.z)

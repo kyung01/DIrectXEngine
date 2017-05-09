@@ -80,6 +80,7 @@ namespace NGraphic {
 			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
 			DepthTexture & lightAtlas,
 			RenderTexture & lightAtlas2,
+			RenderTexture & reflectionTexture,
 			ID3D11Buffer *lightParameters,
 
 			Vector3 cameraPosition,

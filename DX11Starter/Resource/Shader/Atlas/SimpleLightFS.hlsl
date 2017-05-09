@@ -4,6 +4,7 @@ SamplerState sampler_default	: register(s0);
 
 Texture2D textureLightAtlas		: register(t0);
 Texture2D textureProbe		: register(t1);
+TextureCube textureProbeCubemap		: register(t2);
 
 cbuffer ClusterList : register(b0)
 {
@@ -40,7 +41,6 @@ cbuffer global : register(b3)
 	float dummy00;
 	float dummy01;
 
-	float3 cameraPosition;
 	float probeSliceSize;
 	int renderSetting;
 	//LightParameter lightParameter[10];
@@ -52,7 +52,7 @@ struct VertexToPixel
 	float4 position		: SV_POSITION;
 	float4 worldPos		: POSITION;
 	float3 normal			: NORMAL0;
-	//float3 reflectedViewVector : NORMAL1;
+	float3 reflectedViewVector : NORMAL1;
 };
 
 int getClusterBelong(
@@ -327,23 +327,26 @@ float3 getColor(VertexToPixel input) {
 	}
 	return color;
 }
-static const float PI = 3.14159265f;
 float4 main(VertexToPixel input) : SV_TARGET
 {
 	//color.x = color.x*0.001f + input.position.x / (512 * 6.0f);
 	float3 color = getColor(input);
-	float3 reflectedViewVector = input.worldPos.xyz - cameraPosition;
-	reflectedViewVector = normalize(reflectedViewVector);
-	reflectedViewVector = reflect(reflectedViewVector, normalize(input.normal) );
-
-	float3 normal = normalize(reflectedViewVector);
+	float3 normal = normalize(input.reflectedViewVector);
+	
 	if (renderSetting == 1) {
+
+
 		int faceIndex = -1;
 		//normal = normalize(input.normal);
 		faceIndex = getPointLightTextureIndex(normal);
 		//float s = cos(PI / 4);// 1 / sqrt(2);
 		float s = 1.0f;
 		//return float4(normal, 1);
+
+		float4 c122123 = textureProbeCubemap.Sample(sampler_default, normalize(normal));
+		return float4(c122123.xyz, 1);
+
+
 		if (faceIndex == 0) {
 			normal *= 1 / abs(0.1f + normal.x);
 
@@ -361,9 +364,9 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 
 
-			normal *= 1 / abs( normal.x);
-			float u = min(1, max(0, (normal.z + 1) / ( 2)));
-			float v = min(1, max(0, (-normal.y + 1) / ( 2)));
+			normal *= 1 / abs(normal.x);
+			float u = min(1, max(0, (normal.z + 1) / (2)));
+			float v = min(1, max(0, (-normal.y + 1) / (2)));
 			//if (z % 2 == 0) {
 			//	return float4(0, 1, 0, 1);
 			//}
@@ -380,20 +383,38 @@ float4 main(VertexToPixel input) : SV_TARGET
 		}
 		if (faceIndex == 4) {
 			normal *= 1 / abs(normal.z);
-			float u =  (normal.x + 1) / (2);
-			float v =  (-normal.y + 1) / ( 2);
+			float u = (normal.x + 1) / (2);
+			float v = (-normal.y + 1) / (2);
 			//if (z % 2 == 0) {
 			//	return float4(0, 1, 0, 1);
 			//}
 			//else return float4(0, 1, 1, 1);
 			u /= 6.0f;
 			v *= 0.5f;
-			u = min((1.0f / 6.0f)* (faceIndex+1),
-					max((1.0f / 6.0f) * faceIndex, (1.0f / 6.0f)* faceIndex + u) 
+			u = min((1.0f / 6.0f)* (faceIndex + 1),
+				max((1.0f / 6.0f) * faceIndex, (1.0f / 6.0f)* faceIndex + u)
 			);
-			float4 colorCubeMap = textureProbe.Sample(sampler_default, float2(u,v) );
+			float4 c =textureProbeCubemap.Sample(sampler_default, normal);
+			float4 colorCubeMap = textureProbe.Sample(sampler_default, float2(u, v));
 			//return float4(u,v,0, 1);
-		
+
+			return float4(c.xyz, 1);
+		}
+		return float4(1, 0, 0, 1);
+
+	}
+	if (renderSetting == 2) {
+		int faceIndex = -1;
+		faceIndex = getPointLightTextureIndex(normal);
+		if (faceIndex == 4) {
+			//float s = 1;// / sqrt(2);
+			float s = 1 / sqrt(2);
+			float u = (normal.x + s) / (s * 2);
+			float v = (-(normal.y - s)) / (s * 2);
+			u *= 1 / 6.0f;
+			v *= 0.5f;
+			u += 1 / 6.0f* faceIndex;
+			float4 colorCubeMap = textureProbe.Sample(sampler_default, float2(u,v) );
 			return float4(colorCubeMap.xyz, 1);
 		}
 		return float4(1, 0, 0, 1);

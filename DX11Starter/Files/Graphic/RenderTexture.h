@@ -32,6 +32,7 @@ namespace NGraphic {
 
 		bool init(ID3D11Device*, IDXGISwapChain* chain, int, int);
 		bool init(ID3D11Device*, int, int);
+		bool initCubeMap(ID3D11Device*, int, int, void* data);
 		void release();
 
 		void setRenderTarget(ID3D11DeviceContext*, ID3D11DepthStencilView*);

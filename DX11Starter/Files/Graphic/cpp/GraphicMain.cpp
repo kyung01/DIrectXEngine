@@ -6,7 +6,6 @@
 #include <ScreenGrab.h>
 
 #include <wincodec.h>
-
 //end
 using namespace NGraphic;
 
@@ -300,10 +299,10 @@ Vector3 GraphicMain::getSpearNormal(int face, float pixelSize,float u, float v)
 	
 	switch (face)
 	{
-	case 0: normal = Vector3(+1, +yDir, -xDir); break; // +X
-	case 1: normal = Vector3(-1, +yDir, +xDir); break; // -X
-	case 2: normal = Vector3(+xDir, +1, -yDir); break; // +Y
-	case 3: normal = Vector3(+xDir, -1, +yDir); break; // -Y
+	case 0: normal = Vector3(+1, yDir, -xDir); break; // +X
+	case 1: normal = Vector3(-1, yDir, +xDir); break; // -X
+	case 2: normal = Vector3(+xDir, -1, +yDir); break; // -Y
+	case 3: normal = Vector3(+xDir, +1, -yDir); break; // +Y
 	case 4: normal = Vector3(+xDir, yDir, +1); break; // +Z
 	case 5: normal = Vector3(-xDir, yDir, -1); break; // -Z
 	}
@@ -586,11 +585,32 @@ void GraphicMain::updateProbes(
 			//float colorRed[] = { pow(0.5f,2.2),0,0,0.5f };
 			int8_t  colorRed[] = { 50,100,0,255 };
 			memcpy((int8_t *)mappedResource.pData, pixels, sizeof(int8_t) *SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE * 6 * 4);
+			std::vector < std::vector<Vector4>> diffuseMap(6, std::vector<Vector4>(SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE));
+			float* someData = new float[SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE*6*4];
+			for (int i = 0; i < SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE * 6 * 4; i++) {
+				someData[i] = 1;
+			}
+			D3D11_SUBRESOURCE_DATA pData[6];
+
+			std::vector<Vector4> d[6]; // 6 images of type vector4b = 4 * unsigned char
+			for (int cubeMapFaceIndex = 0; cubeMapFaceIndex < 6; cubeMapFaceIndex++)
+			{
+				d[cubeMapFaceIndex].resize(SIZE_LIGHT_TEXTURE * SIZE_LIGHT_TEXTURE);
+
+				// fill with red color  
+				std::fill(
+					d[cubeMapFaceIndex].begin(),
+					d[cubeMapFaceIndex].end(),
+					Vector4(1, 0, 0, 0));
+
+			}
 
 			for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
 
+				float someColor = 0;
 				for (float j = 0; j < SIZE_LIGHT_TEXTURE ; j++)
 					for (float i = 0; i < SIZE_LIGHT_TEXTURE ; i++) {
+						someColor += 0.01f;
 						float u = i / SIZE_LIGHT_TEXTURE;
 						float v = j / SIZE_LIGHT_TEXTURE;
 						auto normal = getSpearNormal(faceIndex, 1.0f / SIZE_LIGHT_TEXTURE, u, v);
@@ -600,6 +620,38 @@ void GraphicMain::updateProbes(
 							//std::cout << coefficientsVertex[shIndex] << "\n";
 						}
 						Vector3 color = getColor(coefficientsChannels, coefficientsVertex, normal);
+						someData[
+							(
+
+							(int)faceIndex *SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE + (int)i + (int)j* SIZE_LIGHT_TEXTURE
+								)*4
+						] = color.x;
+						someData[
+
+
+							(
+
+								(int)faceIndex *SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE + (int)i + (int)j* SIZE_LIGHT_TEXTURE
+								) * 4
+								+1
+						] = color.y;
+						someData[
+
+
+							(
+
+								(int)faceIndex *SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE + (int)i + (int)j* SIZE_LIGHT_TEXTURE
+								) * 4
+								+2
+						] = color.z;
+
+						diffuseMap[faceIndex][j*SIZE_LIGHT_TEXTURE + i].x = color.x;
+						diffuseMap[faceIndex][j*SIZE_LIGHT_TEXTURE + i].y = color.y;
+						diffuseMap[faceIndex][j*SIZE_LIGHT_TEXTURE + i].z = color.z;
+						diffuseMap[faceIndex][j*SIZE_LIGHT_TEXTURE + i].w = 1;
+						
+						//diffuseMap[faceIndex][j*SIZE_LIGHT_TEXTURE + i] = Vector4(color.x, color.y, color.z, 1);
+						d[faceIndex][j*SIZE_LIGHT_TEXTURE + i] = Vector4(color.x, color.y, color.z, 1);
 						colorRed[0] = color.x*255;
 						colorRed[1] = color.y * 255;
 						colorRed[2] = color.z * 255;
@@ -609,9 +661,17 @@ void GraphicMain::updateProbes(
 						index *= 4;
 						memcpy((int8_t *)mappedResource.pData + index, colorRed, sizeof(colorRed));
 					}
+
+				//pData[faceIndex].pSysMem = &d[faceIndex][0];// description.data;
+				//pData[faceIndex].pSysMem = &someData[faceIndex*(SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE) * 4];// description.data;
+				pData[faceIndex].pSysMem = &diffuseMap[faceIndex][0];// description.data;
+				pData[faceIndex].SysMemPitch = (SIZE_LIGHT_TEXTURE * 4)*sizeof(float);
+				pData[faceIndex].SysMemSlicePitch = 0;
 			}
 
 			context->Unmap(m_probeBaked.getShaderResource(), 0);
+			m_isProbeReady = true;
+			m_probeCubemap.initCubeMap(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE, pData);
 			//system("pause");
 			//SaveDDSTextureToFile(context, m_probeStagingTexutre.getShaderResource(),  L"SCREENSHOT.dds");
 			//GUID_WICPixelFormat64bppRGBA
@@ -621,6 +681,7 @@ void GraphicMain::updateProbes(
 			delete coefficientsChannels;
 			delete coefficientsVertex;
 			delete pixels;
+			delete someData;
 			//delete colorRed;
 			DirectXUtility::HRESULT_CHECK(h);
 			//system("pause");
@@ -706,13 +767,25 @@ void GraphicMain::renderClusteredForwardRendering(
 	m_renderTextures[TARGET_TEST]->clear(context, 0, 0, 0, 0);
 	m_depthTextures[DEPTH_TEST]->clear(context);
 	//Render
-	RenderInstruction::RENDER_TEST(device, context, asset, 
-		renderTargetView, depthStencilView, viewport,
-		matWorld,matView,matProj , depthAtlas, textureAtlas, 0,
-		scene.m_camMain.m_pos,
-		SIZE_LIGHT_TEXTURE,
-		scene.objs_solid, 
-		scene.objs_lights);
+	if(m_isProbeReady)
+		RenderInstruction::RENDER_TEST(device, context, asset,
+			renderTargetView, depthStencilView, viewport,
+			matWorld, matView, matProj, depthAtlas, textureAtlas, m_probeCubemap,
+			0,
+			scene.m_camMain.m_pos,
+			SIZE_LIGHT_TEXTURE,
+			scene.objs_solid,
+			scene.objs_lights);
+	else 
+
+		RenderInstruction::RENDER_TEST(device, context, asset,
+			renderTargetView, depthStencilView, viewport,
+			matWorld, matView, matProj, depthAtlas, textureAtlas, textureAtlas,
+			0,
+			scene.m_camMain.m_pos,
+			SIZE_LIGHT_TEXTURE,
+			scene.objs_solid,
+			scene.objs_lights);
 
 }
 
