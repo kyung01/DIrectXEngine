@@ -301,8 +301,8 @@ Vector3 GraphicMain::getSpearNormal(int face, float pixelSize,float u, float v)
 	{
 	case 0: normal = Vector3(+1, yDir, -xDir); break; // +X
 	case 1: normal = Vector3(-1, yDir, +xDir); break; // -X
-	case 2: normal = Vector3(+xDir, -1, +yDir); break; // -Y
-	case 3: normal = Vector3(+xDir, +1, -yDir); break; // +Y
+	case 2: normal = Vector3(+xDir, +1, -yDir); break; // -Y
+	case 3: normal = Vector3(+xDir, -1, +yDir); break; // +Y
 	case 4: normal = Vector3(+xDir, yDir, +1); break; // +Z
 	case 5: normal = Vector3(-xDir, yDir, -1); break; // -Z
 	}
@@ -612,7 +612,7 @@ void GraphicMain::updateProbes(
 					for (float i = 0; i < SIZE_LIGHT_TEXTURE ; i++) {
 						someColor += 0.01f;
 						float u = i / SIZE_LIGHT_TEXTURE;
-						float v = j / SIZE_LIGHT_TEXTURE;
+						float v = 1-j / SIZE_LIGHT_TEXTURE;
 						auto normal = getSpearNormal(faceIndex, 1.0f / SIZE_LIGHT_TEXTURE, u, v);
 						getSH(coefficientsVertex, normal);
 						//std::cout << "indexs" << "\n";
