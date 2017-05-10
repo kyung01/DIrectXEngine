@@ -287,6 +287,10 @@ void RenderTexture::release()
 {
 	if (!m_isInitialized)
 		return;
+	if (m_renderTargetTexture) {
+		m_renderTargetTexture->Release();
+		m_renderTargetTexture = 0;
+	}
 	if (m_shaderResourceView)
 	{
 		m_shaderResourceView->Release();

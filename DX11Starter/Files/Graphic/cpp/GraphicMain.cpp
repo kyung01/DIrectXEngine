@@ -442,7 +442,18 @@ void GraphicMain::updateProbes(
 	//beginRendering(context);
 	float depthMin = 0;
 	float depthMax = 1.0f;
-	for (auto it = scene.m_probes.begin(); it != scene.m_probes.end(); it++) {
+	int probeCount = scene.m_probes.size();
+
+	D3D11_SUBRESOURCE_DATA* pSubResourceDataCubeArray = new D3D11_SUBRESOURCE_DATA[6 * 2* probeCount];
+	std::vector < std::vector<Vector4>> dataCubeArray(6 * 2* probeCount, std::vector<Vector4>(SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE));
+
+	int probeIndex = 0;
+	for (int i = 0; i < 6 * 2 * probeCount; i++) {
+		for (int j = 0; j < SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE; j++) {
+			dataCubeArray[i][j] = Vector4(0, 1, 0, 1);
+		}
+	}
+	for (auto it = scene.m_probes.begin(); it != scene.m_probes.end(); it++, probeIndex++) {
 		auto &probe = **it;
 		float textureWidth = probe.m_deferredTexture->getWidth() / 6.0f;
 		float textureHeight = textureWidth;
@@ -535,27 +546,6 @@ void GraphicMain::updateProbes(
 			projMatrix,
 			scene);
 		{ 
-			{
-				D3D11_SUBRESOURCE_DATA pData[6 * 2];
-				std::vector < std::vector<Vector4>> diffuseMap(6*2, std::vector<Vector4>(SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE));
-				
-				for (int i = 0; i < 6*2; i++) {
-					for (int j = 0; j < SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE; j++) {
-						diffuseMap[i][j] = Vector4(1, 0, 0, 1);
-					}
-				}
-				for (int faceIndex = 0; faceIndex < 6 * 2; faceIndex++) {
-					pData[faceIndex].pSysMem = &diffuseMap[faceIndex][0];// description.data;
-					pData[faceIndex].SysMemPitch = (SIZE_LIGHT_TEXTURE * 4) * sizeof(float);
-					pData[faceIndex].SysMemSlicePitch = 0;
-				}
-
-
-
-				m_probeCubeArray.initCubeArray(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE, 2, &pData);
-
-			}
-
 
 
 			Vector3* coefficientsChannels = new Vector3[9];
@@ -579,6 +569,8 @@ void GraphicMain::updateProbes(
 					for (float i = 0; i < SIZE_LIGHT_TEXTURE; i ++)
 					{
 						int index  = j* (SIZE_LIGHT_TEXTURE * 6) + (SIZE_LIGHT_TEXTURE*faceIndex + i);
+
+						dataCubeArray[probeIndex *(6*2)+ faceIndex][j *SIZE_LIGHT_TEXTURE + i] = Vector4(pointer[index * 4], pointer[index * 4+1], pointer[index * 4+2], 1);
 						float u = i / SIZE_LIGHT_TEXTURE;
 						float v = j / SIZE_LIGHT_TEXTURE;
 						//index++;
@@ -710,6 +702,16 @@ void GraphicMain::updateProbes(
 			//system("pause");
 		}
 	}
+
+	for (int faceIndex = 0; faceIndex < 6 * 2*probeCount; faceIndex++) {
+		pSubResourceDataCubeArray[faceIndex].pSysMem = &dataCubeArray[faceIndex][0];// description.data;
+		pSubResourceDataCubeArray[faceIndex].SysMemPitch = (SIZE_LIGHT_TEXTURE * 4) * sizeof(float);
+		pSubResourceDataCubeArray[faceIndex].SysMemSlicePitch = 0;
+	}
+
+
+
+	m_probeCubeArray.initCubeArray(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE, 2, pSubResourceDataCubeArray);
 
 	//endRendering(context);
 

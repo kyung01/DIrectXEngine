@@ -5,6 +5,7 @@ SamplerState sampler_default	: register(s0);
 Texture2D textureLightAtlas		: register(t0);
 Texture2D textureProbe		: register(t1);
 TextureCube textureProbeCubemap		: register(t2);
+TextureCubeArray textureProbeArray		: register(t3);
 
 cbuffer ClusterList : register(b0)
 {
@@ -334,6 +335,13 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float3 normal = normalize(input.reflectedViewVector);
 	
 	if (renderSetting == 1) {
+
+		float4 c122123 = textureProbeArray.Sample(sampler_default, float4(normalize(normal), 0) );
+		return float4(c122123.xyz, 1);
+
+		
+	}
+	if (renderSetting == 3) {
 
 
 		int faceIndex = -1;
