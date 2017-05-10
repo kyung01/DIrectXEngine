@@ -467,6 +467,7 @@ void RenderInstruction::RENDER_TEST(
 	DepthTexture & lightAtlas,
 	RenderTexture & lightAtlas2,
 	RenderTexture & reflectionTexture,
+	ID3D11ShaderResourceView * probeArray,
 	ID3D11Buffer * lightParameters,
 	Vector3 cameraPosition,
 	float probeSliceSize,

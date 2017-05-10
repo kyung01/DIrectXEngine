@@ -534,7 +534,30 @@ void GraphicMain::updateProbes(
 			probe.getMatrixZMinus(),
 			projMatrix,
 			scene);
-		{
+		{ 
+			{
+				D3D11_SUBRESOURCE_DATA pData[6 * 2];
+				std::vector < std::vector<Vector4>> diffuseMap(6*2, std::vector<Vector4>(SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE));
+				
+				for (int i = 0; i < 6*2; i++) {
+					for (int j = 0; j < SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE; j++) {
+						diffuseMap[i][j] = Vector4(1, 0, 0, 1);
+					}
+				}
+				for (int faceIndex = 0; faceIndex < 6 * 2; faceIndex++) {
+					pData[faceIndex].pSysMem = &diffuseMap[faceIndex][0];// description.data;
+					pData[faceIndex].SysMemPitch = (SIZE_LIGHT_TEXTURE * 4) * sizeof(float);
+					pData[faceIndex].SysMemSlicePitch = 0;
+				}
+
+
+
+				m_probeCubeArray.initCubeArray(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE, 2, &pData);
+
+			}
+
+
+
 			Vector3* coefficientsChannels = new Vector3[9];
 			int8_t* pixels = new int8_t[SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE*6 *4];
 			float* coefficientsVertex = new float[9];
@@ -671,7 +694,7 @@ void GraphicMain::updateProbes(
 
 			context->Unmap(m_probeBaked.getShaderResource(), 0);
 			m_isProbeReady = true;
-			m_probeCubemap.initCubeMap(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE, pData);
+			m_probeCubemap.initCube(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE, pData);
 			//system("pause");
 			//SaveDDSTextureToFile(context, m_probeStagingTexutre.getShaderResource(),  L"SCREENSHOT.dds");
 			//GUID_WICPixelFormat64bppRGBA
@@ -770,7 +793,7 @@ void GraphicMain::renderClusteredForwardRendering(
 	if(m_isProbeReady)
 		RenderInstruction::RENDER_TEST(device, context, asset,
 			renderTargetView, depthStencilView, viewport,
-			matWorld, matView, matProj, depthAtlas, textureAtlas, m_probeCubemap,
+			matWorld, matView, matProj, depthAtlas, textureAtlas, m_probeCubemap,m_probeCubeArray.getShaderResourceView(),
 			0,
 			scene.m_camMain.m_pos,
 			SIZE_LIGHT_TEXTURE,
@@ -780,7 +803,7 @@ void GraphicMain::renderClusteredForwardRendering(
 
 		RenderInstruction::RENDER_TEST(device, context, asset,
 			renderTargetView, depthStencilView, viewport,
-			matWorld, matView, matProj, depthAtlas, textureAtlas, textureAtlas,
+			matWorld, matView, matProj, depthAtlas, textureAtlas, textureAtlas, textureAtlas.getShaderResourceView(),
 			0,
 			scene.m_camMain.m_pos,
 			SIZE_LIGHT_TEXTURE,

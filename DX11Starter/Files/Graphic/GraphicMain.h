@@ -44,6 +44,7 @@ namespace NGraphic {
 		StagingTexture		m_probeBaked;
 		RenderTexture		m_probeCubemap;
 		RenderTexture		m_renderTextureDummy;
+		RenderTexture		m_probeCubeArray;
 		DepthTexture		m_depthTextureDummy;
 		int					m_rsm_flux_eye_perspective_width, 
 							m_rsm_flux_eye_perspective_height;
