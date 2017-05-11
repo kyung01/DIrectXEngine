@@ -444,11 +444,11 @@ void GraphicMain::updateProbes(
 	float depthMax = 1.0f;
 	int probeCount = scene.m_probes.size();
 
-	D3D11_SUBRESOURCE_DATA* pSubResourceDataCubeArray = new D3D11_SUBRESOURCE_DATA[6 * 2* probeCount];
-	std::vector < std::vector<Vector4>> dataCubeArray(6 * 2* probeCount, std::vector<Vector4>(SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE));
+	D3D11_SUBRESOURCE_DATA* pSubResourceDataCubeArray = new D3D11_SUBRESOURCE_DATA[6 * probeCount];
+	std::vector < std::vector<Vector4>> dataCubeArray(6 * probeCount, std::vector<Vector4>(SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE));
 
 	int probeIndex = 0;
-	for (int i = 0; i < 6 * 2 * probeCount; i++) {
+	for (int i = 0; i < 6 * probeCount; i++) {
 		for (int j = 0; j < SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE; j++) {
 			dataCubeArray[i][j] = Vector4(0, 1, 0, 1);
 		}
@@ -703,7 +703,7 @@ void GraphicMain::updateProbes(
 		}
 	}
 
-	for (int faceIndex = 0; faceIndex < 6 * 2*probeCount; faceIndex++) {
+	for (int faceIndex = 0; faceIndex < 6 * probeCount; faceIndex++) {
 		pSubResourceDataCubeArray[faceIndex].pSysMem = &dataCubeArray[faceIndex][0];// description.data;
 		pSubResourceDataCubeArray[faceIndex].SysMemPitch = (SIZE_LIGHT_TEXTURE * 4) * sizeof(float);
 		pSubResourceDataCubeArray[faceIndex].SysMemSlicePitch = 0;
@@ -711,7 +711,7 @@ void GraphicMain::updateProbes(
 
 
 
-	m_probeCubeArray.initCubeArray(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE, 2, pSubResourceDataCubeArray);
+	m_probeCubeArray.initCubeArray(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE, probeCount, pSubResourceDataCubeArray);
 
 	//endRendering(context);
 
