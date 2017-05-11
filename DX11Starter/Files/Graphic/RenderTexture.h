@@ -19,6 +19,8 @@ namespace NGraphic {
 	class RenderTexture
 	{
 	private:
+		void init();
+
 		bool m_isInitialized;
 		int m_width, m_height;
 		D3D11_VIEWPORT viewport;

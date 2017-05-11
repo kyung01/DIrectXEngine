@@ -102,6 +102,8 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 		TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_UNIT*TEXTURE_LIGHT_ATLAS_SIZE,
 		TEXTURE_LIGHT_ATLAS_SIZE, TEXTURE_LIGHT_ATLAS_SIZE);
 	//m_depthTextures[TARGET_LIGHTSHAFT_BACK] = m_depthTextures[TARGET_LIGHTSHAFT_FRONT];
+	m_probeCubemapTarget.init(device, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE);
+	m_probeCubemapDepth.init(device, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE);
 	m_probePrebake.init(device, DXGI_FORMAT_R32G32B32A32_FLOAT, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE * 1);
 	m_probeBaked.init(device, DXGI_FORMAT_R8G8B8A8_UNORM, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE * 2);
 	return true;
@@ -157,6 +159,104 @@ void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &li
 			}
 		}
 	}
+}
+void NGraphic::GraphicMain::renderProbe(
+	ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene, NScene::Probe & probe, RenderTexture & m_deferredTexture, DepthTexture & m_deferredDepth)
+{
+	float depthMin = 0;
+	float depthMax = 1.0f;
+	float deltaTime = 0;
+	float totalTime = 0;
+	float textureWidth = m_deferredTexture.getWidth() / 6.0f;
+	float textureHeight = textureWidth;
+
+	auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
+	auto viewMatirx = probe.getMatrixXMinus();
+
+	DirectX::SimpleMath::Matrix projMatrix = DirectX::XMMatrixPerspectiveFovLH(
+		3.14f / 2,		// Field of View Angle
+		1.0f,		// Aspect ratio
+		0.001, 1000.0f);
+	//auto projMatrix = scene.m_camMain.getProjectionMatrix();
+
+	m_deferredTexture.clear(context, 0, 0, 0, 1);
+	m_deferredDepth.clear(context);
+
+	updateFrustum(device, context, deltaTime, totalTime, asset,
+		m_frustumProbe,
+		probe.getMatrixXPlus(), scene.objs_lights);
+	renderClusteredForward(device, context,
+		m_deferredTexture.getRenderTargetView(),
+		m_deferredDepth.getDepthStencilView(),
+		{ 0.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
+		asset, m_frustumProbe,
+		worldMatrix,
+		probe.getMatrixXPlus(),
+		projMatrix,
+		scene);
+
+	updateFrustum(device, context, deltaTime, totalTime, asset,
+		m_frustumProbe,
+		probe.getMatrixXMinus(), scene.objs_lights);
+	renderClusteredForward(device, context,
+		m_deferredTexture.getRenderTargetView(),
+		m_deferredDepth.getDepthStencilView(),
+		{ textureWidth*1.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
+		asset, m_frustumProbe,
+		worldMatrix,
+		probe.getMatrixXMinus(),
+		projMatrix,
+		scene);
+
+	updateFrustum(device, context, deltaTime, totalTime, asset,
+		m_frustumProbe,
+		probe.getMatrixYPlus(), scene.objs_lights);
+	renderClusteredForward(device, context,
+		m_deferredTexture.getRenderTargetView(),
+		m_deferredDepth.getDepthStencilView(),
+		{ textureWidth*2.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
+		asset, m_frustumProbe,
+		worldMatrix,
+		probe.getMatrixYPlus(),
+		projMatrix,
+		scene);
+	updateFrustum(device, context, deltaTime, totalTime, asset,
+		m_frustumProbe,
+		probe.getMatrixYMinus(), scene.objs_lights);
+	renderClusteredForward(device, context,
+		m_deferredTexture.getRenderTargetView(),
+		m_deferredDepth.getDepthStencilView(),
+		{ textureWidth*3.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
+		asset, m_frustumProbe,
+		worldMatrix,
+		probe.getMatrixYMinus(),
+		projMatrix,
+		scene);
+	updateFrustum(device, context, deltaTime, totalTime, asset,
+		m_frustumProbe,
+		probe.getMatrixZPlus(), scene.objs_lights);
+	renderClusteredForward(device, context,
+		m_deferredTexture.getRenderTargetView(),
+		m_deferredDepth.getDepthStencilView(),
+		{ textureWidth*4.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
+		asset, m_frustumProbe,
+		worldMatrix,
+		probe.getMatrixZPlus(),
+		projMatrix,
+		scene);
+
+	updateFrustum(device, context, deltaTime, totalTime, asset,
+		m_frustumProbe,
+		probe.getMatrixZMinus(), scene.objs_lights);
+	renderClusteredForward(device, context,
+		m_deferredTexture.getRenderTargetView(),
+		m_deferredDepth.getDepthStencilView(),
+		{ textureWidth*5.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
+		asset, m_frustumProbe,
+		worldMatrix,
+		probe.getMatrixZMinus(),
+		projMatrix,
+		scene);
 }
 void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene)
 {
@@ -440,8 +540,7 @@ void GraphicMain::updateProbes(
 	
 
 	//beginRendering(context);
-	float depthMin = 0;
-	float depthMax = 1.0f;
+	m_probeCubeArray.release();
 	int probeCount = scene.m_probes.size();
 
 	D3D11_SUBRESOURCE_DATA* pSubResourceDataCubeArray = new D3D11_SUBRESOURCE_DATA[6 * probeCount];
@@ -454,97 +553,9 @@ void GraphicMain::updateProbes(
 		}
 	}
 	for (auto it = scene.m_probes.begin(); it != scene.m_probes.end(); it++, probeIndex++) {
-		auto &probe = **it;
-		float textureWidth = probe.m_deferredTexture->getWidth() / 6.0f;
-		float textureHeight = textureWidth;
 
-		auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
-		auto viewMatirx = probe.getMatrixXMinus();
-
-		DirectX::SimpleMath::Matrix projMatrix = DirectX::XMMatrixPerspectiveFovLH(
-			3.14f / 2,		// Field of View Angle
-			1.0f,		// Aspect ratio
-			0.001, 1000.0f);
-		//auto projMatrix = scene.m_camMain.getProjectionMatrix();
-
-		probe.m_deferredTexture->clear(context, 0, 0, 0, 1);
-		probe.m_deferredDepth->clear(context);
-
-		updateFrustum(device, context, deltaTime, totalTime, asset,
-			m_frustumProbe,
-			probe.getMatrixXPlus(), scene.objs_lights);
-		renderClusteredForward(device, context,
-			probe.m_deferredTexture->getRenderTargetView(),
-			probe.m_deferredDepth->getDepthStencilView(),
-			{ 0.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
-			asset, m_frustumProbe,
-			worldMatrix,
-			probe.getMatrixXPlus(),
-			projMatrix,
-			scene);
-		
-		updateFrustum(device, context, deltaTime, totalTime, asset,
-			m_frustumProbe,
-			probe.getMatrixXMinus(), scene.objs_lights);
-		renderClusteredForward(device, context,
-			probe.m_deferredTexture->getRenderTargetView(),
-			probe.m_deferredDepth->getDepthStencilView(),
-			{ textureWidth*1.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
-			asset, m_frustumProbe,
-			worldMatrix,
-			probe.getMatrixXMinus(),
-			projMatrix,
-			scene);
-		
-		updateFrustum(device, context, deltaTime, totalTime, asset,
-			m_frustumProbe,
-			probe.getMatrixYPlus(), scene.objs_lights);
-		renderClusteredForward(device, context,
-			probe.m_deferredTexture->getRenderTargetView(),
-			probe.m_deferredDepth->getDepthStencilView(),
-			{ textureWidth*2.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
-			asset, m_frustumProbe,
-			worldMatrix,
-			probe.getMatrixYPlus(),
-			projMatrix,
-			scene);
-		updateFrustum(device, context, deltaTime, totalTime, asset,
-			m_frustumProbe,
-			probe.getMatrixYMinus(), scene.objs_lights);
-		renderClusteredForward(device, context,
-			probe.m_deferredTexture->getRenderTargetView(),
-			probe.m_deferredDepth->getDepthStencilView(),
-			{ textureWidth*3.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
-			asset, m_frustumProbe,
-			worldMatrix,
-			probe.getMatrixYMinus(),
-			projMatrix,
-			scene);
-		updateFrustum(device, context, deltaTime, totalTime, asset,
-			m_frustumProbe,
-			probe.getMatrixZPlus(), scene.objs_lights);
-		renderClusteredForward(device, context,
-			probe.m_deferredTexture->getRenderTargetView(),
-			probe.m_deferredDepth->getDepthStencilView(),
-			{ textureWidth*4.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
-			asset, m_frustumProbe,
-			worldMatrix,
-			probe.getMatrixZPlus(),
-			projMatrix,
-			scene);
-
-		updateFrustum(device, context, deltaTime, totalTime, asset,
-			m_frustumProbe,
-			probe.getMatrixZMinus(), scene.objs_lights);
-		renderClusteredForward(device, context,
-			probe.m_deferredTexture->getRenderTargetView(),
-			probe.m_deferredDepth->getDepthStencilView(),
-			{ textureWidth*5.0f,0.0f, textureWidth ,textureHeight,depthMin,depthMax },
-			asset, m_frustumProbe,
-			worldMatrix,
-			probe.getMatrixZMinus(),
-			projMatrix,
-			scene);
+		renderProbe(device, context, asset, scene, **it, m_probeCubemapTarget, m_probeCubemapDepth );
+		auto probeShaderResource = m_probeCubemapTarget.getShaderResource();
 		{ 
 
 
@@ -557,7 +568,7 @@ void GraphicMain::updateProbes(
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 			ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 			//don't copy resources for now
-			context->CopyResource(m_probePrebake.getShaderResource(), probe.m_deferredTexture->getShaderResource());
+			context->CopyResource(m_probePrebake.getShaderResource(), probeShaderResource);
 			h = context->Map(m_probePrebake.getShaderResource(), 0, D3D11_MAP_READ_WRITE, 0, &mappedResource);
 			float* pointer = (float*)mappedResource.pData;
 			//DirectX::D3DX11SaveTextureToFile
@@ -570,7 +581,7 @@ void GraphicMain::updateProbes(
 					{
 						int index  = j* (SIZE_LIGHT_TEXTURE * 6) + (SIZE_LIGHT_TEXTURE*faceIndex + i);
 
-						dataCubeArray[probeIndex *(6*2)+ faceIndex][j *SIZE_LIGHT_TEXTURE + i] = Vector4(pointer[index * 4], pointer[index * 4+1], pointer[index * 4+2], 1);
+						dataCubeArray[probeIndex *(6)+ faceIndex][j *SIZE_LIGHT_TEXTURE + i] = Vector4(pointer[index * 4], pointer[index * 4+1], pointer[index * 4+2], 1);
 						float u = i / SIZE_LIGHT_TEXTURE;
 						float v = j / SIZE_LIGHT_TEXTURE;
 						//index++;
@@ -686,7 +697,6 @@ void GraphicMain::updateProbes(
 
 			context->Unmap(m_probeBaked.getShaderResource(), 0);
 			m_isProbeReady = true;
-			m_probeCubemap.initCube(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE, pData);
 			//system("pause");
 			//SaveDDSTextureToFile(context, m_probeStagingTexutre.getShaderResource(),  L"SCREENSHOT.dds");
 			//GUID_WICPixelFormat64bppRGBA
@@ -795,22 +805,24 @@ void GraphicMain::renderClusteredForwardRendering(
 	if(m_isProbeReady)
 		RenderInstruction::RENDER_TEST(device, context, asset,
 			renderTargetView, depthStencilView, viewport,
-			matWorld, matView, matProj, depthAtlas, textureAtlas, m_probeCubemap,m_probeCubeArray.getShaderResourceView(),
+			matWorld, matView, matProj, depthAtlas, textureAtlas, m_probeCubeArray.getShaderResourceView(),
 			0,
 			scene.m_camMain.m_pos,
 			SIZE_LIGHT_TEXTURE,
 			scene.objs_solid,
-			scene.objs_lights);
+			scene.objs_lights,
+			scene.m_probes);
 	else 
 
 		RenderInstruction::RENDER_TEST(device, context, asset,
 			renderTargetView, depthStencilView, viewport,
-			matWorld, matView, matProj, depthAtlas, textureAtlas, textureAtlas, textureAtlas.getShaderResourceView(),
+			matWorld, matView, matProj, depthAtlas, textureAtlas,  textureAtlas.getShaderResourceView(),
 			0,
 			scene.m_camMain.m_pos,
 			SIZE_LIGHT_TEXTURE,
 			scene.objs_solid,
-			scene.objs_lights);
+			scene.objs_lights,
+			scene.m_probes);
 
 }
 

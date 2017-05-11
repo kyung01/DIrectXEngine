@@ -27,7 +27,7 @@
 #include <Graphic\Buffer\LightParameter.h>
 #include <Graphic\StagingTexture.h>
 #include <Game\Context.h>
-
+#include <Graphic\Scene\Probe.h>
 
 namespace NGraphic {
 
@@ -42,7 +42,9 @@ namespace NGraphic {
 		RenderStateStack	m_renderStackStack;
 		StagingTexture		m_probePrebake;
 		StagingTexture		m_probeBaked;
-		RenderTexture		m_probeCubemap;
+		RenderTexture		m_probeCubemapTarget;
+		DepthTexture		m_probeCubemapDepth;
+
 		RenderTexture		m_renderTextureDummy;
 		RenderTexture		m_probeCubeArray;
 		DepthTexture		m_depthTextureDummy;
@@ -81,6 +83,8 @@ namespace NGraphic {
 		void updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights);
 
 		
+		void renderProbe(ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene,
+			NScene::Probe &probe,RenderTexture & probeTarget, DepthTexture & probeDepth);
 
 		void renderDeferred();
 		void renderClusteredForwardRendering(
@@ -109,6 +113,8 @@ namespace NGraphic {
 		bool init(ID3D11Device *device, ID3D11DeviceContext *context, int textureWidth, int textureHeight, int textureIndirectLightWidth, int textureIndirectLightHeight);
 		void update(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene);
 		void updateProbes(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene);
+		
+		
 		void updateUnInitializedObjects(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, Asset & asset, NScene::Scene & scene);
 		void updateFrustum(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, 
 			Asset & asset,

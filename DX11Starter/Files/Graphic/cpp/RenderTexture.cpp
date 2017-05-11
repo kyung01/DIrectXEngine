@@ -16,12 +16,20 @@ RenderTexture::RenderTexture()
 RenderTexture::RenderTexture(const RenderTexture& other)
 {
 	m_isInitialized = false;
+	m_renderTargetView = 0;
+	m_shaderResourceView = 0;
 }
 
 
 RenderTexture::~RenderTexture()
 {
 	release();
+}
+void RenderTexture::init() {
+
+	m_isInitialized = false;
+	m_renderTargetView = 0;
+	m_shaderResourceView = 0;
 }
 
 

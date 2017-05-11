@@ -28,9 +28,16 @@ struct LightParameter
 	float dummy;				// 4
 	float topLeftX, topLeftY, viewPortWidth, viewPortHeight;
 	float4x4 matLight; //used to get depth information;
-	//float4x4 matLightProjection; //used to get depth information;
-	//matrix inverseProjectionViewMatrix; //used to get depth information;
-	//matrix inverseViewProjZ; //used to get depth information;
+					   //float4x4 matLightProjection; //used to get depth information;
+					   //matrix inverseProjectionViewMatrix; //used to get depth information;
+					   //matrix inverseViewProjZ; //used to get depth information;
+};
+struct ProbeDiffuseParameter
+{
+	float3 position;
+	float c1, 
+		c2, c3, c4, c5, 
+		c6, c7, c8, c9;
 };
 
 struct DecalParameter {

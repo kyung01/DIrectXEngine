@@ -80,14 +80,14 @@ namespace NGraphic {
 			DirectX::SimpleMath::Matrix& worldMatrix, DirectX::SimpleMath::Matrix& viewMatrix, DirectX::SimpleMath::Matrix& projMatrix,
 			DepthTexture & lightAtlas,
 			RenderTexture & lightAtlas2,
-			RenderTexture & reflectionTexture,
 			ID3D11ShaderResourceView * probeArray,
 			ID3D11Buffer *lightParameters,
 
 			Vector3 cameraPosition,
 			float probeSliceSize,
 			std::list<std::shared_ptr<NScene::Object> >  objs,
-			std::list<std::shared_ptr<NScene::Light> >  objsDebug
+			std::list<std::shared_ptr<NScene::Light> >  objsDebug,
+			std::list<std::shared_ptr<NScene::Probe>>  objProbes
 		);//rendering the normal scene
 
 
