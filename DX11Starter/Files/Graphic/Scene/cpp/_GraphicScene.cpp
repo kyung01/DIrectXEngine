@@ -1,6 +1,7 @@
 #include <Graphic\Scene\Object.h>
 #include <Graphic\Scene\SpotLight.h>
 #include <Graphic\Scene\PointLight.h>
+#include <Graphic\Scene\ILight.h>
 #include <Graphic\Scene\Camera.h>
 using namespace NGraphic;
 using namespace NGraphic::NScene;
@@ -141,6 +142,34 @@ Object Camera::setRotation(Quaternion quaternion)
 }
 
 //Light
+
+ILight::ILight()
+{
+	//The light model bases 26.56 degree or 0.463 radiance as the base
+	m_lightType = LIGHT_TYPE::POINTLIGHT;
+	m_lightColor = Vector3(1, 1, 1);
+}
+
+
+void ILight::setLightColor(Vector3 color)
+{
+	m_isLightDirty = true;
+	m_lightColor = color;
+}
+
+void ILight::setLightColor(float r, float g, float b)
+{
+	m_isLightDirty = true;
+	m_lightColor = Vector3(r, g, b);
+}
+
+Vector3 ILight::getLightColor()
+{
+	return m_lightColor;
+}
+
+
+
 SpotLight::SpotLight()
 {
 	//The light model bases 26.56 degree or 0.463 radiance as the base
@@ -152,6 +181,7 @@ SpotLight::SpotLight()
 	setScale(Vector3(1, 1, 1));
 }
 
+/*
 
 void SpotLight::setLightColor(Vector3 color)
 {
@@ -169,7 +199,7 @@ Vector3 SpotLight::getLightColor()
 {
 	return m_lightColor;
 }
-
+*/
 
 void PointLight::updatePointLightViewMatrixs()
 {
