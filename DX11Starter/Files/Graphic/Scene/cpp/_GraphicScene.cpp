@@ -1,5 +1,5 @@
 #include <Graphic\Scene\Object.h>
-#include <Graphic\Scene\Light.h>
+#include <Graphic\Scene\SpotLight.h>
 #include <Graphic\Scene\PointLight.h>
 #include <Graphic\Scene\Camera.h>
 using namespace NGraphic;
@@ -141,7 +141,7 @@ Object Camera::setRotation(Quaternion quaternion)
 }
 
 //Light
-Light::Light()
+SpotLight::SpotLight()
 {
 	//The light model bases 26.56 degree or 0.463 radiance as the base
 	Camera::Camera();
@@ -153,19 +153,19 @@ Light::Light()
 }
 
 
-void Light::setLightColor(Vector3 color)
+void SpotLight::setLightColor(Vector3 color)
 {
 	m_isLightDirty = true;
 	m_lightColor = color;
 }
 
-void Light::setLightColor(float r, float g, float b)
+void SpotLight::setLightColor(float r, float g, float b)
 {
 	m_isLightDirty = true;
 	m_lightColor = Vector3(r, g, b);
 }
 
-Vector3 Light::getLightColor()
+Vector3 SpotLight::getLightColor()
 {
 	return m_lightColor;
 }
@@ -173,7 +173,7 @@ Vector3 Light::getLightColor()
 
 void PointLight::updatePointLightViewMatrixs()
 {
-	Light::getViewMatrix();
+	SpotLight::getViewMatrix();
 	m_matLookXPlus = DirectX::XMMatrixLookToLH(m_pos, Vector3(1, 0, 0), Vector3(0, 1, 0));
 	m_matLookXMinus = DirectX::XMMatrixLookToLH(m_pos, Vector3(-1, 0, 0), Vector3(0, 1, 0));
 	m_matLookYPlus = DirectX::XMMatrixLookToLH(m_pos, Vector3(0, 1, 0), Vector3(0, 0, -1));
@@ -184,7 +184,7 @@ void PointLight::updatePointLightViewMatrixs()
 
 NGraphic::NScene::PointLight::PointLight()
 {
-	Light();
+	SpotLight();
 	m_lightType = LIGHT_TYPE::POINTLIGHT;
 	setFOV(3.14 / 2 + 0.05f);
 }
@@ -196,7 +196,7 @@ Matrix PointLight::getViewMatrix()
 		updatePointLightViewMatrixs();
 		//update my other matrix as well
 	}
-	return Light::getViewMatrix();
+	return SpotLight::getViewMatrix();
 }
 
 Matrix PointLight::getMatrixXPlus()

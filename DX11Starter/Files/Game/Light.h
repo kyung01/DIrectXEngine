@@ -5,7 +5,7 @@
 #include <Game\Entity.h>
 #include <Game\GameEnum.h>
 #include <SimpleMath.h>
-#include <Graphic\Scene\Light.h>
+#include <Graphic\Scene\SpotLight.h>
 namespace NGame {
 
 	class Script;
@@ -13,7 +13,7 @@ namespace NGame {
 	class Light:public Entity {
 	private:
 		float m_angle;
-		std::list<NGraphic::NScene::Light> m_lights;
+		std::list<NGraphic::NScene::SpotLight> m_lights;
 	public:
 		/*
 		LIGHT_SPOTLIGHT or LIGHT_POINTLIGHT

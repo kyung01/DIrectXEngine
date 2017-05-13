@@ -5,7 +5,7 @@
 
 #include "SimpleShader.h"
 #include "DepthTexture.h"
-#include "Graphic\Scene\Light.h"
+#include <Graphic\Scene\SpotLight.h>
 #include <list>
 #include <map>
 #include <memory>
@@ -79,8 +79,8 @@ namespace NGraphic {
 		void beginRendering(ID3D11DeviceContext *context);// = 0;
 		void endRendering(ID3D11DeviceContext *context);// = 0;
 		void getScreenWidth(int &w, int &h);// = 0;
-		void updateBufferLightPrameter(ID3D11DeviceContext *context, ID3D11Buffer* buffer, std::list<std::shared_ptr<NScene::Light>> &lights);
-		void updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights);
+		void updateBufferLightPrameter(ID3D11DeviceContext *context, ID3D11Buffer* buffer, std::list<std::shared_ptr<NScene::SpotLight>> &lights);
+		void updateLightAtlas(std::list<std::shared_ptr<NScene::SpotLight>> &lights);
 
 		
 		void renderProbe(ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene,
@@ -120,7 +120,7 @@ namespace NGraphic {
 			Asset & asset,
 			NGraphic::NFrustum::Frustum &frustum,
 			DirectX::SimpleMath::Matrix camViewMatrix,
-			std::list < std::shared_ptr< NScene::Light> > lights);
+			std::list < std::shared_ptr< NScene::SpotLight> > lights);
 
 
 

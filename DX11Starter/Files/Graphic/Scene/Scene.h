@@ -3,7 +3,7 @@
 #include <memory>
 #include "Camera.h"
 #include <Graphic\Scene\Object.h>
-#include <Graphic\Scene\Light.h>>
+#include <Graphic\Scene\SpotLight.h>>
 #include <Graphic\Scene\PointLight.h>
 #include <Graphic\Scene\Probe.h>
 namespace NGraphic {
@@ -11,8 +11,8 @@ namespace NGraphic {
 		class Scene {
 
 		public:
-			std::list<std::shared_ptr<Light>> objs_lightsNotReady; //things to be rendered on the screen
-			std::list<std::shared_ptr<Light>> objs_lights; //things to be rendered on the screen
+			std::list<std::shared_ptr<SpotLight>> objs_lightsNotReady; //things to be rendered on the screen
+			std::list<std::shared_ptr<SpotLight>> objs_lights; //things to be rendered on the screen
 
 			std::list<std::shared_ptr<Probe>> m_probesNotReady; //things to be rendered on the screen
 			std::list<std::shared_ptr<Probe>> m_probes; //things to be rendered on the screen
@@ -28,7 +28,7 @@ namespace NGraphic {
 			std::shared_ptr<Object> getObjSolid();
 			std::shared_ptr<Object> getObjUI();
 			std::shared_ptr<PointLight> getPointLight(Vector3 lightColor, float lightDistance);
-			std::shared_ptr<Light> getSpotLight(float angle, Vector3 lightColor, float lightDistance);
+			std::shared_ptr<SpotLight> getSpotLight(float angle, Vector3 lightColor, float lightDistance);
 			std::shared_ptr<Probe> getProbe();
 		};
 	}

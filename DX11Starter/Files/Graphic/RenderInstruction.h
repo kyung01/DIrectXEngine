@@ -86,7 +86,7 @@ namespace NGraphic {
 			Vector3 cameraPosition,
 			float probeSliceSize,
 			std::list<std::shared_ptr<NScene::Object> >  objs,
-			std::list<std::shared_ptr<NScene::Light> >  objsDebug,
+			std::list<std::shared_ptr<NScene::SpotLight> >  objsDebug,
 			std::list<std::shared_ptr<NScene::Probe>>  objProbes
 		);//rendering the normal scene
 

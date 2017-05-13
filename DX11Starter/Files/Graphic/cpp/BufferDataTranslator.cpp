@@ -46,7 +46,7 @@ void BufferDataTranslator::constrcut()
 	}
 	delete myCounts;
 }
-void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& lights)
+void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::SpotLight>>& lights)
 {
 	int index = 0;
 	NBuffer::LightParameter parameter;
@@ -60,10 +60,10 @@ void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& 
 		std::cout <<"translate " << parameter.isSpotlight << "\n";
 		//system("pause");
 		parameter.position = light.m_pos;
-		parameter.topLeftX = light.m_atlasTopLeftX;
-		parameter.topLeftY = light.m_atlasTopLeftY;
-		parameter.viewPortWidth = light.m_atlasViewportWidth;
-		parameter.viewPortHeight = light.m_atlasViewportHeight;
+		parameter.topLeftX = light.m_atlas.topLeftX;
+		parameter.topLeftY = light.m_atlas.topLeftY;
+		parameter.viewPortWidth = light.m_atlas.width;
+		parameter.viewPortHeight = light.m_atlas.height;
 		//std::cout << "LIGHT POS " << light.m_pos.x << " , " << light.m_pos.y << " , " << light.m_pos.z << "\n";
 		//std::cout << "LIGHT ViewPort TIOP" << info.topLeftX << " , " << info.topLeftY << "\n";
 		//std::cout << "LIGHT ViewPort " << info.viewportWidth << " , " << info.viewportHeight << "\n";
@@ -72,12 +72,12 @@ void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::Light>>& 
 		if (light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT) {
 			auto matViewProj = DirectX::XMMatrixMultiply(
 				light.getViewMatrix(),
-				light.getProjectionMatrix(light.m_atlasViewportWidth, light.m_atlasViewportHeight));
+				light.getProjectionMatrix(light.m_atlas.width, light.m_atlas.height));
 			DirectX::XMStoreFloat4x4(&parameter.matLight, XMMatrixTranspose(matViewProj));
 
 		}
 		if (light.m_lightType == NScene::LIGHT_TYPE::POINTLIGHT) {
-			auto matProj = light.getProjectionMatrix(light.m_atlasViewportWidth /6.0, light.m_atlasViewportHeight);
+			auto matProj = light.getProjectionMatrix(light.m_atlas.width /6.0, light.m_atlas.height);
 			DirectX::XMStoreFloat4x4(&parameter.matLight, XMMatrixTranspose(matProj));
 
 		}
@@ -140,16 +140,6 @@ void NGraphic::BufferDataTranslator::translate(std::vector<NFrustum::Cluster>& c
 
 			m_clusterItems->setData(item, offset + indexLight++);
 		}
-		//for (auto itDecal = cluster[i].decal.begin(); itDecal != cluster[i].decal.end() && (offset + indexDecal) < m_arrClusterItemSize; itDecal++, indexDecal++) {
-		//	//m_arrClusterItems.get()[offset + indexDecal]->decal = *itDecal;
-		//	m_clusterItems->m_data[offset + indexDecal].decal = *itDecal;
-		//}
-		//for (auto itProbe = cluster[i].reflection.begin(); itProbe != cluster[i].reflection.end() && (offset + indexProbe) < m_arrClusterItemSize; itProbe++, indexProbe++) {
-		//	//m_arrClusterItems.get()[offset + indexProbe]->probe = *itProbe;
-		//	m_clusterItems->m_data[offset + indexProbe].probe = *itProbe;
-		//}
-
-		//offset += max(max(indexLight, indexDecal), indexProbe);
 		offset += indexLight;
 		if (offsetOld == offset) {
 			//std::cout << "OFFSET AT " << offset << " MX AT " << m_arrClusterItemSize<<std::endl << "BECAUSE" << indexLight << " , " << indexDecal << " , " << indexProbe << std::endl;
@@ -159,39 +149,6 @@ void NGraphic::BufferDataTranslator::translate(std::vector<NFrustum::Cluster>& c
 		//system("pause");
 		
 	}
-	//std::cout << "OFFSET ENDED AT " << offset <<std::endl ;;// " MX AT " << m_arrClusterItemSize << std::endl << "BECAUSE" << indexLight << " , " << indexDecal << " , " << indexProbe << std::endl;
-
-	int lightValue = 0 ;
-	/*
-	for (int i = 0; i < m_arrClusterItemSize; i++) {
-	
-		int  decalCount = 22, probeCount = 33;
-		unsigned int myCount = 0;
-		myCount |= 0;
-		myCount <<= 8;
-		myCount |= probeCount;
-		myCount <<= 8;
-		myCount |= decalCount;
-		myCount <<= 8;
-		myCount |= lightValue;
-		lightValue += 1;
-		if (lightValue == 2) {
-			lightValue = 0;
-		}
-
-		NBuffer::ClusterItem	item;
-		item.lightDecalProbeDummy = myCount;
-
-		m_clusterItems->setData(item, i);
-		
-		int lightIndex = ((item.lightDecalProbeDummy) & 0xff);
-		//std::cout << lightIndex << " , " << std::endl;
-		//std::cout << "DEBUG " << (int)m_clusterItems->m_data[i].light << " , " << (int)m_clusterItems->m_data[i].decal << " , " << (int)m_clusterItems->m_data[i].probe << " , " << std::endl;
-		//system("pause");
-	}
-	*/
-	//std::cout << "OFFSET " << offset << "\n";
-
 }
 
 void NGraphic::BufferDataTranslator::transfer(ID3D11DeviceContext * context, 

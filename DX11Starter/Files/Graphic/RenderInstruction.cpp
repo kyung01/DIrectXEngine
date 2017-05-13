@@ -471,7 +471,7 @@ void RenderInstruction::RENDER_TEST(
 	Vector3 cameraPosition,
 	float probeSliceSize,
 	std::list<std::shared_ptr<NScene::Object>>  objs,
-	std::list<std::shared_ptr<NScene::Light>>  objLights,
+	std::list<std::shared_ptr<NScene::SpotLight>>  objLights,
 	std::list<std::shared_ptr<NScene::Probe>>  objProbes)
 {
 
@@ -544,7 +544,7 @@ void RenderInstruction::RENDER_TEST(
 	int lightIndex = 0;
 	for (auto it = objLights.begin(); it != objLights.end(); it++,lightIndex+= 3) {
 		shaderFrag.SetInt("renderSetting", 1 + lightIndex % 2 );
-		NGraphic::NScene::Light& lightObj = **it;
+		NGraphic::NScene::SpotLight& lightObj = **it;
 		NGraphic::Mesh& mesh = (lightObj.m_lightType == NScene::LIGHT_TYPE::POINTLIGHT) ?
 			*asset.m_meshes[MESH_ID_SPHERE] : *asset.m_meshes[MESH_ID_CONE];
 		SET_MATRIX(&shaderVert, "world",

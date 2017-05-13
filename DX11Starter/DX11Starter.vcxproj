@@ -173,6 +173,7 @@
     <ClInclude Include="Files\Game\Entity.h" />
     <ClInclude Include="Files\Game\Context.h" />
     <ClInclude Include="Files\Game\Probe.h" />
+    <ClInclude Include="Files\Graphic\AtlasReference.h" />
     <ClInclude Include="Files\Graphic\BufferDataTranslator.h" />
     <ClInclude Include="Files\Graphic\Buffer\ClusterIndex.h" />
     <ClInclude Include="Files\Graphic\Buffer\ClusterItem.h" />
@@ -202,7 +203,7 @@
     <ClInclude Include="Files\Graphic\Scene\AtlasInformation.h" />
     <ClInclude Include="Files\Graphic\Scene\Camera.h" />
     <ClInclude Include="Files\Graphic\Scene\DefferedRenderTetures.h" />
-    <ClInclude Include="Files\Graphic\Scene\Light.h" />
+    <ClInclude Include="Files\Graphic\Scene\SpotLight.h" />
     <ClInclude Include="Files\Graphic\Scene\Object.h" />
     <ClInclude Include="Files\Graphic\Scene\PointLight.h" />
     <ClInclude Include="Files\Graphic\Scene\Probe.h" />

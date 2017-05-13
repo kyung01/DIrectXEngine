@@ -109,26 +109,30 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 	return true;
 }
 void GraphicMain::updateBufferLightPrameter(
-	ID3D11DeviceContext *context, ID3D11Buffer* buffer, std::list<std::shared_ptr<NScene::Light>>& lights)
+	ID3D11DeviceContext *context, ID3D11Buffer* buffer, std::list<std::shared_ptr<NScene::SpotLight>>& lights)
 {
 	
 }
 
-void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &lights)
+void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::SpotLight>> &lights)
 {
 	float size = 1;
 	
 	m_atlasSlicer->clear();
 	for (auto it = lights.begin(); it != lights.end(); it++) {
 		auto &light = **it;
+		float &atalsTopleftX = light.m_atlas.topLeftX;
+		float &atalsTopleftY = light.m_atlas.topLeftY;
+		float &atalsWidth = light.m_atlas.width;
+		float &atalsHeight = light.m_atlas.height;
 		//auto &info =  m_lightInfos[light.m_id];
 		//0 spotlight
 		//1 pointlight
 		if (light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT) {
 
 			if (!m_atlasSlicer->getRoom(
-				light.m_atlasTopLeftX, light.m_atlasTopLeftY, 
-				light.m_atlasViewportWidth, light.m_atlasViewportHeight, (int)size, (int)size)) {
+				atalsTopleftX, atalsTopleftY,
+				atalsWidth, atalsHeight, (int)size, (int)size)) {
 				std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
 				system("pause");
 			}
@@ -143,9 +147,8 @@ void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::Light>> &li
 		}
 		else {
 			if (!m_atlasSlicer->getRoom(
-
-				light.m_atlasTopLeftX, light.m_atlasTopLeftY,
-				light.m_atlasViewportWidth, light.m_atlasViewportHeight, 
+				atalsTopleftX, atalsTopleftY,
+				atalsWidth, atalsHeight,
 				size * 6, size)) {
 				std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
 				system("pause");
@@ -275,8 +278,8 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 			*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
 			scene,
 
-			worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix((**it).m_atlasViewportWidth, (**it).m_atlasViewportHeight),
-			(**it).m_atlasTopLeftX, (**it).m_atlasTopLeftY, (**it).m_atlasViewportWidth, (**it).m_atlasViewportHeight);
+			worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix((**it).m_atlas.width, (**it).m_atlas.height),
+			(**it).m_atlas.topLeftX, (**it).m_atlas.topLeftY, (**it).m_atlas.width, (**it).m_atlas.height);
 		else {
 			auto pointLight = static_cast<NScene::PointLight*>(&light);
 			//(**it).setFOV(3.14f / 2.0f + 0.11f);
@@ -289,8 +292,8 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 				pointLight->getMatrixXPlus(), pointLight->getMatrixXMinus(),
 				pointLight->getMatrixYPlus(), pointLight->getMatrixYMinus(), 
 				pointLight->getMatrixZPlus(), pointLight->getMatrixZMinus(), 
-				(**it).getProjectionMatrix((**it).m_atlasViewportWidth /6, (**it).m_atlasViewportWidth / 6),
-				(**it).m_atlasTopLeftX, (**it).m_atlasTopLeftY, (**it).m_atlasViewportWidth, (**it).m_atlasViewportHeight);
+				(**it).getProjectionMatrix((**it).m_atlas.width /6, (**it).m_atlas.height / 6),
+				(**it).m_atlas.topLeftX, (**it).m_atlas.topLeftY, (**it).m_atlas.width, (**it).m_atlas.height);
 			//(**it).setFOV(3.14f / 2.0f);
 		}
 
@@ -737,7 +740,7 @@ void GraphicMain::updateFrustum(
 	Asset & asset,
 	NGraphic::NFrustum::Frustum &frustum,
 	DirectX::SimpleMath::Matrix camViewMatrix,
-	std::list < std::shared_ptr< NScene::Light> > lights)
+	std::list < std::shared_ptr< NScene::SpotLight> > lights)
 {
 	frustum.testBegin();
 	int index = 0;
@@ -948,7 +951,7 @@ void NGraphic::GraphicMain::renderDeffered(
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 
 
-		NScene::Light& light = **it;
+		NScene::SpotLight& light = **it;
 		LightInfo& lightInfo = m_lightInfos[it->get()->m_id];
 
 		lightInfo.position->clear(context, 0, 0, 0, 1);

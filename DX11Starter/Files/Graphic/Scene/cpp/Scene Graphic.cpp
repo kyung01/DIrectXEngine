@@ -1,5 +1,5 @@
 #include "Graphic\Scene\Scene.h"
-#include "Graphic\Scene\Light.h"
+#include "Graphic\Scene\SpotLight.h"
 using namespace NGraphic;
 using namespace NGraphic::NScene;
 
@@ -52,10 +52,10 @@ std::shared_ptr<PointLight> NGraphic::NScene::Scene::getPointLight(
 	return light;
 }
 
-std::shared_ptr<Light> NGraphic::NScene::Scene::getSpotLight(
+std::shared_ptr<SpotLight> NGraphic::NScene::Scene::getSpotLight(
 	float angle, Vector3 lightColor, float lightDistance)
 {
-	std::shared_ptr<Light> light = std::make_shared<Light>();
+	std::shared_ptr<SpotLight> light = std::make_shared<SpotLight>();
 	light->m_lightType = LIGHT_TYPE::SPOTLIGHT;
 	light->setLightColor( lightColor);
 	light->setFOV(angle);

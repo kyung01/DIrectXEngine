@@ -1,12 +1,12 @@
 #pragma once
-#include "Light.h"
+#include <Graphic\Scene\SpotLight.h>
 #include <SimpleMath.h>
 using namespace DirectX::SimpleMath;
 //using namespace glm;
 namespace NGraphic {
 
 	namespace NScene {
-		class PointLight : public Light {
+		class PointLight : public SpotLight {
 
 			Matrix 
 				m_matLookXPlus, m_matLookXMinus,
