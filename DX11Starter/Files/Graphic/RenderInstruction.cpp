@@ -514,6 +514,8 @@ void RenderInstruction::RENDER_TEST(
 	//shaderVert.SetMatrix4x4("proj", matrixStore);
 	shaderFrag.SetFloat("probeSliceSize", probeSliceSize);
 	shaderFrag.SetInt("renderSetting", 0);
+	//shaderFrag.SetShaderResourceView("textureLightAtlas", lightAtlas2.getShaderResourceView());
+	//shaderFrag.SetShaderResourceView("textureLightAtlas", lightAtlas2.getShaderResourceView());
 	shaderFrag.SetShaderResourceView("textureLightAtlas", lightAtlas.getShaderResourceView());
 	shaderFrag.SetShaderResourceView("textureProbe", asset.m_textures[KEnum::TEXTURE_ID_PROBE0]);
 	//shaderFrag.SetShaderResourceView("textureProbeCubemap", reflectionTexture.getShaderResourceView());

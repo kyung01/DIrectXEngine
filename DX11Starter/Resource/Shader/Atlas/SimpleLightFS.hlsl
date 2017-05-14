@@ -224,12 +224,86 @@ float pointLight(
 		return -2;
 	}
 	float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv_depth.xy);
-	
 	//return lightBaked.xyz;// *min(1, lightBaked.w);
 
 
 	float isShadow = (uv_depth.z - 0.001)< lightBaked.x;
 	
+	return light *isShadow;
+}
+
+float3 pointLightDebug(
+
+	float4x4 matLight,
+	float viewportTopLeftX,
+	float viewportTopLeftY,
+	float viewportWidth,
+	float viewportHeight,
+	float viewportScaleX,
+	float viewportScaleY,
+	float3 lightPosition,
+	float3 position, float3 normal) {
+
+	float light = pointLight(lightPosition, position, normal);
+	float3 positionDir = (position - lightPosition);
+	int pointLightIndex = getPointLightTextureIndex(positionDir);
+	if (pointLightIndex == -1) return float4(1, 1, 1, 1);
+	float3 positionOriginal = position;
+	position = position - lightPosition;
+	//float x = position.x, y = position.y, z = position.z;
+
+	float dummy = 0;
+
+
+	switch (pointLightIndex) {
+	default:
+		return -1;
+	case 0:
+		dummy = position.x;
+		position.x = -position.z;
+		position.z = dummy;
+		break;
+	case 1:
+		dummy = position.x;
+		position.x = position.z;
+		position.z = -dummy;
+		break;
+	case 2:
+		dummy = position.y;
+		position.y = -position.z;
+		position.z = dummy;
+		break;
+	case 3:
+		dummy = position.y;
+		position.y = position.z;
+		position.z = -dummy;
+		break;
+	case 4:
+		break;
+	case 5:
+	 	position.x = -position.x;
+		position.z = -position.z;
+		break;
+	}
+
+	viewportTopLeftX += (pointLightIndex)* (viewportWidth / 6.0);
+	viewportWidth = viewportWidth / 6.0;
+	float3 uv_depth = getPointlight_UVDepth(
+		matLight,
+		viewportTopLeftX, viewportTopLeftY,
+		viewportWidth, viewportHeight,
+		viewportScaleX, viewportScaleY,
+		position
+	);
+	if (uv_depth.x == -1 || uv_depth.y == -1) {
+		return -2;
+	}
+	float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv_depth.xy);
+	//return lightBaked.xyz;// *min(1, lightBaked.w);
+
+	return lightBaked.xyz;
+	float isShadow = (uv_depth.z - 0.001)< lightBaked.x;
+
 	return light *isShadow;
 }
 // Entry point for this pixel shader
@@ -269,8 +343,7 @@ float3 getColor(VertexToPixel input) {
 	uint clusterItemProbeCount = (clusterIndex.lightDecalProbeCount >> (8 * 2)) & 0xff;
 
 	float3 color = float3(0, 0, 0);
-
-	[loop]
+	[loop ]
 	for (int i = 0; i < clusterItemLightCount; i++)
 	{
 		float3 colorAdd = float3(0, 0, 0);
@@ -302,7 +375,7 @@ float3 getColor(VertexToPixel input) {
 			if (uv_depth.x == -1 || uv_depth.y == -1) {
 				continue;
 			}
-			float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv_depth.xy);
+			float4 lightBaked = textureLightAtlas.Gather(sampler_default, uv_depth.xy);
 			float isShadow = (uv_depth.z - 0.001)< lightBaked.x;
 			colorAdd *= isShadow;
 
@@ -320,7 +393,6 @@ float3 getColor(VertexToPixel input) {
 			//if (lightPointLight == -2) return float4(1, 0, 1, 1);
 			colorAdd += light.color * lightPointLight;
 		}
-
 
 		color += saturate(colorAdd);
 

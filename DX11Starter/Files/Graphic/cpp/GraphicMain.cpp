@@ -116,23 +116,19 @@ void GraphicMain::updateBufferLightPrameter(
 
 void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::SpotLight>> &lights)
 {
-	float size = 1;
+	float size = 2;
 	
 	m_atlasSlicer->clear();
 	for (auto it = lights.begin(); it != lights.end(); it++) {
 		auto &light = **it;
-		float &atalsTopleftX = light.m_atlas.topLeftX;
-		float &atalsTopleftY = light.m_atlas.topLeftY;
-		float &atalsWidth = light.m_atlas.width;
-		float &atalsHeight = light.m_atlas.height;
 		//auto &info =  m_lightInfos[light.m_id];
 		//0 spotlight
 		//1 pointlight
 		if (light.m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT) {
 
 			if (!m_atlasSlicer->getRoom(
-				atalsTopleftX, atalsTopleftY,
-				atalsWidth, atalsHeight, (int)size, (int)size)) {
+				light.m_atlas.topLeftX, light.m_atlas.topLeftY,
+				light.m_atlas.width, light.m_atlas.height, (int)size, (int)size)) {
 				std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
 				system("pause");
 			}
@@ -147,8 +143,8 @@ void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::SpotLight>>
 		}
 		else {
 			if (!m_atlasSlicer->getRoom(
-				atalsTopleftX, atalsTopleftY,
-				atalsWidth, atalsHeight,
+				light.m_atlas.topLeftX, light.m_atlas.topLeftY,
+				light.m_atlas.width, light.m_atlas.height,
 				size * 6, size)) {
 				std::cout << "GraphicMain::updateLightAtlas-> Updating Light Atals Failed.\n";
 				system("pause");
@@ -292,7 +288,7 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 				pointLight->getMatrixXPlus(), pointLight->getMatrixXMinus(),
 				pointLight->getMatrixYPlus(), pointLight->getMatrixYMinus(), 
 				pointLight->getMatrixZPlus(), pointLight->getMatrixZMinus(), 
-				(**it).getProjectionMatrix((**it).m_atlas.width /6, (**it).m_atlas.height / 6),
+				(**it).getProjectionMatrix((**it).m_atlas.width /6, (**it).m_atlas.height ),
 				(**it).m_atlas.topLeftX, (**it).m_atlas.topLeftY, (**it).m_atlas.width, (**it).m_atlas.height);
 			//(**it).setFOV(3.14f / 2.0f);
 		}
@@ -808,7 +804,7 @@ void GraphicMain::renderClusteredForwardRendering(
 	if(m_isProbeReady)
 		RenderInstruction::RENDER_TEST(device, context, asset,
 			renderTargetView, depthStencilView, viewport,
-			matWorld, matView, matProj, depthAtlas, textureAtlas, m_probeCubeArray.getShaderResourceView(),
+			matWorld, matView, matProj, depthAtlas,textureAtlas, m_probeCubeArray.getShaderResourceView(),
 			0,
 			scene.m_camMain.m_pos,
 			SIZE_LIGHT_TEXTURE,
