@@ -11,8 +11,8 @@ namespace NGraphic {
 		class Scene {
 
 		public:
-			std::list<std::shared_ptr<SpotLight>> objs_lightsNotReady; //things to be rendered on the screen
-			std::list<std::shared_ptr<SpotLight>> objs_lights; //things to be rendered on the screen
+			std::list<std::shared_ptr<ILight>> objs_lightsNotReady; //things to be rendered on the screen
+			std::list<std::shared_ptr<ILight>> objs_lights; //things to be rendered on the screen
 
 			std::list<std::shared_ptr<Probe>> m_probesNotReady; //things to be rendered on the screen
 			std::list<std::shared_ptr<Probe>> m_probes; //things to be rendered on the screen

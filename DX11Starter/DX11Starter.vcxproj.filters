@@ -320,6 +320,9 @@
     <ClInclude Include="Files\Graphic\Scene\SphericalCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Files\Graphic\Scene\ILight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

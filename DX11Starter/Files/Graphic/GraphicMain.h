@@ -119,8 +119,8 @@ namespace NGraphic {
 		void updateFrustum(ID3D11Device * device, ID3D11DeviceContext * context, float deltaTime, float totalTime, 
 			Asset & asset,
 			NGraphic::NFrustum::Frustum &frustum,
-			DirectX::SimpleMath::Matrix camViewMatrix,
-			std::list < std::shared_ptr< NScene::SpotLight> > lights);
+			DirectX::SimpleMath::Matrix camViewMatrix, 
+			std::list < std::shared_ptr< NScene::ILight> > lights);
 
 
 

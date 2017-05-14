@@ -18,17 +18,18 @@ namespace NGraphic {
 			bool m_isAlive, m_isDirty;
 		protected:
 		public:
-			int m_id;
 			Vector3 m_scale;
 			Vector3 m_pos;
 			Vector3 m_dirLook;
 			Quaternion m_rotation;
+			Matrix m_matModel;
 
 
 			IObject();
 			virtual IObject setScale(Vector3 scale);
 			virtual IObject setPos(Vector3 pos);
 			virtual IObject setRotation(Quaternion quaternion);
+			Matrix getModelMatrix();
 		};
 	}
 }
