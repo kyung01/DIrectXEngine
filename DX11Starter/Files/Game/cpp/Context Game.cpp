@@ -132,17 +132,16 @@ void NGame::Context::addLight(NGraphic::NScene::Scene & scene)
 	float X_MAX = 5.0f, Y_MAX = 10.0f, Z_MAX = 5.0f;
 
 	//Vector3 lightPosition(-X_MAX + (2 * X_MAX) *	 hprRandomFloat(), Y_MAX * hprRandomFloat(), -Z_MAX + 2 * Z_MAX * hprRandomFloat());
-	Vector3 lightPosition(scene.m_camMain.m_pos );
-	//Vector3 lightColor = hprGetRandomColor(hprRandomFloat() * 100);
-	Vector3 lightColor(0.5f, 0.5f, 1.0f);
-	lightType = 0;
+	Vector3 lightPosition(scene.m_camMain.m_pos  + scene.m_camMain.m_dirLook);
+	Vector3 lightColor = hprGetRandomColor(hprRandomFloat() * 100);
+	//Vector3 lightColor(0.5f, 0.5f, 1.0f);
 	if (lightType++ % 2 == 0) {
 		auto gamePointLight = Light::GET_POINTLIGHT(Vector4(lightColor.x, lightColor.y, lightColor.z, 1), 13.1f);
 		auto sphereLight = scene.getPointLight(lightColor, 13.0f);
 		gamePointLight->m_graphicObjects.push_back(sphereLight);
 		m_lights.push_back(gamePointLight);
 
-		//gamePointLight->setRotation(scene.m_camMain.m_rotation);
+		gamePointLight->setRotation(scene.m_camMain.m_rotation);
 		gamePointLight->setPos(lightPosition.x, lightPosition.y, lightPosition.z);
 
 	}
@@ -153,7 +152,7 @@ void NGame::Context::addLight(NGraphic::NScene::Scene & scene)
 		gameSpotLight->m_graphicObjects.push_back(spotLight);
 		m_lights.push_back(gameSpotLight);
 
-		//gameSpotLight->setRotation(scene.m_camMain.m_rotation);
+		gameSpotLight->setRotation(scene.m_camMain.m_rotation);
 		gameSpotLight->setPos(lightPosition.x, lightPosition.y, lightPosition.z);
 	}
 }
