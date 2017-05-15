@@ -736,13 +736,12 @@ void GraphicMain::updateFrustum(
 	Asset & asset,
 	NGraphic::NFrustum::Frustum &frustum,
 	DirectX::SimpleMath::Matrix camViewMatrix,
-	std::list < std::shared_ptr< NScene::ILight> > lights)
+	std::list < std::shared_ptr< NScene::SpotLight> > lights)
 {
 	frustum.testBegin();
 	int index = 0;
 	for (auto it = lights.begin(); it != lights.end(); it++, index++) {
-		auto * light = &**it;
-		//auto * lightObj = static_cast<NScene::Object
+		auto &light = **it;
 		Vector3 pos = XMVector3Transform(light.m_pos, camViewMatrix);
 		Vector3 posDirLook = XMVector3Transform(light.m_pos + light.m_dirLook, camViewMatrix);
 		Vector3 dir = posDirLook - pos;
