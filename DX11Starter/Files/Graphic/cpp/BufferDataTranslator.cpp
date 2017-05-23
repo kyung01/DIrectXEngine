@@ -46,7 +46,7 @@ void BufferDataTranslator::constrcut()
 	}
 	delete myCounts;
 }
-void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::SpotLight>>& lights)
+void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::OldSpotLight>>& lights)
 {
 	int index = 0;
 	NBuffer::LightParameter parameter;

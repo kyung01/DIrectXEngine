@@ -1,5 +1,5 @@
 #pragma once
-#include "PointLight.h"
+#include "OldPointLight.h"
 #include <SimpleMath.h>
 #include "Graphic\RenderTexture.h"
 #include "Graphic\DepthTexture.h"
@@ -8,7 +8,7 @@ using namespace DirectX::SimpleMath;
 namespace NGraphic {
 
 	namespace NScene {
-		class Probe : public PointLight {
+		class Probe : public OldPointLight {
 		public:
 			Probe();
 			std::shared_ptr<RenderTexture>	m_deferredTexture;

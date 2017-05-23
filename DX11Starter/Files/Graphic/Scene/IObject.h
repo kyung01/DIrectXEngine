@@ -23,12 +23,13 @@ namespace NGraphic {
 			Vector3 m_pos;
 			Vector3 m_dirLook;
 			Quaternion m_rotation;
-
+			Matrix m_matModel;
 
 			IObject();
 			virtual IObject setScale(Vector3 scale);
 			virtual IObject setPos(Vector3 pos);
 			virtual IObject setRotation(Quaternion quaternion);
+			Matrix getModelMatrix();
 		};
 	}
 }

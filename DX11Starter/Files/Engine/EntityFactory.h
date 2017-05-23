@@ -9,14 +9,22 @@
 //#include "Shader.h"
 using namespace DirectX::SimpleMath;
 
-namespace Engine {
+namespace KEngine {
+
+	struct EntityFactoryIndex {
+		int at;
+		int size;
+
+	};
 	struct EntityFactory {
 	private:
-		std::vector<Entity> m_entities;
+		std::vector<byte> m_entities;
+		std::vector<EntityFactoryIndex> m_indexs;
 	protected:
 	public:
-		void addEntity(Entity entity);
-
+		Entity& getEntity(int n);
+		void addEntity(byte* entity, int size);
+		
 	};
 }
 /*

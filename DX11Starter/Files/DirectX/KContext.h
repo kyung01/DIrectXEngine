@@ -40,7 +40,7 @@ namespace NDirectX {
 		NGraphic::DepthTexture	m_depth;
 	public:
 		std::list<RenderContext> m_renderContexts;
-		NGraphic::NScene::Camera testingCamera; //TODO delete this?
+		NGraphic::NScene::OldCamera testingCamera; //TODO delete this?
 		~KContext();
 
 

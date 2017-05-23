@@ -1,5 +1,5 @@
-#include "Graphic\GraphicMain.h"
 #include <string>
+#include <Graphic\GraphicMain.h>
 #include "Graphic\RenderInstruction.h"
 //trying to save the texture
 
@@ -15,7 +15,7 @@ void GraphicMain::processObject(NScene::Object obj) {
 }
 
 
-void GraphicMain::processCamera(NScene::Camera cam)
+void GraphicMain::processCamera(NScene::OldCamera cam)
 {
 }
 
@@ -109,12 +109,12 @@ this->m_renderTextures[key]	->init(device, defWidth, defHeight);
 	return true;
 }
 void GraphicMain::updateBufferLightPrameter(
-	ID3D11DeviceContext *context, ID3D11Buffer* buffer, std::list<std::shared_ptr<NScene::SpotLight>>& lights)
+	ID3D11DeviceContext *context, ID3D11Buffer* buffer, std::list<std::shared_ptr<NScene::OldSpotLight>>& lights)
 {
 	
 }
 
-void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::SpotLight>> &lights)
+void GraphicMain::updateLightAtlas(std::list<std::shared_ptr<NScene::OldSpotLight>> &lights)
 {
 	float size = 2;
 	
@@ -259,6 +259,7 @@ void NGraphic::GraphicMain::renderProbe(
 }
 void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * context, Asset & asset, NScene::Scene & scene)
 {
+	
 	beginRendering(context);
 	auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
 	m_renderTextures[TARGET_LIGHT_ATLAS]->clear(context,0,0,0,1);
@@ -277,7 +278,7 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 			worldMatrix, (**it).getViewMatrix(), (**it).getProjectionMatrix((**it).m_atlas.width, (**it).m_atlas.height),
 			(**it).m_atlas.topLeftX, (**it).m_atlas.topLeftY, (**it).m_atlas.width, (**it).m_atlas.height);
 		else {
-			auto pointLight = static_cast<NScene::PointLight*>(&light);
+			auto pointLight = static_cast<NScene::OldPointLight*>(&light);
 			//(**it).setFOV(3.14f / 2.0f + 0.11f);
 			RenderInstruction::RENDER_LIGHT_ATLAS_POINT(
 				device, context, asset,
@@ -290,19 +291,11 @@ void GraphicMain::renderLightAtlas(ID3D11Device * device, ID3D11DeviceContext * 
 				pointLight->getMatrixZPlus(), pointLight->getMatrixZMinus(), 
 				(**it).getProjectionMatrix((**it).m_atlas.width /6, (**it).m_atlas.height ),
 				(**it).m_atlas.topLeftX, (**it).m_atlas.topLeftY, (**it).m_atlas.width, (**it).m_atlas.height);
-			//(**it).setFOV(3.14f / 2.0f);
 		}
 
-		
-		//RenderInstruction::RENDER_LIGHT_ATLAS_SPOT(
-		//	device, context, asset, scene,
-		//	*m_renderTextures[TARGET_LIGHT_ATLAS], *m_depthTextures[DEPTH_LIGHT_ATLAS],
-		//	light,
-		//	m_lightInfos[light.m_id].topLeftX, m_lightInfos[light.m_id].topLeftY, m_lightInfos[light.m_id].viewportWidth, m_lightInfos[light.m_id].viewportHeight);
 	}
-
-
 	endRendering(context);
+	
 }
 
 GraphicMain::GraphicMain()
@@ -376,6 +369,24 @@ void GraphicMain::updateUnInitializedObjects(ID3D11Device * device, ID3D11Device
 		}
 		scene.objs_lights.insert(scene.objs_lights.begin(), scene.objs_lightsNotReady.begin(), scene.objs_lightsNotReady.end());
 		scene.objs_lightsNotReady.clear();
+	}
+	if (!scene.m_lights.empty()) {
+		for (auto it = scene.m_lights.begin(); it != scene.m_lights.end(); it++) {
+			/*
+			//NScene::ILight * pointerToLight = &*it;
+			//pointerToLight->m_textureTarget.init(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE);
+			//pointerToLight->m_texturinit(device, SIZE_LIGHT_TEXTURE, SIZE_LIGHT_TEXTURE);
+
+			NScene::PointLight	*pointLight = static_cast<NScene::PointLight	*>(pointerToLight);
+			//NScene::SpotLight	*spotLight = static_cast<NScene::SpotLight	*>(pointerToLight);
+
+			if (it->m_lightType == NScene::LIGHT_TYPE::SPOTLIGHT) {
+				pointLight->m_textureTarget.init(device, SIZE_LIGHT_TEXTURE * 6, SIZE_LIGHT_TEXTURE)
+			}
+
+			static_cast< (*it);
+			*/
+		}
 	}
 	if (!scene.m_probesNotReady.empty()) {
 
@@ -736,7 +747,7 @@ void GraphicMain::updateFrustum(
 	Asset & asset,
 	NGraphic::NFrustum::Frustum &frustum,
 	DirectX::SimpleMath::Matrix camViewMatrix,
-	std::list < std::shared_ptr< NScene::SpotLight> > lights)
+	std::list < std::shared_ptr< NScene::OldSpotLight> > lights)
 {
 	frustum.testBegin();
 	int index = 0;
@@ -947,7 +958,7 @@ void NGraphic::GraphicMain::renderDeffered(
 	for (auto it = scene.objs_lights.begin(); it != scene.objs_lights.end(); it++) {
 
 
-		NScene::SpotLight& light = **it;
+		NScene::OldSpotLight& light = **it;
 		LightInfo& lightInfo = m_lightInfos[it->get()->m_id];
 
 		lightInfo.position->clear(context, 0, 0, 0, 1);

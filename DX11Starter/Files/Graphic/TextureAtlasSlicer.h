@@ -5,7 +5,7 @@
 #include "SimpleShader.h"
 #include "RenderTexture.h"
 #include "DepthTexture.h"
-#include "Graphic\Scene\SpotLight.h"
+#include "Graphic\Scene\OldSpotLight.h"
 #include <list>
 #include <map>
 #include <memory>

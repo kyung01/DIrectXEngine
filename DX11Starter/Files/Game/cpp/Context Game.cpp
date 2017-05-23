@@ -77,7 +77,7 @@ void Context::init(NGraphic::NScene::Scene * scene)
 
 		if (lightType++%2 == 0) {
 			auto gamePointLight = Light::GET_POINTLIGHT(Vector4(lightColor.x, lightColor.y, lightColor.z, 1),0.1f);
-			auto sphereLight = scene->getPointLight(lightColor, 13.0f);
+			auto sphereLight = scene->getPointLightOLD(lightColor, 13.0f);
 			gamePointLight->m_graphicObjects.push_back(sphereLight);
 			m_lights.push_back(gamePointLight);
 			
@@ -87,7 +87,7 @@ void Context::init(NGraphic::NScene::Scene * scene)
 		}
 		else {
 			auto gameSpotLight = Light::GET_SPOTLIGHT(3.14f/2,Vector4(lightColor.x, lightColor.y, lightColor.z, 1), 0.1f);
-			auto spotLight = scene->getSpotLight(3.14f/2,lightColor, 13);
+			auto spotLight = scene->getSpotLightOLD(3.14f/2,lightColor, 13);
 			spotLight->setLightColor(lightColor);
 			gameSpotLight->m_graphicObjects.push_back(spotLight);
 			m_lights.push_back(gameSpotLight);
@@ -105,7 +105,7 @@ void Context::init(NGraphic::NScene::Scene * scene)
 	return;
 
 	//auto cone = scene->getObjSolid();
-	auto coneLight = scene->getSpotLight(3.14/2,Vector3(1,1,1),1);
+	auto coneLight = scene->getSpotLightOLD(3.14/2,Vector3(1,1,1),1);
 	//cone->m_meshId = NGraphic::MESH_ID_CONE;
 	//cone->setScale(Vector3(2.0f));
 	//cone->setRotation(DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), -3.14 / 2));
@@ -137,7 +137,7 @@ void NGame::Context::addLight(NGraphic::NScene::Scene & scene)
 	//Vector3 lightColor(0.5f, 0.5f, 1.0f);
 	if (lightType++ % 2 == 0) {
 		auto gamePointLight = Light::GET_POINTLIGHT(Vector4(lightColor.x, lightColor.y, lightColor.z, 1), 13.1f);
-		auto sphereLight = scene.getPointLight(lightColor, 13.0f);
+		auto sphereLight = scene.getPointLightOLD(lightColor, 13.0f);
 		gamePointLight->m_graphicObjects.push_back(sphereLight);
 		m_lights.push_back(gamePointLight);
 
@@ -147,7 +147,7 @@ void NGame::Context::addLight(NGraphic::NScene::Scene & scene)
 	}
 	else {
 		auto gameSpotLight = Light::GET_SPOTLIGHT(3.14f / 2, Vector4(lightColor.x, lightColor.y, lightColor.z, 1), 13.1f);
-		auto spotLight = scene.getSpotLight(3.14f / 2, lightColor, 13);
+		auto spotLight = scene.getSpotLightOLD(3.14f / 2, lightColor, 13);
 		spotLight->setLightColor(lightColor);
 		gameSpotLight->m_graphicObjects.push_back(spotLight);
 		m_lights.push_back(gameSpotLight);
@@ -167,7 +167,7 @@ void NGame::Context::addProbe(NGraphic::NScene::Scene & scene)
 	randAxis.Normalize();
 	//auto probe = scene.getProbe();
 	auto probeGame = std::make_shared<Probe>();
-	probeGame->m_graphicProbe = scene.getProbe();
+	probeGame->m_graphicProbe = scene.getProbeReflection();
 	probeGame->m_graphicObjects.push_back(probeGame->m_graphicProbe);
 	m_probes.push_back(probeGame);
 

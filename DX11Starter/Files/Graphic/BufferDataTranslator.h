@@ -8,7 +8,7 @@
 #include <memory>
 
 #include <Graphic\Frustum.h>
-#include <Graphic\Scene\SpotLight.h>
+#include <Graphic\Scene\OldSpotLight.h>
 #include <Graphic\Buffer\KDynamicBuffer.h>
 #include <Graphic\Buffer\ClusterIndex.h>
 #include <Graphic\Buffer\ClusterItem.h>
@@ -35,7 +35,7 @@ namespace NGraphic {
 		BufferDataTranslator(int clusterSize, int clusterItemMax, int lightMax, int decalMax, int probeMax);
 		void constrcut();
 		void translate(std::vector<NFrustum::Cluster> &cluster);
-		void translate(std::list<std::shared_ptr<NScene::SpotLight>>& lights);
+		void translate(std::list<std::shared_ptr<NScene::OldSpotLight>>& lights);
 		void transfer(ID3D11DeviceContext * context, ID3D11Buffer* bufferClusterIndex, ID3D11Buffer* bufferClusterItem, ID3D11Buffer* bufferLights, ID3D11Buffer* bufferDecals, ID3D11Buffer* bufferProbes);
 	};
 	

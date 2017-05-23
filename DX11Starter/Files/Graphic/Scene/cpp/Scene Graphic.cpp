@@ -1,5 +1,4 @@
-#include "Graphic\Scene\Scene.h"
-#include "Graphic\Scene\SpotLight.h"
+#include <Graphic\Scene\Scene.h>
 using namespace NGraphic;
 using namespace NGraphic::NScene;
 
@@ -39,37 +38,67 @@ std::shared_ptr<Object> NGraphic::NScene::Scene::getObjUI()
 	return obj;
 }
 
-std::shared_ptr<PointLight> NGraphic::NScene::Scene::getPointLight(
+std::shared_ptr<OldPointLight> NGraphic::NScene::Scene::getPointLightOLD(
 	Vector3 lightColor, float lightDistance)
 {
-	std::shared_ptr<PointLight> light = std::make_shared<PointLight>();
-	//light->m_lightType = LIGHT_TYPE::POINTLIGHT;
+	std::shared_ptr<OldPointLight> light = std::make_shared<OldPointLight>();
+	light->m_lightType = LIGHT_TYPE::POINTLIGHT;
 	light->setLightColor( lightColor);
 	light->m_lightDistance = lightDistance;
 	//objs_lightsNotReady.push_back(light);
 	objs_lightsNotReady.push_back(light);
-
+	{
+	}
 	return light;
 }
 
-std::shared_ptr<SpotLight> NGraphic::NScene::Scene::getSpotLight(
+std::shared_ptr<OldSpotLight> Scene::getSpotLightOLD(
 	float angle, Vector3 lightColor, float lightDistance)
 {
-	std::shared_ptr<SpotLight> light = std::make_shared<SpotLight>();
+	std::shared_ptr<OldSpotLight> light = std::make_shared<OldSpotLight>();
 	light->m_lightType = LIGHT_TYPE::SPOTLIGHT;
 	light->setLightColor( lightColor);
 	light->setFOV(angle);
 	light->m_lightDistance = lightDistance;
 	//objs_lightsNotReady.push_back(light);
 	objs_lightsNotReady.push_back(light);
+	
 
 	return light;
 }
 
-std::shared_ptr<Probe> NGraphic::NScene::Scene::getProbe()
+std::shared_ptr<Probe> NGraphic::NScene::Scene::getProbeReflection()
 {
 	std::shared_ptr<Probe> probe = std::make_shared<Probe>();
 	m_probesNotReady.push_back(probe);
+	{
 
+	}
 	return probe;
+}
+
+std::shared_ptr<Probe> NGraphic::NScene::Scene::getProbeDiffuse()
+{
+	return std::shared_ptr<Probe>();
+}
+
+PointLight NGraphic::NScene::Scene::getPointLight(Vector3 lightColor, float lightDistance)
+{
+
+	PointLight light;
+	light.setLightColor(lightColor);
+	light.m_lightDistance = lightDistance;
+	m_lightsNotReady.push_back(light);
+	return light;
+}
+
+SpotLight NGraphic::NScene::Scene::getSpotLight(float angle, Vector3 lightColor, float lightDistance)
+{
+	SpotLight light;
+	light.setLightColor(lightColor);
+	light.setFOV(angle);
+	light.m_lightDistance = lightDistance;
+	m_lightsNotReady.push_back(light);
+
+	return light;
 }

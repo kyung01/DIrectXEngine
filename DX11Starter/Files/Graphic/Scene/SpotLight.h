@@ -10,8 +10,12 @@ using namespace DirectX::SimpleMath;
 namespace NGraphic {
 
 	namespace NScene {
-		class SpotLight : public Camera ,public ILight {
+		class SpotLight : public ILight, public Camera {
 		public:
+
+			
+			AtlasReference m_atlas;
+			
 			SpotLight();
 
 

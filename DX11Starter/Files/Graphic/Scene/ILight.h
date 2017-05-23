@@ -10,12 +10,28 @@ using namespace DirectX::SimpleMath;
 namespace NGraphic {
 
 	namespace NScene {
-		class ILight  {
+		class ILight {
 		protected:
 			bool m_isLightDirty;
 			Vector3 m_lightColor;
 		public:
 			ILight();
+			LIGHT_TYPE m_lightType;
+			float m_lightDistance;
+
+
+
+			void setLightColor(Vector3 color);
+			void setLightColor(float r, float g, float b);
+			Vector3 getLightColor();
+		};
+
+		class OldILight  {
+		protected:
+			bool m_isLightDirty;
+			Vector3 m_lightColor;
+		public:
+			OldILight();
 			LIGHT_TYPE m_lightType;
 			float m_lightDistance;
 

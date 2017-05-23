@@ -114,6 +114,7 @@ void KContext::OnResize()
 
 }
 
+int testLight = 0;
 // --------------------------------------------------------
 // Update your KContext here - user input, move objects, AI, etc.
 // --------------------------------------------------------
@@ -128,11 +129,21 @@ void KContext::Update(float deltaTime, float totalTime)
 
 	if (m_ui.m_uiMain.m_settings.addNewLight) {
 		m_ui.m_uiMain.m_settings.addNewLight = false;
-		m_renderContexts.begin()->gameContext.addLight(m_renderContexts.begin()->scene);
+		if (testLight++ % 2 == 0) {
+
+			auto light = m_renderContexts.begin()->scene.getSpotLight(3.14f/2,Vector3(0, 0, 1), 12);
+		}
+		else {
+
+			auto light = m_renderContexts.begin()->scene.getPointLight(Vector3(1, 0, 0), 12);
+		}
+		//m_renderContexts.begin()->gameContext.addLight(m_renderContexts.begin()->scene);
 		std::cout << "ADDING NEW LIGHT\n";
 	}
 	if (m_ui.m_uiMain.m_settings.addNewReflectiveProbe) {
 		m_ui.m_uiMain.m_settings.addNewReflectiveProbe = false;
+		auto light = m_renderContexts.begin()->scene.getProbeReflection();
+
 		m_renderContexts.begin()->gameContext.addProbe(m_renderContexts.begin()->scene);
 		std::cout << "ADDING NEW PROBE\n";
 	}

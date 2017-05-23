@@ -1,6 +1,6 @@
 #include <Graphic\Scene\Object.h>
-#include <Graphic\Scene\SpotLight.h>
-#include <Graphic\Scene\PointLight.h>
+#include <Graphic\Scene\OldSpotLight.h>
+#include <Graphic\Scene\OldPointLight.h>
 #include <Graphic\Scene\ILight.h>
 #include <Graphic\Scene\Camera.h>
 #include <Graphic\Scene\SphericalCamera.h>
@@ -58,7 +58,7 @@ Matrix Object::getModelMatrix()
 	return m_matModel;
 }
 //Camera
-Camera::Camera() :
+OldCamera::OldCamera() :
 	m_clipFar(500),
 	m_clipNear(0.1),
 	m_screenWidth(100),
@@ -70,12 +70,12 @@ Camera::Camera() :
 	m_isDirty_matProjection = true;
 }
 
-float Camera::getFOV()
+float OldCamera::getFOV()
 {
 	return m_fov;
 }
 
-Matrix Camera::getProjectionMatrix()
+Matrix OldCamera::getProjectionMatrix()
 {
 	if (m_isDirty_matProjection) {
 		m_isDirty_matProjection = false;
@@ -86,7 +86,7 @@ Matrix Camera::getProjectionMatrix()
 	}
 	return m_matProjection;
 }
-Matrix Camera::getProjectionMatrix(float width, float height)
+Matrix OldCamera::getProjectionMatrix(float width, float height)
 {
 	m_screenWidth = width;
 	m_screenHeight = height;
@@ -94,7 +94,7 @@ Matrix Camera::getProjectionMatrix(float width, float height)
 	return getProjectionMatrix();
 }
 
-Matrix Camera::getProjectionMatrix(float fov, float screen_width, float screen_height, float clipNear, float clipFar)
+Matrix OldCamera::getProjectionMatrix(float fov, float screen_width, float screen_height, float clipNear, float clipFar)
 {
 	if (m_fov != fov || m_screenWidth != screen_width || m_screenHeight != screen_height || m_clipNear != clipNear || m_clipFar != clipFar) {
 		m_isDirty_matProjection = true;
@@ -108,7 +108,7 @@ Matrix Camera::getProjectionMatrix(float fov, float screen_width, float screen_h
 	return getProjectionMatrix();
 }
 
-Matrix Camera::getViewMatrix()
+Matrix OldCamera::getViewMatrix()
 {
 	if (m_isDirty_matView) {
 		m_isDirty_matView = false;
@@ -120,13 +120,13 @@ Matrix Camera::getViewMatrix()
 	return m_matView;
 }
 
-void NGraphic::NScene::Camera::setFOV(float value)
+void NGraphic::NScene::OldCamera::setFOV(float value)
 {
 	m_isDirty_matProjection = true;
 	m_fov = value;
 }
 
-Object Camera::setPos(Vector3 pos)
+Object OldCamera::setPos(Vector3 pos)
 {
 	Object::setPos(pos);
 	m_isDirty_matView = true;
@@ -134,7 +134,7 @@ Object Camera::setPos(Vector3 pos)
 }
 
 
-Object Camera::setRotation(Quaternion quaternion)
+Object OldCamera::setRotation(Quaternion quaternion)
 {
 	Object::setRotation(quaternion);
 	m_isDirty_matView = true;
@@ -142,9 +142,9 @@ Object Camera::setRotation(Quaternion quaternion)
 
 }
 
-void SphericalCamera::updatePointLightViewMatrixs()
+void OldSphericalCamera::updatePointLightViewMatrixs()
 {
-	Camera::getViewMatrix();
+	OldCamera::getViewMatrix();
 	m_matLookXPlus = DirectX::XMMatrixLookToLH(m_pos, Vector3(1, 0, 0), Vector3(0, 1, 0));
 	m_matLookXMinus = DirectX::XMMatrixLookToLH(m_pos, Vector3(-1, 0, 0), Vector3(0, 1, 0));
 	m_matLookYPlus = DirectX::XMMatrixLookToLH(m_pos, Vector3(0, 1, 0), Vector3(0, 0, -1));
@@ -153,23 +153,23 @@ void SphericalCamera::updatePointLightViewMatrixs()
 	m_matLookZMinus = DirectX::XMMatrixLookToLH(m_pos, Vector3(0, 0, -1), Vector3(0, 1, 0));
 }
 
-NGraphic::NScene::SphericalCamera::SphericalCamera()
+NGraphic::NScene::OldSphericalCamera::OldSphericalCamera()
 {
-	Camera();
+	OldCamera();
 	setFOV(3.14 / 2 + 0.15f);
 }
 
 
-Matrix SphericalCamera::getViewMatrix()
+Matrix OldSphericalCamera::getViewMatrix()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
 		//update my other matrix as well
 	}
-	return Camera::getViewMatrix();
+	return OldCamera::getViewMatrix();
 }
 
-Matrix SphericalCamera::getMatrixXPlus()
+Matrix OldSphericalCamera::getMatrixXPlus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
@@ -178,7 +178,7 @@ Matrix SphericalCamera::getMatrixXPlus()
 	}
 	return m_matLookXPlus;
 }
-Matrix SphericalCamera::getMatrixXMinus()
+Matrix OldSphericalCamera::getMatrixXMinus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
@@ -188,7 +188,7 @@ Matrix SphericalCamera::getMatrixXMinus()
 	return m_matLookXMinus;
 }
 
-Matrix SphericalCamera::getMatrixYPlus()
+Matrix OldSphericalCamera::getMatrixYPlus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
@@ -197,7 +197,7 @@ Matrix SphericalCamera::getMatrixYPlus()
 	}
 	return m_matLookYPlus;
 }
-Matrix SphericalCamera::getMatrixYMinus()
+Matrix OldSphericalCamera::getMatrixYMinus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
@@ -207,7 +207,7 @@ Matrix SphericalCamera::getMatrixYMinus()
 	return m_matLookYMinus;
 }
 
-Matrix SphericalCamera::getMatrixZPlus()
+Matrix OldSphericalCamera::getMatrixZPlus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
@@ -216,7 +216,7 @@ Matrix SphericalCamera::getMatrixZPlus()
 	}
 	return m_matLookZPlus;
 }
-Matrix SphericalCamera::getMatrixZMinus()
+Matrix OldSphericalCamera::getMatrixZMinus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
@@ -228,7 +228,7 @@ Matrix SphericalCamera::getMatrixZMinus()
 
 //Light
 
-ILight::ILight()
+OldILight::OldILight()
 {
 	//The light model bases 26.56 degree or 0.463 radiance as the base
 	m_lightType = LIGHT_TYPE::POINTLIGHT;
@@ -236,29 +236,29 @@ ILight::ILight()
 }
 
 
-void ILight::setLightColor(Vector3 color)
+void OldILight::setLightColor(Vector3 color)
 {
 	m_isLightDirty = true;
 	m_lightColor = color;
 }
 
-void ILight::setLightColor(float r, float g, float b)
+void OldILight::setLightColor(float r, float g, float b)
 {
 	m_isLightDirty = true;
 	m_lightColor = Vector3(r, g, b);
 }
 
-Vector3 ILight::getLightColor()
+Vector3 OldILight::getLightColor()
 {
 	return m_lightColor;
 }
 
 
 
-SpotLight::SpotLight()
+OldSpotLight::OldSpotLight()
 {
 	//The light model bases 26.56 degree or 0.463 radiance as the base
-	Camera::Camera();
+	OldCamera::OldCamera();
 	m_lightType = LIGHT_TYPE::POINTLIGHT;
 	m_ObjectType = OBJ_TYPE::LIGHT;
 	m_fov = 3.14f * 0.5;// 26.56 / (360 / 6.28318530718);
@@ -286,9 +286,17 @@ Vector3 SpotLight::getLightColor()
 }
 */
 
-void PointLight::updatePointLightViewMatrixs()
+
+NGraphic::NScene::OldPointLight::OldPointLight()
 {
-	SpotLight::getViewMatrix();
+	OldSpotLight();
+	m_lightType = LIGHT_TYPE::POINTLIGHT;
+	setFOV(3.14 / 2 + 0.15f);
+}
+
+void OldPointLight::updatePointLightViewMatrixs()
+{
+	OldSpotLight::getViewMatrix();
 	m_matLookXPlus = DirectX::XMMatrixLookToLH(m_pos, Vector3(1, 0, 0), Vector3(0, 1, 0));
 	m_matLookXMinus = DirectX::XMMatrixLookToLH(m_pos, Vector3(-1, 0, 0), Vector3(0, 1, 0));
 	m_matLookYPlus = DirectX::XMMatrixLookToLH(m_pos, Vector3(0, 1, 0), Vector3(0, 0, -1));
@@ -297,24 +305,16 @@ void PointLight::updatePointLightViewMatrixs()
 	m_matLookZMinus = DirectX::XMMatrixLookToLH(m_pos, Vector3(0, 0, -1), Vector3(0, 1, 0));
 }
 
-NGraphic::NScene::PointLight::PointLight()
-{
-	SpotLight();
-	m_lightType = LIGHT_TYPE::POINTLIGHT;
-	setFOV(3.14 / 2 + 0.15f);
-}
-
-
-Matrix PointLight::getViewMatrix()
+Matrix OldPointLight::getViewMatrix()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
 		//update my other matrix as well
 	}
-	return SpotLight::getViewMatrix();
+	return OldSpotLight::getViewMatrix();
 }
 
-Matrix PointLight::getMatrixXPlus()
+Matrix OldPointLight::getMatrixXPlus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
@@ -323,7 +323,7 @@ Matrix PointLight::getMatrixXPlus()
 	}
 	return m_matLookXPlus;
 }
-Matrix PointLight::getMatrixXMinus()
+Matrix OldPointLight::getMatrixXMinus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
@@ -333,7 +333,7 @@ Matrix PointLight::getMatrixXMinus()
 	return m_matLookXMinus;
 }
 
-Matrix PointLight::getMatrixYPlus()
+Matrix OldPointLight::getMatrixYPlus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
@@ -342,7 +342,7 @@ Matrix PointLight::getMatrixYPlus()
 	}
 	return m_matLookYPlus;
 }
-Matrix PointLight::getMatrixYMinus()
+Matrix OldPointLight::getMatrixYMinus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
@@ -352,7 +352,7 @@ Matrix PointLight::getMatrixYMinus()
 	return m_matLookYMinus;
 }
 
-Matrix PointLight::getMatrixZPlus()
+Matrix OldPointLight::getMatrixZPlus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
@@ -361,7 +361,7 @@ Matrix PointLight::getMatrixZPlus()
 	}
 	return m_matLookZPlus;
 }
-Matrix PointLight::getMatrixZMinus()
+Matrix OldPointLight::getMatrixZMinus()
 {
 	if (m_isDirty_matView) {
 		updatePointLightViewMatrixs();
@@ -370,3 +370,4 @@ Matrix PointLight::getMatrixZMinus()
 	}
 	return m_matLookZMinus;
 }
+
