@@ -18,10 +18,11 @@ namespace KEngine {
 	};
 	struct EntityFactory {
 	private:
-		std::vector<byte> m_entities;
-		std::vector<EntityFactoryIndex> m_indexs;
+		std::vector<Entity> m_entities;
+		//std::vector<EntityFactoryIndex> m_indexs;
 	protected:
 	public:
+		Entity& addEntity();
 		Entity& getEntity(int n);
 		void addEntity(byte* entity, int size);
 		

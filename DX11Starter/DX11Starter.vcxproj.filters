@@ -87,13 +87,7 @@
     <ClCompile Include="Files\Graphic\cpp\SimpleShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Files\Graphic\Mesh\Meshes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Files\Graphic\Asset\Asset.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Files\Game\cpp\Entities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Files\Graphic\Buffer\Buffer.cpp">
@@ -109,9 +103,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Files\Graphic\cpp\BufferDataTranslator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Files\Graphic\Asset\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Files\Graphic\Scene\cpp\_GraphicScene.cpp">
@@ -132,9 +123,6 @@
     <ClCompile Include="Files\Graphic\Scene\cpp\IProbeDiffuse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Files\Engine\Entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Files\Graphic\Scene\IObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -151,6 +139,45 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Files\Graphic\Scene\cpp\Lights.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Engine\cpp\Depth2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Engine\cpp\Engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Engine\cpp\Engine_Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Engine\cpp\Engine_Entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Engine\cpp\Engine_SimpleShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Engine\cpp\Engine_Texture2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Graphic\Mesh\Graphic_Meshes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Graphic\Asset\Asset_Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Engine\cpp\Engine_Asset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Engine\Systems\cpp\Engine_LightRender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Engine\Systems\cpp\Engine_RenderSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Engine\Systems\cpp\Engine_System.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Game\cpp\GAME_Entities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -338,9 +365,6 @@
     <ClInclude Include="Files\Graphic\Scene\SphericalCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Files\Engine\Component.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Files\Engine\Entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -375,6 +399,48 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Graphic\Scene\PointLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Componenets\Component.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Componenets\SphericalHarmonicProbe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\System.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Texture2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Depth2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Componenets\ForwardLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Asset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Enum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\SimpleShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Systems\LightRender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Systems\RenderSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Systems\System.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Componenets\Renderable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

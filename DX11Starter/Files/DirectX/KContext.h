@@ -14,19 +14,12 @@
 #include <Graphic\GraphicMain.h>
 #include <Graphic\Asset\Asset.h>
 
+#include <Engine\Engine.h>
 //TODO Draw triangle with different backgrounds onto three different framebuffers
 namespace NDirectX {
 	/*
 	Each GraphicMain should be assinged one scene and one scene only
 	*/
-	struct RenderContext{
-		std::string name; // id to describe the scene
-		std::string description; // describe what this scene is
-		//NGame::Context gameContext;
-		NGame::Context			gameContext;
-		NGraphic::GraphicMain	engine;
-		NGraphic::NScene::Scene scene;
-	};
 
 	class KContext
 		: public DXCore
@@ -34,13 +27,14 @@ namespace NDirectX {
 
 	private:
 		NImGui::KContext m_ui;
-		World::WorldMain world;
+		//World::WorldMain world;
 		NGraphic::Asset m_asset;
-		NGraphic::RenderTexture m_texture;
-		NGraphic::DepthTexture	m_depth;
+		KEngine::Engine m_engine;
+		//NGraphic::RenderTexture m_texture;
+		//NGraphic::DepthTexture	m_depth;
 	public:
-		std::list<RenderContext> m_renderContexts;
-		NGraphic::NScene::OldCamera testingCamera; //TODO delete this?
+		//std::list<RenderContext> m_renderContexts;
+		//NGraphic::NScene::OldCamera testingCamera; //TODO delete this?
 		~KContext();
 
 

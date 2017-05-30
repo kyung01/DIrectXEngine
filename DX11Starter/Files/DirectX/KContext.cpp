@@ -57,48 +57,21 @@ float scale = 0.9f;
 // --------------------------------------------------------
 void KContext::Init()
 {
-	//m_texture.init(device,swapChain, this->width, this->height);
-	//m_depth.init(device, this->width, this->height);
+	std::cout << "\n";
 
-	m_renderContexts.push_back({ "example00","Created for demo purpose.", NGame::Context(),GraphicMain(), Scene() });
-	
-	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
-		if (!it->engine.init(this->device, this->context, this->width * scale,this->height*scale, 256, 256)) {
-			std::cout << "GraphicMain failed to init" << std::endl;
-		}
-		it->gameContext.init(& it->scene);
-		NGame::LoadExample00(it->gameContext);
-
-		float ratio = 0.5f;
-
-		//if (!it->main.init(this->device, this->context, (int)round( ((float)this->width )*ratio), (int)round( ((float)this->height   )*ratio), 256, 256)) {
-		it->scene	.loadExample00();
-	}
-
-
+	m_engine.init(device, context);
 	m_ui.init(hInstance, hWnd, device, context, swapChain, backBufferRTV);
-	m_ui.m_uiMain.init(&m_renderContexts.begin()->engine, &m_renderContexts.begin()->scene);//TODO delete this line
+	//system("pause");
 	if (!m_asset.init(device, context)) {
 		std::cout << "Failed crucial steps.\n";
 		system("pause");
 	}
-	m_asset.loadDebug_frustums(device, m_renderContexts.begin()->engine.m_frustumLight.m_cubes);
-	world.objs.push_back(World::Object());
-	world.objs.push_back(World::Object());
-	world.objs.push_back(World::Object());
-	world.objs.push_back(World::Object());
-
 	//LoadShaders();
-
+	
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives (points, lines or triangles) we want to draw.  
 	// Essentially: "What kind of shape should the GPU draw with our data?"
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-
-	//m_renderContexts.begin()->main.mesh00 = &*triangle; //TODO you should delete this line
-	
-	//NImGui::UIMain::example_texture = m_renderContexts.begin()->main.m_renderTextures[Graphic::RENDER_TYPE::DEFFERED_DIFFUSE];
 }
 
 
@@ -120,43 +93,14 @@ int testLight = 0;
 // --------------------------------------------------------
 void KContext::Update(float deltaTime, float totalTime)
 {
-	world.update(deltaTime);
-	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
-		it->gameContext.update(deltaTime);
-		it->engine.update(device, context, deltaTime, totalTime,m_asset, it->scene);
-	}
+	
 
 
-	if (m_ui.m_uiMain.m_settings.addNewLight) {
-		m_ui.m_uiMain.m_settings.addNewLight = false;
-		if (testLight++ % 2 == 0) {
-
-			auto light = m_renderContexts.begin()->scene.getSpotLight(3.14f/2,Vector3(0, 0, 1), 12);
-		}
-		else {
-
-			auto light = m_renderContexts.begin()->scene.getPointLight(Vector3(1, 0, 0), 12);
-		}
-		//m_renderContexts.begin()->gameContext.addLight(m_renderContexts.begin()->scene);
-		std::cout << "ADDING NEW LIGHT\n";
-	}
-	if (m_ui.m_uiMain.m_settings.addNewReflectiveProbe) {
-		m_ui.m_uiMain.m_settings.addNewReflectiveProbe = false;
-		auto light = m_renderContexts.begin()->scene.getProbeReflection();
-
-		m_renderContexts.begin()->gameContext.addProbe(m_renderContexts.begin()->scene);
-		std::cout << "ADDING NEW PROBE\n";
-	}
-	if (m_ui.m_uiMain.m_settings.bakeReflectiveProbe) {
-		m_ui.m_uiMain.m_settings.bakeReflectiveProbe = false;
-		m_renderContexts.begin()->engine.updateProbes(device, context, deltaTime, totalTime, m_asset, m_renderContexts.begin()->scene);
-		std::cout << "ADDING NEW PROBE\n";
-	}
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
 		Quit();
 
-
+	m_engine.update(deltaTime);
 	float x, y, dis_camerMove(1.0*deltaTime);
 	int count = 0;
 	
@@ -165,21 +109,6 @@ void KContext::Update(float deltaTime, float totalTime)
 		std::cout << "Quit\n";
 		Quit();
 		/* Do something useful */
-	}
-	auto &cam = m_renderContexts.begin()->scene.m_camMain;
-	auto forwardModified = cam.m_dirLook;
-	forwardModified.y = 0;
-	forwardModified.Normalize();
-	auto vecLeft = forwardModified.Cross(Vector3(0, 1, 0));
-	vecLeft.Normalize();
-
-	std::map < char, Vector3 > keys = { { 'W', cam.m_dirLook } ,{ 'S', -cam.m_dirLook },{ 'A', vecLeft },{ 'D',-vecLeft } };
-	for each(auto k in keys) {
-		if (GetAsyncKeyState(k.first) & 0x8000) {
-			auto result = k.second * dis_camerMove ;
-			cam.setPos(cam.m_pos + result);
-			/* Do something useful */
-		}
 	}
 }
 
@@ -201,25 +130,9 @@ void KContext::Draw(float deltaTime, float totalTime)
 		1.0f,
 		0);
 
-	for (auto it = m_renderContexts.begin(); it != m_renderContexts.end(); it++) {
-
-
-		auto worldMatrix = DirectX::SimpleMath::Matrix::Identity;
-		auto viewMatirx = it->scene.m_camMain.getViewMatrix();
-		auto projMatrix = it->scene.m_camMain.getProjectionMatrix(this->width * scale, this->height*scale);
-
-
-
-		it->engine.renderClusteredForward(this->device, this->context,
-			backBufferRTV, depthStencilView, viewport,
-			m_asset, it->engine.m_frustumLight,
-			worldMatrix,
-			viewMatirx,
-			projMatrix,
-			it->scene);
-	}
 	context->OMSetRenderTargets(1,&this-> backBufferRTV, depthStencilView);
 	m_ui.render();
+	m_engine.render(device, context, this->backBufferRTV, depthStencilView, viewport);
 	swapChain->Present(0, 0);
 }
 
@@ -260,7 +173,6 @@ void KContext::OnMouseMove(WPARAM buttonState, int x, int y)
 	
 	float power = .010;
 	bool isContinue = true;
-	auto &cam = m_renderContexts.begin()->scene.m_camMain;
 	int xDis = x - mouseMoveXY[0];
 	int yDis = y - mouseMoveXY[1];
 	if (mouseMoveXY[0] == -1) {
@@ -276,17 +188,6 @@ void KContext::OnMouseMove(WPARAM buttonState, int x, int y)
 	}
 	mouseRotation[0] += xDis * power;
 	mouseRotation[1] += yDis * power;
-	cam.setRotation(cam.m_rotation * Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), xDis*power));
-	//	+ Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), yDis*power));
-	Vector3 dirAxis = -cam.m_dirLook.Cross(Vector3(0, 1, 0));
-	dirAxis.y = 0;
-	dirAxis.z = 0;
-	//dirAxis.Normalize();
-	cam.setRotation(
-		Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), mouseRotation[1]) *
-		Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), mouseRotation[0]));
-	//cam.setRotation(cam.m_rotation * Quaternion::CreateFromAxisAngle(dirAxis, yDis*power));
-	//std::cout << x<<"\n";
 }
 
 // --------------------------------------------------------
