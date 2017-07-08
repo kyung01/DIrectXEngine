@@ -128,7 +128,9 @@
   <ItemGroup>
     <ClCompile Include="Files\DirectX\DXCore.cpp" />
     <ClCompile Include="Files\DirectX\KContext.cpp" />
+    <ClCompile Include="Files\Engine\Componenets\cpp\Engine_Renderable.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine_Asset.cpp" />
+    <ClCompile Include="Files\Engine\cpp\Engine_Camera.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine_Mesh.cpp" />
     <ClCompile Include="Files\Engine\cpp\EntityFactory.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine.cpp" />
@@ -187,6 +189,7 @@
     <ClInclude Include="Files\DirectX\DXCore.h" />
     <ClInclude Include="Files\DirectX\KContext.h" />
     <ClInclude Include="Files\Engine\Asset.h" />
+    <ClInclude Include="Files\Engine\Camera.h" />
     <ClInclude Include="Files\Engine\Componenets\Renderable.h" />
     <ClInclude Include="Files\Engine\Componenets\SphericalHarmonicProbe.h" />
     <ClInclude Include="Files\Engine\Componenets\ForwardLight.h" />

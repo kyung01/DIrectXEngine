@@ -13,11 +13,13 @@ namespace NGraphic {
 				m_fov,
 				m_screenWidth, m_screenHeight,
 				m_clipNear, m_clipFar;
-			Matrix	m_matProjection,
+			Matrix	
+				m_matProjection,
 				m_matView;
 		protected:
 		public:
-			bool	m_isDirty_matProjection,
+			bool	
+				m_isDirty_matProjection,
 				m_isDirty_matView;
 			CAMERA_TYPE viewType;
 			//mat4 position, rotation;

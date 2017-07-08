@@ -53,6 +53,8 @@ Matrix Camera::getProjectionMatrix(float fov, float screen_width, float screen_h
 	return getProjectionMatrix();
 }
 
+
+
 Matrix Camera::getViewMatrix()
 {
 	if (m_isDirty_matView) {
@@ -64,6 +66,7 @@ Matrix Camera::getViewMatrix()
 	}
 	return m_matView;
 }
+
 
 void Camera::setFOV(float value)
 {

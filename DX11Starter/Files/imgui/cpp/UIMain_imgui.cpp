@@ -66,6 +66,7 @@ void NImGui::UIMain::render(std::map<int, NGraphic::LightInfo> lightInfos) {
 
 void NImGui::UIMain::render()
 {
+	ImGui::ShowTestWindow();
 	if (!graphicMain) return; // I don't have a pointer to the instance needed to initate drawing cycle
 	{
 		ImGui::Begin("RenderTextures Demo", 0, ImGuiWindowFlags_ShowBorders);
@@ -156,7 +157,6 @@ void NImGui::UIMain::render()
 	Begin("Scene Editor", 0, ImGuiWindowFlags_ShowBorders);
 	End();
 
-	ImGui::ShowTestWindow();
 
 	ImGui::Text("hiworld");
 }

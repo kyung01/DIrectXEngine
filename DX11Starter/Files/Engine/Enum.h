@@ -2,6 +2,8 @@
 namespace KEngine {
 
 	enum KEnum {
+
+		RASTR_CULLBACKFACE,
 		SHADERTYPE_VERTEX,
 		SHADERTYPE_FRAGMENT,
 
@@ -16,6 +18,7 @@ namespace KEngine {
 		MESH_FRUSTUM,
 		MESH_SPOTLIGHT,
 
+		SHADER_SIMPLE,
 
 		RENDER_TEST,
 		RENDER_DEFAULT,

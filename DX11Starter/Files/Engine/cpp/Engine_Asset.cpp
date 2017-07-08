@@ -33,7 +33,8 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 		LoadInfoShader(RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectVS.hlsl"),
 		LoadInfoShader(RENDER_ONE_COLOR,			L"Resource/Shader/OneColorVS.hlsl"),
 		LoadInfoShader(RENDER_TRANSPARENT,			L"Resource/Shader/TransparentVS.hlsl"),
-		LoadInfoShader(RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightVS.hlsl")
+		LoadInfoShader(RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightVS.hlsl"),
+		LoadInfoShader(SHADER_SIMPLE,			L"Resource/Shader/SimpleShaderVS.hlsl")
 	});
 	return lst;
 }
@@ -51,6 +52,7 @@ std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 		LoadInfoShader(RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectFS.hlsl"),
 		LoadInfoShader(RENDER_ONE_COLOR,			L"Resource/Shader/OneColorFS.hlsl"),
 		LoadInfoShader(RENDER_TRANSPARENT,			L"Resource/Shader/TransparentFS.hlsl"),
+		LoadInfoShader(SHADER_SIMPLE,			L"Resource/Shader/SimpleShaderFS.hlsl"),
 		LoadInfoShader(RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightFS.hlsl"
 		,{
 			(int)true, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE,
@@ -110,6 +112,13 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	}
 	else
 		print("init meshes succeess");
+
+	D3D11_RASTERIZER_DESC rsDescBack = {};
+	rsDescBack.FillMode = D3D11_FILL_SOLID;
+	rsDescBack.CullMode = D3D11_CULL_BACK;
+	//rsDescBack.FrontCounterClockwise = true;
+	rsDescBack.DepthClipEnable = true;
+	device->CreateRasterizerState(&rsDescBack, &m_rasterizers[KEnum::RASTR_CULLBACKFACE]);
 }
 
 bool Asset::initShaders(ID3D11Device * device, ID3D11DeviceContext * context, std::list<LoadInfoShader> dataVert, std::list<LoadInfoShader> dataFrag)
@@ -153,7 +162,8 @@ bool Asset::initShaders(ID3D11Device * device, ID3D11DeviceContext * context, st
 bool Asset::initMeshes(ID3D11Device* device, std::list<LoadInfoMesh> dataMesh) {
 	for (auto it = dataMesh.begin(); it != dataMesh.end(); it++) {
 		
-		m_meshes.insert({it->id,Mesh(device, it->path)});
+		m_meshes.emplace(std::piecewise_construct, std::make_tuple(it->id), std::make_tuple(device, it->path));
+		//(it->id,Mesh{device, it->path});
 	}
 	return true;
 }
@@ -164,4 +174,8 @@ SimpleFragmentShader& Asset::getFragShader(KEnum name) {
 SimpleVertexShader& Asset::getVertShader(KEnum name) {
 	return m_shadersVert.find(name)->second;
 
+}
+ID3D11RasterizerState * Asset::getRasterizer(KEnum name)
+{
+	return m_rasterizers.find(name)->second;
 }

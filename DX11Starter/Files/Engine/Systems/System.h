@@ -19,7 +19,7 @@ namespace KEngine {
 		public:
 			virtual void addEntity(Entity& entity);
 			virtual void update(float time);
-			virtual void render(ID3D11Device * device, ID3D11DeviceContext * context);
+			//virtual void render(ID3D11Device * device, ID3D11DeviceContext * context);
 
 		};
 	}

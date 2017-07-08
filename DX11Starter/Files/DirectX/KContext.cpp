@@ -105,6 +105,7 @@ void KContext::Update(float deltaTime, float totalTime)
 	int count = 0;
 	
 	XMVECTOR dir;
+		 
 	if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
 		std::cout << "Quit\n";
 		Quit();
@@ -131,8 +132,8 @@ void KContext::Draw(float deltaTime, float totalTime)
 		0);
 
 	context->OMSetRenderTargets(1,&this-> backBufferRTV, depthStencilView);
-	m_ui.render();
 	m_engine.render(device, context, this->backBufferRTV, depthStencilView, viewport);
+	m_ui.render();
 	swapChain->Present(0, 0);
 }
 

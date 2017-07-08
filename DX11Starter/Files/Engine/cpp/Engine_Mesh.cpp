@@ -1,5 +1,6 @@
 #include <Engine\Mesh.h>
-
+#include <DirectX\DirectXUtility.h>
+#define print(argument) std::cout<<"KEngine::Mesh : "<<argument<<"\n"
 using namespace KEngine;
 Vertex::Vertex()
 	:
@@ -64,8 +65,10 @@ Mesh::Mesh(ID3D11Device * device, char* objFile) {
 	std::ifstream obj(objFile);
 
 	// Check for successful open
-	if (!obj.is_open())
+	if (!obj.is_open()) {
+		print("obj file is not open");
 		return;
+	}
 
 	// Variables used while reading the file
 	std::vector< XMFLOAT3> positions;     // Positions from the file
@@ -238,9 +241,9 @@ void Mesh::construct(ID3D11Device * device, Vertex * verticies_data, int vertice
 	initialVertexData.pSysMem = verticies_data;
 	D3D11_SUBRESOURCE_DATA initialIndexData;
 	initialIndexData.pSysMem = indicies_data;
-
-	device->CreateBuffer(&vbd, &initialVertexData, &this->bufferVertices);
-	device->CreateBuffer(&ibd, &initialIndexData, &this->bufferIndicies);
+	print("Create Buffer...");
+	DirectX::DirectXUtility::HRESULT_CHECK(device->CreateBuffer(&vbd, &initialVertexData, &this->bufferVertices));
+	DirectX::DirectXUtility::HRESULT_CHECK(device->CreateBuffer(&ibd, &initialIndexData, &this->bufferIndicies));
 }
 
 
@@ -277,6 +280,7 @@ Mesh::Mesh(ID3D11Device * device, Vertex * verticies_data, int vertices_offsetEn
 
 Mesh::~Mesh()
 {
+	print("Mesh is being destroyed.");
 	if (bufferVertices) { bufferVertices->Release(); }
 	if (bufferIndicies) { bufferIndicies->Release(); }
 }

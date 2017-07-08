@@ -6,13 +6,13 @@ using namespace KEngine;
 
 void Engine::initExample()
 {
-	int ENTITY_NUMBER = 10;
+	int ENTITY_NUMBER = 1;
 	for (int j = 0; j < ENTITY_NUMBER; j++)for (int i = 0; i < ENTITY_NUMBER; i++)
 	{
 		Entity& entity = m_entityFactory.addEntity();
 		m_renderSystem.addEntity(entity);
 		Renderable& renderable = m_renderSystem.getComponent(j * ENTITY_NUMBER + (i));
-		renderable.position = Vector3(i,j,1);
+		renderable.setPosition( Vector3(i,j,1));
 	}
 }
 
@@ -24,10 +24,15 @@ void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context)
 }
 void Engine::update(float timeElapsed)
 {
-	print("update");
+	//print("update");
+	m_renderSystem.update(timeElapsed);
 }
 
-void Engine::render(ID3D11Device * device, ID3D11DeviceContext * context, ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT viewport)
+void Engine::render(
+	ID3D11Device * device, ID3D11DeviceContext * context, 
+	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT viewport)
 {
-	print("render");
+	//print("render");
+	m_renderSystem.render(device, context, target, targetDepth, viewport, m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE),
+		m_asset.getVertShader(KEnum::SHADER_SIMPLE), m_asset.getFragShader(KEnum::SHADER_SIMPLE), m_asset.m_meshes);
 }

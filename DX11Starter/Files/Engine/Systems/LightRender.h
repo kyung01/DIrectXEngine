@@ -20,7 +20,7 @@ namespace KEngine {
 
 			void addEntity(Entity& entity) override;
 			void update(float time) override;
-			void render(ID3D11Device * device, ID3D11DeviceContext * context) override;
+			void render(ID3D11Device * device, ID3D11DeviceContext * context);
 		};
 	}
 

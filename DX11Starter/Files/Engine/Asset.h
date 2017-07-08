@@ -37,13 +37,14 @@ namespace KEngine {
 	};
 	class Asset {
 	private:
-
+		//bank
 		std::map<KEnum, SimpleFragmentShader> m_shadersFrag;
 		std::map<KEnum, SimpleVertexShader> m_shadersVert;
-		std::map<KEnum, Mesh> m_meshes;
 		std::map<KEnum, ID3D11ShaderResourceView*> m_textures;
 		std::map<KEnum, ID3D11ShaderResourceView*> m_texturesCubeMap;
 		std::map<KEnum, ID3D11SamplerState*> m_samplers; //sampler ID
+		std::map<KEnum, ID3D11RasterizerState*> m_rasterizers;
+		std::map<KEnum, ID3D11BlendState*> m_blendStates;
 
 		std::list<LoadInfoShader>	getLoadListShaderVert();
 		std::list<LoadInfoShader>	getLoadListShaderFrag();
@@ -54,18 +55,20 @@ namespace KEngine {
 		bool initMeshes(ID3D11Device* device, std::list<LoadInfoMesh> dataMesh);
 	public:
 
+		std::map<KEnum, Mesh> m_meshes;
 
-		ID3D11BlendState * BLEND_STATE_ADDITIVE, *BLEND_STATE_TRANSPARENT;
-		ID3D11RasterizerState
-			* RASTR_STATE_CULL_FRONT,
-			*RASTR_STATE_CULL_BACK,
-			*RASTR_STATE_CULL_NONE,
-			*RASTR_WIREFRAME;
+		//ID3D11BlendState * BLEND_STATE_ADDITIVE, *BLEND_STATE_TRANSPARENT;
+		//ID3D11RasterizerState
+		//	* RASTR_STATE_CULL_FRONT,
+		//	*RASTR_STATE_CULL_BACK,
+		//	*RASTR_STATE_CULL_NONE,
+		//	*RASTR_WIREFRAME;
 		ID3D11DepthStencilState *	DEPTH_STATE_SKYBOX;
 
 		bool init(ID3D11Device* device, ID3D11DeviceContext *context);
 		SimpleFragmentShader&		getFragShader(KEnum name);
 		SimpleVertexShader&			getVertShader(KEnum name);
+		ID3D11RasterizerState*			getRasterizer(KEnum name);
 		//Vector3 getRandomColor(int seed);
 
 		/*
