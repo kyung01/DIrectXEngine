@@ -4,7 +4,7 @@ Camera::Camera(){
 	//dirLook = Vector3(0, 0, 1);
 	m_isDirtyView = true;
 	//m_isDirtyProj = true;
-	setProjParameters(3.14f / 2.0f, 100, 100, 0.1, 100);
+	setProjParameters(3.14f / 2.0f, 100, 100, 0.1, 1000);
 }
 Matrix Camera::getViewMatrix()
 {

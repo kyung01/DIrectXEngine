@@ -1,6 +1,18 @@
 #include <Engine\Systems\RenderSystem.h>
 using namespace KEngine;
 using namespace KEngine::KSystem;
+
+void KEngine::KSystem::RenderSystem::setCameraPosition(Vector3 position)
+{
+	m_camera.setPosition(position);
+}
+
+void KEngine::KSystem::RenderSystem::setCameraRotation(Quaternion rotation)
+{
+	m_camera.setQuaternion(rotation);
+}
+
+
 void RenderSystem::setMatrix(ISimpleShader * shader, std::string name, DirectX::XMMATRIX matrix) {
 
 	DirectX::XMStoreFloat4x4(&matTemp, XMMatrixTranspose(matrix));
@@ -58,6 +70,8 @@ void RenderSystem::render(
 
 }
 
+
+
 void RenderSystem::addEntity(KEngine::Entity &entity) {
 	m_components.resize(m_components.size() + 1);
 	Renderable& renderable = m_components[m_components.size() - 1];
@@ -67,29 +81,6 @@ void RenderSystem::addEntity(KEngine::Entity &entity) {
 }
 void RenderSystem::update(float time)
 {
-	Vector3 dirForward = m_camera.getLookDir();
-	Vector3 dirRight = Vector3(0, 1, 0).Cross( dirForward );
-	Vector3 moveDir;
-	if (GetAsyncKeyState('W'))
-	{
-		moveDir += dirForward;
-	}
-	if (GetAsyncKeyState('S'))
-	{
-		moveDir -= dirForward;
-	}
-	if (GetAsyncKeyState('D'))
-	{
-		moveDir += dirRight;
-	}
-	if (GetAsyncKeyState('A'))
-	{
-		moveDir -= dirRight;
-	}
-	moveDir.Normalize();
-	m_camera.setPosition(m_camera.getPosition() + moveDir * time );
-	std::cout << m_camera.getPosition().x << " , " << m_camera.getPosition().y << " , " << m_camera.getPosition().z << "\n";
-	//pri
 }
 Renderable & RenderSystem::getComponent(int n)
 {

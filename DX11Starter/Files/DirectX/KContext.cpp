@@ -171,7 +171,7 @@ int mouseMoveXY[2] = {-1,-1};
 float mouseRotation[2] = { 0,0 };
 void KContext::OnMouseMove(WPARAM buttonState, int x, int y)
 {
-	
+	m_engine.OnMouseMove(buttonState, x, y);
 	float power = .010;
 	bool isContinue = true;
 	int xDis = x - mouseMoveXY[0];

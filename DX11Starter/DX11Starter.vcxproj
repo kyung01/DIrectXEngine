@@ -136,6 +136,7 @@
     <ClCompile Include="Files\Engine\cpp\Engine.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine_Entity.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine_SimpleShader.cpp" />
+    <ClCompile Include="Files\Engine\Systems\cpp\Engine_InputSystem.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_LightRender.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_RenderSystem.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_System.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="Files\Engine\Mesh.h" />
     <ClInclude Include="Files\Engine\SimpleShader.h" />
     <ClInclude Include="Files\Engine\System.h" />
+    <ClInclude Include="Files\Engine\Systems\InputSystem.h" />
     <ClInclude Include="Files\Engine\Systems\LightRender.h" />
     <ClInclude Include="Files\Engine\Systems\RenderSystem.h" />
     <ClInclude Include="Files\Engine\Systems\System.h" />

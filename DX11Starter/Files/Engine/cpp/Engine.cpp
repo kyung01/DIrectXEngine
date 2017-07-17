@@ -26,6 +26,9 @@ void Engine::update(float timeElapsed)
 {
 	//print("update");
 	m_renderSystem.update(timeElapsed);
+	m_inputSystem.update(timeElapsed);
+	m_renderSystem.setCameraPosition(m_inputSystem.getPosition());
+	m_renderSystem.setCameraRotation(m_inputSystem.getRotation());
 }
 
 void Engine::render(
@@ -33,6 +36,18 @@ void Engine::render(
 	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT viewport)
 {
 	//print("render");
-	m_renderSystem.render(device, context, target, targetDepth, viewport, m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE),
-		m_asset.getVertShader(KEnum::SHADER_SIMPLE), m_asset.getFragShader(KEnum::SHADER_SIMPLE), m_asset.m_meshes);
+	m_renderSystem.render(
+		device, context, target, targetDepth, viewport, 
+		m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE),
+		m_asset.getVertShader(KEnum::SHADER_SIMPLE), m_asset.getFragShader(KEnum::SHADER_SIMPLE), 
+		m_asset.m_meshes);
+}
+void Engine::OnMouseMove(WPARAM buttonState, int x, int y)
+{
+	m_inputSystem.OnMouseMove(buttonState, x, y);
+
+	if (!(buttonState & 0x0001)) //if button is not pressed
+	{
+		return;
+	}
 }

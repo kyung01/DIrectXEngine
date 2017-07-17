@@ -29,6 +29,9 @@ namespace KEngine {
 			std::vector<Renderable> m_components;
 			//helper methods
 		public:
+			void setCameraPosition(Vector3 position);
+			void setCameraRotation(Quaternion rotation);
+
 			void addEntity(Entity& entity) override;
 			void update(float time) override;
 			void render(
