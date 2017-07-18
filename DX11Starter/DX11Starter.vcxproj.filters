@@ -458,6 +458,12 @@
     <ClInclude Include="Files\Engine\Systems\InputSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Files\Engine\Componenets\ClusterLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Systems\ClusteredFrustumLightCoolingSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

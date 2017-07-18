@@ -4,7 +4,7 @@ Camera::Camera(){
 	//dirLook = Vector3(0, 0, 1);
 	m_isDirtyView = true;
 	//m_isDirtyProj = true;
-	setProjParameters(3.14f / 2.0f, 100, 100, 0.1, 1000);
+	setProjParameters(3.14f / 2.0f, 1280, 720, 0.1, 1000);
 }
 Matrix Camera::getViewMatrix()
 {
@@ -23,7 +23,7 @@ Matrix Camera::getViewMatrix()
 			m_screenWidth / m_screenHeight,		// Aspect ratio
 			m_clipNear, m_clipFar);
 	}
-	return Matrix();
+	return projMatrix;
 }
 void Camera::setProjParameters(float fov, float screenWidth, float screenHeight, float clipNear, float clipFar)
 {

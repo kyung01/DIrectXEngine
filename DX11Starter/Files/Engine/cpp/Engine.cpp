@@ -16,10 +16,11 @@ void Engine::initExample()
 	}
 }
 
-void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context)
+void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context, int windowWidth, int windowHeight)
 {
 	print("init");
 	m_asset.init(device, context);
+	m_renderSystem.init(windowWidth, windowHeight);
 	initExample();
 }
 void Engine::update(float timeElapsed)
@@ -50,4 +51,9 @@ void Engine::OnMouseMove(WPARAM buttonState, int x, int y)
 	{
 		return;
 	}
+}
+
+void KEngine::Engine::OnResize(int windowWidth, int windowHeight)
+{
+	m_renderSystem.OnResize(windowWidth, windowHeight);
 }

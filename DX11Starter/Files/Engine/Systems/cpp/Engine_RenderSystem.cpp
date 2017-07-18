@@ -2,6 +2,15 @@
 using namespace KEngine;
 using namespace KEngine::KSystem;
 
+void KEngine::KSystem::RenderSystem::init(int renderTargetWidth, int renderTargetHeight)
+{
+	m_camera.setProjParameters((3.14f / 2.0f ), renderTargetWidth, renderTargetHeight, 0.1f, 1000.0f);
+}
+
+void KEngine::KSystem::RenderSystem::setCameraProjectionFOV(float ratio)
+{
+}
+
 void KEngine::KSystem::RenderSystem::setCameraPosition(Vector3 position)
 {
 	m_camera.setPosition(position);
@@ -85,6 +94,11 @@ void RenderSystem::update(float time)
 Renderable & RenderSystem::getComponent(int n)
 {
 	return m_components[n];
+}
+
+void KEngine::KSystem::RenderSystem::OnResize(int targetFrameWidth, int targetFrameHeight)
+{
+	m_camera.setProjParameters((3.14f / 2.0f), targetFrameWidth, targetFrameHeight, 0.1f, 1000.0f);
 }
 
 /*

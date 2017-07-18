@@ -11,6 +11,8 @@ using namespace NDirectX;
 using namespace NGraphic;
 using namespace NGraphic::NScene;
 
+const int KContext::INIT_WINDOW_WIDTH = 1280;
+const int KContext::INIT_WINDOW_HEIGHT = 720;
 // --------------------------------------------------------
 // Constructor
 //
@@ -23,8 +25,8 @@ KContext::KContext(HINSTANCE hInstance)
 	: DXCore( 
 		hInstance,		   // The application's handle
 		"DirectX Game",	   // Text for the window's title bar
-		1280,			   // Width of the window's client area
-		720,			   // Height of the window's client area
+		INIT_WINDOW_WIDTH,			   // Width of the window's client area
+		INIT_WINDOW_HEIGHT,			   // Height of the window's client area
 		true)			   // Show extra stats (fps) in title bar?
 {
 	
@@ -59,7 +61,7 @@ void KContext::Init()
 {
 	std::cout << "\n";
 
-	m_engine.init(device, context);
+	m_engine.init(device, context, INIT_WINDOW_WIDTH, INIT_WINDOW_HEIGHT);
 	m_ui.init(hInstance, hWnd, device, context, swapChain, backBufferRTV);
 	//system("pause");
 	if (!m_asset.init(device, context)) {
@@ -82,6 +84,8 @@ void KContext::Init()
 void KContext::OnResize()
 {
 	DXCore::OnResize();
+	m_engine.OnResize(this->width, this->height);
+	//std::cout << "KContext Resize\n";
 	//m_texture.init(device, swapChain, this->width, this->height);
 	//m_depth.init(device, this->width, this->height);
 

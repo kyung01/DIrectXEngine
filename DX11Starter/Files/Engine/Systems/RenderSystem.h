@@ -29,6 +29,8 @@ namespace KEngine {
 			std::vector<Renderable> m_components;
 			//helper methods
 		public:
+			void init(int renderTargetWidth, int renderTargetHeight);
+			void setCameraProjectionFOV(float ratio);
 			void setCameraPosition(Vector3 position);
 			void setCameraRotation(Quaternion rotation);
 
@@ -42,6 +44,8 @@ namespace KEngine {
 				std::map<KEnum, Mesh> &meshes
 			);
 			Renderable& getComponent(int n);
+
+			void OnResize(int targetFrameWidth, int targetFrameHeight);
 		};
 	}
 

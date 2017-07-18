@@ -33,6 +33,7 @@ namespace NDirectX {
 		//NGraphic::RenderTexture m_texture;
 		//NGraphic::DepthTexture	m_depth;
 	public:
+		const static int INIT_WINDOW_WIDTH, INIT_WINDOW_HEIGHT;
 		//std::list<RenderContext> m_renderContexts;
 		//NGraphic::NScene::OldCamera testingCamera; //TODO delete this?
 		~KContext();
