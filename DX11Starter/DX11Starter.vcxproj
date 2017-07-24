@@ -139,6 +139,7 @@
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_InputSystem.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_LightRender.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_RenderSystem.cpp" />
+    <ClCompile Include="Files\Engine\Systems\cpp\Engine_FlawedSystem.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_System.cpp" />
     <ClCompile Include="Files\Game\cpp\ContextExamples Game.cpp" />
     <ClCompile Include="Files\Game\cpp\Context Game.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="Files\Engine\Systems\LightRender.h" />
     <ClInclude Include="Files\Engine\Systems\RenderSystem.h" />
     <ClInclude Include="Files\Engine\Systems\System.h" />
+    <ClInclude Include="Files\Engine\Systems\SystemFlawed.h" />
     <ClInclude Include="Files\Engine\Texture2D.h" />
     <ClInclude Include="Files\Game\ContextExamples.h" />
     <ClInclude Include="Files\Game\Entity.h" />

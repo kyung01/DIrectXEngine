@@ -4,7 +4,7 @@
 #include <vector> //TODO delete
 #include <d3d11.h>
 #include <SimpleMath.h>
-#include <Engine\Systems\System.h>
+#include <Engine\Systems\SystemFlawed.h>
 //#include "glm\glm.hpp"
 //#include "Shader.h"
 #include <list>
@@ -25,7 +25,7 @@ namespace KEngine {
 				rightTopNear;
 		};
 
-		class ClusteredFrustumLightCoolingSystem : System {
+		class ClusteredFrustumLightCoolingSystem : SystemFlawed {
 		private:
 		protected:
 

@@ -4,7 +4,7 @@
 #include <vector> //TODO delete
 #include <d3d11.h>
 #include <SimpleMath.h>
-#include <Engine\Systems\System.h>
+#include <Engine\Systems\SystemFlawed.h>
 #include <Engine\Componenets\SphericalHarmonicProbe.h>
 
 //#include "glm\glm.hpp"
@@ -14,7 +14,7 @@ using namespace KEngine::KComponent;
 namespace KEngine {
 	namespace KSystem {
 
-		class LightRender : System {
+		class LightRender : SystemFlawed {
 			std::vector<SphericalHarmonicProbe> m_components;
 		public:
 

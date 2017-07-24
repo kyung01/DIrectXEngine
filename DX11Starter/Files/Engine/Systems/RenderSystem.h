@@ -5,7 +5,7 @@
 #include <d3d11.h>
 #include <SimpleMath.h>
 #include <Engine\Camera.h>
-#include <Engine\Systems\System.h>
+#include <Engine\Systems\SystemFlawed.h>
 #include <Engine\Componenets\Renderable.h>
 #include <Engine\SimpleShader.h>
 #include <Engine\Mesh.h>
@@ -15,7 +15,7 @@ using namespace DirectX::SimpleMath;
 using namespace KEngine::KComponent;
 namespace KEngine {
 	namespace KSystem {
-		class RenderSystem : System {
+		class RenderSystem : SystemFlawed {
 		private:
 		protected:
 			DirectX::XMFLOAT4X4 matTemp; //temporary mat to store modified matrixs

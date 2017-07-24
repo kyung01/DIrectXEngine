@@ -1,13 +1,13 @@
 #pragma once
 #include <d3d11.h>
 #include <SimpleMath.h>
-#include <Engine\Systems\System.h>
+#include <Engine\Systems\SystemFlawed.h>
 #include <Engine\Camera.h>
 
 using namespace DirectX::SimpleMath;
 namespace KEngine {
 	namespace KSystem {
-		class InputSystem : System {
+		class InputSystem : SystemFlawed {
 			Vector3 m_playerPosition;
 			Quaternion m_playerRotation;
 		protected:
