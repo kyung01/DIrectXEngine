@@ -6,7 +6,7 @@ using namespace KEngine;
 
 void Engine::initExample()
 {
-	int ENTITY_NUMBER = 1;
+	int ENTITY_NUMBER = 10;
 	for (int j = 0; j < ENTITY_NUMBER; j++)for (int i = 0; i < ENTITY_NUMBER; i++)
 	{
 		Entity& entity = m_entityFactory.addEntity();

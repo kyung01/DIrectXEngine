@@ -36,6 +36,7 @@ Quaternion KEngine::KComponent::Renderable::getRotation()
 
 void KEngine::KComponent::Renderable::setPosition(Vector3 position)
 {
+	m_position = position;
 	m_isWorldMatrixDirty = true;
 }
 
