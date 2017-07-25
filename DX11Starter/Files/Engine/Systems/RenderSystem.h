@@ -5,7 +5,7 @@
 #include <d3d11.h>
 #include <SimpleMath.h>
 #include <Engine\Camera.h>
-#include <Engine\Systems\SystemFlawed.h>
+#include <Engine\Systems\System.h>
 #include <Engine\Componenets\Renderable.h>
 #include <Engine\SimpleShader.h>
 #include <Engine\Mesh.h>
@@ -15,26 +15,26 @@ using namespace DirectX::SimpleMath;
 using namespace KEngine::KComponent;
 namespace KEngine {
 	namespace KSystem {
-		class RenderSystem : SystemFlawed {
+		class RenderSystem : public System<Renderable>{
 		private:
 		protected:
+			Camera m_camera;
 			DirectX::XMFLOAT4X4 matTemp; //temporary mat to store modified matrixs
 			void setMatrix(ISimpleShader * shader, std::string name, DirectX::XMMATRIX matrix);
 			void setRenderTarget(
 				ID3D11DeviceContext* deviceContext,
 				ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport);
 			void renderMesh(ID3D11DeviceContext * context, Mesh& mesh, UINT offsetBegin, UINT stride);
-	
-			Camera m_camera; 
-			std::vector<Renderable> m_components;
+
 			//helper methods
+			void addEntityHandle(Entity& entity, Renderable &componenet) override;
 		public:
 			void init(int renderTargetWidth, int renderTargetHeight);
 			void setCameraProjectionFOV(float ratio);
 			void setCameraPosition(Vector3 position);
 			void setCameraRotation(Quaternion rotation);
 
-			void addEntity(Entity& entity) override;
+			//void addEntity(Entity& entity) override;
 			void update(float time) override;
 			void render(
 				ID3D11Device * device, ID3D11DeviceContext * context,

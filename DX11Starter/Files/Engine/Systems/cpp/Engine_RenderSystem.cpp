@@ -2,9 +2,14 @@
 using namespace KEngine;
 using namespace KEngine::KSystem;
 
+void KEngine::KSystem::RenderSystem::addEntityHandle(Entity & entity, Renderable & componenet)
+{
+	entity.m_renderable = &componenet;
+}
+
 void KEngine::KSystem::RenderSystem::init(int renderTargetWidth, int renderTargetHeight)
 {
-	m_camera.setProjParameters((3.14f / 2.0f ), renderTargetWidth, renderTargetHeight, 0.1f, 1000.0f);
+	m_camera.setProjParameters((3.14f / 2.0f), renderTargetWidth, renderTargetHeight, 0.1f, 1000.0f);
 }
 
 void KEngine::KSystem::RenderSystem::setCameraProjectionFOV(float ratio)
@@ -51,7 +56,7 @@ void RenderSystem::render(
 	std::map<KEnum, Mesh> &meshes
 )
 {
-	float colorClean[4] = {0.1f,0.1f,0.1f,1};
+	float colorClean[4] = { 0.1f,0.1f,0.1f,1 };
 	context->ClearRenderTargetView(renderTargetView, colorClean);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	context->RSSetState(cullBackFace);
@@ -67,27 +72,20 @@ void RenderSystem::render(
 		setMatrix(&vertexShader, "world", it->getWorldMatrix());
 		vertexShader.CopyAllBufferData();
 		fragmentShader.CopyAllBufferData();
-		UINT stride = sizeof(Vertex); 
-		UINT offset = 0; 
-		context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset); 
-		context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0); 
-		context->DrawIndexed(mesh.getBufferIndexCount(), 0, 				0); 
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+		context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);
+		context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(mesh.getBufferIndexCount(), 0, 0);
 		//std::cout << "RENDERING AT " << it->getPosition().x << " , " << it->getPosition().y << " , " << it->getPosition().z << "\n";
 		//send the new world matrix information
-										//renderMesh(context, mesh, 0, sizeof(Vertex));
+		//renderMesh(context, mesh, 0, sizeof(Vertex));
 	}
 
 }
 
 
 
-void RenderSystem::addEntity(KEngine::Entity &entity) {
-	m_components.resize(m_components.size() + 1);
-	Renderable& renderable = m_components[m_components.size() - 1];
-	//link
-	renderable.m_entity = &entity;
-	entity.m_renderable = &renderable;
-}
 void RenderSystem::update(float time)
 {
 }

@@ -11,13 +11,13 @@ namespace KEngine {
 	namespace KSystem {
 
 		//need to be fixed
-		template <struct BaseComponent>
+		template <typename BaseComponent>
 		class System {
 
 		protected:
-			vector<BaseComponent> m_componenets;
+			std::vector<BaseComponent> m_components;
 
-			virtual void addEntityHandle(Entity& entity, BaseComponent &componenet);
+			virtual void addEntityHandle(Entity& entity, BaseComponent &componenet) {};
 		public:
 			void addEntity(Entity& entity) {
 				m_components.resize(m_components.size() + 1);
@@ -26,7 +26,7 @@ namespace KEngine {
 				component.m_entity = &entity;
 				addEntityHandle(entity, component);
 			}
-			virtual void update(float time);
+			virtual void update(float time) {};
 			//virtual void render(ID3D11Device * device, ID3D11DeviceContext * context);
 
 		};
