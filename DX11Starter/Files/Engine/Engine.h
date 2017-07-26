@@ -9,7 +9,6 @@
 #include <Engine\Systems\LightRender.h>
 #include <Engine\Systems\RenderSystem.h>
 #include <Engine\Systems\RenderSystemFlawed.h>
-#include <Engine\Systems\InputSystem.h>
 #include <Engine\EventHandlers\PlayerInput.h>
 //#include "glm\glm.hpp"
 //#include "Shader.h"
@@ -30,7 +29,6 @@ namespace KEngine {
 		//Systems
 		KSystem::RenderSystem m_renderSystem;
 		KSystem::RenderSystemFlawed m_renderSystemFlawed;
-		KSystem::InputSystem m_inputSystem;
 		//Handlers
 		KHandler::PlayerInput m_handlerKeyboardInput;
 	protected:

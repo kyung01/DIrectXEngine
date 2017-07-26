@@ -180,9 +180,6 @@
     <ClCompile Include="Files\Engine\Componenets\cpp\Engine_Renderable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Files\Engine\Systems\cpp\Engine_InputSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_FlawedSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -459,9 +456,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Engine\Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Files\Engine\Systems\InputSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Engine\Componenets\ClusterLight.h">

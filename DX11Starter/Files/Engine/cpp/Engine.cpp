@@ -72,7 +72,6 @@ void Engine::OnMouseMove(WPARAM buttonState, int x, int y)
 	for (auto it = m_eventHandlers.begin(); it != m_eventHandlers.end(); it++) {
 		(*it)->OnMouseMove(buttonState, x, y);
 	}
-	m_inputSystem.OnMouseMove(buttonState, x, y);
 
 	if (!(buttonState & 0x0001)) //if button is not pressed
 	{

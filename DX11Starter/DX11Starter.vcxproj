@@ -138,7 +138,6 @@
     <ClCompile Include="Files\Engine\cpp\Engine_Entity.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine_SimpleShader.cpp" />
     <ClCompile Include="Files\Engine\EventHandlers\cpp\Engine_PlayerInput.cpp" />
-    <ClCompile Include="Files\Engine\Systems\cpp\Engine_InputSystem.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_LightRender.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_RenderSystem.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_RenderSystemFlawed.cpp" />
@@ -212,7 +211,6 @@
     <ClInclude Include="Files\Engine\SimpleShader.h" />
     <ClInclude Include="Files\Engine\System.h" />
     <ClInclude Include="Files\Engine\Systems\ClusteredFrustumLightCoolingSystem.h" />
-    <ClInclude Include="Files\Engine\Systems\InputSystem.h" />
     <ClInclude Include="Files\Engine\Systems\LightRender.h" />
     <ClInclude Include="Files\Engine\Systems\RenderSystem.h" />
     <ClInclude Include="Files\Engine\Systems\RenderSystemFlawed.h" />
