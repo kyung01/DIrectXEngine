@@ -31,7 +31,6 @@ void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context,
 {
 	print("init");
 	m_asset.init(device, context);
-	m_renderSystemFlawed.init(windowWidth, windowHeight);
 	initExample();
 }
 void Engine::update(float timeElapsed)
@@ -81,5 +80,5 @@ void Engine::OnMouseMove(WPARAM buttonState, int x, int y)
 
 void KEngine::Engine::OnResize(int windowWidth, int windowHeight)
 {
-	m_renderSystemFlawed.OnResize(windowWidth, windowHeight);
+	m_renderSystem.OnResize(windowWidth, windowHeight);
 }

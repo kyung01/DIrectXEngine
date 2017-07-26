@@ -138,10 +138,7 @@
     <ClCompile Include="Files\Engine\cpp\Engine_Entity.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine_SimpleShader.cpp" />
     <ClCompile Include="Files\Engine\EventHandlers\cpp\Engine_PlayerInput.cpp" />
-    <ClCompile Include="Files\Engine\Systems\cpp\Engine_LightRender.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_RenderSystem.cpp" />
-    <ClCompile Include="Files\Engine\Systems\cpp\Engine_RenderSystemFlawed.cpp" />
-    <ClCompile Include="Files\Engine\Systems\cpp\Engine_FlawedSystem.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_System.cpp" />
     <ClCompile Include="Files\Game\cpp\ContextExamples Game.cpp" />
     <ClCompile Include="Files\Game\cpp\Context Game.cpp" />
@@ -211,11 +208,8 @@
     <ClInclude Include="Files\Engine\SimpleShader.h" />
     <ClInclude Include="Files\Engine\System.h" />
     <ClInclude Include="Files\Engine\Systems\ClusteredFrustumLightCoolingSystem.h" />
-    <ClInclude Include="Files\Engine\Systems\LightRender.h" />
     <ClInclude Include="Files\Engine\Systems\RenderSystem.h" />
-    <ClInclude Include="Files\Engine\Systems\RenderSystemFlawed.h" />
     <ClInclude Include="Files\Engine\Systems\System.h" />
-    <ClInclude Include="Files\Engine\Systems\SystemFlawed.h" />
     <ClInclude Include="Files\Engine\Texture2D.h" />
     <ClInclude Include="Files\Game\ContextExamples.h" />
     <ClInclude Include="Files\Game\Entity.h" />

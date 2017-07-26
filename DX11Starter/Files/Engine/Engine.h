@@ -6,9 +6,7 @@
 #include <Engine\EventHandler.h>
 #include <Engine\Asset.h>
 #include <Engine\EntityFactory.h>
-#include <Engine\Systems\LightRender.h>
 #include <Engine\Systems\RenderSystem.h>
-#include <Engine\Systems\RenderSystemFlawed.h>
 #include <Engine\EventHandlers\PlayerInput.h>
 //#include "glm\glm.hpp"
 //#include "Shader.h"
@@ -28,7 +26,6 @@ namespace KEngine {
 		std::list<EventHandler*> m_eventHandlers;
 		//Systems
 		KSystem::RenderSystem m_renderSystem;
-		KSystem::RenderSystemFlawed m_renderSystemFlawed;
 		//Handlers
 		KHandler::PlayerInput m_handlerKeyboardInput;
 	protected:
