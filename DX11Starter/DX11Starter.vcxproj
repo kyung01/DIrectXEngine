@@ -138,6 +138,7 @@
     <ClCompile Include="Files\Engine\cpp\Engine_Entity.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine_SimpleShader.cpp" />
     <ClCompile Include="Files\Engine\EventHandlers\cpp\Engine_PlayerInput.cpp" />
+    <ClCompile Include="Files\Engine\Systems\cpp\Engine_LightSystem.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_RenderSystem.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_System.cpp" />
     <ClCompile Include="Files\Game\cpp\ContextExamples Game.cpp" />
@@ -191,7 +192,11 @@
     <ClInclude Include="Files\DirectX\KContext.h" />
     <ClInclude Include="Files\Engine\Asset.h" />
     <ClInclude Include="Files\Engine\Camera.h" />
+    <ClInclude Include="Files\Engine\ClusteredFrustum\Frustum.h" />
+    <ClInclude Include="Files\Engine\ClusteredFrustum\Translator.h" />
+    <ClInclude Include="Files\Engine\ClusteredFrustum\Sorter.h" />
     <ClInclude Include="Files\Engine\Componenets\ClusterLight.h" />
+    <ClInclude Include="Files\Engine\Componenets\LightEntity.h" />
     <ClInclude Include="Files\Engine\Componenets\Renderable.h" />
     <ClInclude Include="Files\Engine\Componenets\SphericalHarmonicProbe.h" />
     <ClInclude Include="Files\Engine\Componenets\ForwardLight.h" />
@@ -208,6 +213,7 @@
     <ClInclude Include="Files\Engine\SimpleShader.h" />
     <ClInclude Include="Files\Engine\System.h" />
     <ClInclude Include="Files\Engine\Systems\ClusteredFrustumLightCoolingSystem.h" />
+    <ClInclude Include="Files\Engine\Systems\LightSystem.h" />
     <ClInclude Include="Files\Engine\Systems\RenderSystem.h" />
     <ClInclude Include="Files\Engine\Systems\System.h" />
     <ClInclude Include="Files\Engine\Texture2D.h" />

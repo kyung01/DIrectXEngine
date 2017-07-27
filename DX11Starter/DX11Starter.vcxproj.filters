@@ -189,6 +189,9 @@
     <ClCompile Include="Files\Engine\EventHandlers\cpp\Engine_PlayerInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Files\Engine\Systems\cpp\Engine_LightSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\imgui\imconfig.h">
@@ -462,6 +465,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Engine\EventHandlers\PlayerInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Componenets\LightEntity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Systems\LightSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\ClusteredFrustum\Sorter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\ClusteredFrustum\Translator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\ClusteredFrustum\Frustum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
