@@ -126,6 +126,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Files\ClusteredFrustum\cpp\ClusteredFrustum_Frustum.cpp" />
+    <ClCompile Include="Files\DirectX\DirectXSimpleMath.cpp" />
     <ClCompile Include="Files\DirectX\DXCore.cpp" />
     <ClCompile Include="Files\DirectX\KContext.cpp" />
     <ClCompile Include="Files\Engine\Componenets\cpp\Engine_Renderable.cpp" />
@@ -187,14 +189,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\Camera.h" />
+    <ClInclude Include="Files\DirectX\DirectXSimpleMath.h" />
     <ClInclude Include="Files\DirectX\DirectXUtility.h" />
     <ClInclude Include="Files\DirectX\DXCore.h" />
     <ClInclude Include="Files\DirectX\KContext.h" />
     <ClInclude Include="Files\Engine\Asset.h" />
     <ClInclude Include="Files\Engine\Camera.h" />
-    <ClInclude Include="Files\Engine\ClusteredFrustum\Frustum.h" />
-    <ClInclude Include="Files\Engine\ClusteredFrustum\Translator.h" />
-    <ClInclude Include="Files\Engine\ClusteredFrustum\Sorter.h" />
+    <ClInclude Include="Files\ClusteredFrustum\Frustum.h" />
+    <ClInclude Include="Files\ClusteredFrustum\Translator.h" />
+    <ClInclude Include="Files\ClusteredFrustum\Sorter.h" />
     <ClInclude Include="Files\Engine\Componenets\ClusterLight.h" />
     <ClInclude Include="Files\Engine\Componenets\LightEntity.h" />
     <ClInclude Include="Files\Engine\Componenets\Renderable.h" />

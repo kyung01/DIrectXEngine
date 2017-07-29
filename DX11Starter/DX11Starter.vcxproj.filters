@@ -192,6 +192,12 @@
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_LightSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Files\DirectX\DirectXSimpleMath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\ClusteredFrustum\cpp\ClusteredFrustum_Frustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\imgui\imconfig.h">
@@ -473,13 +479,16 @@
     <ClInclude Include="Files\Engine\Systems\LightSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Files\Engine\ClusteredFrustum\Sorter.h">
+    <ClInclude Include="Files\DirectX\DirectXSimpleMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Files\Engine\ClusteredFrustum\Translator.h">
+    <ClInclude Include="Files\ClusteredFrustum\Frustum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Files\Engine\ClusteredFrustum\Frustum.h">
+    <ClInclude Include="Files\ClusteredFrustum\Sorter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\ClusteredFrustum\Translator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

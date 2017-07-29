@@ -15,16 +15,16 @@ namespace KEngine {
 			int index;
 		};
 		struct PointLightInfo {
-			//Vector3 position;
+			Vector3 position;
 			Vector3 color;
 			float intensity;
 		};
 		struct SpotLightInfo {
-			//Vector3 position;
-			//Quaternion rotation;
+			Vector3 position;
+			Quaternion rotation;
 			Vector3 color;
 			float intensity;
-			float cornRadius;
+			float fov;
 		};
 
 	}

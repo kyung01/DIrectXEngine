@@ -86,7 +86,7 @@ void RenderSystem::render(
 
 
 
-void RenderSystem::update(float time)
+void RenderSystem::update(std::vector<Entity> &entities, float time)
 {
 }
 Renderable & RenderSystem::getComponent(int n)

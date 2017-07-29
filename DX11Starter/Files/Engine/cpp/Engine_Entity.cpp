@@ -2,7 +2,7 @@
 using namespace KEngine;
 
 Entity::Entity() :
-	m_transform3D(0),
+	transform3D(0),
 	m_forwardLight(0),
 	m_sphereicalHarmonicProbe(0)
 {

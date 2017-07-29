@@ -5,7 +5,7 @@
 #include <d3d11.h>
 #include <SimpleMath.h>
 //#include <Engine\Componenets\Component.h>
-//#include <Engine\Componenets\Transform3D.h>
+#include <Engine\Componenets\Transform3D.h>
 //#include <Engine\Componenets\ForwardLight.h>
 //#include <Engine\Componenets\SphericalHarmonicProbe.h>
 
@@ -27,7 +27,7 @@ namespace KEngine {
 	public:
 		Entity();
 
-		KComponent::Transform3D* m_transform3D;
+		KComponent::Transform3D* transform3D;
 		KComponent::ForwardLight *m_forwardLight;
 		KComponent::SphericalHarmonicProbe *m_sphereicalHarmonicProbe;
 		KComponent::Renderable* m_renderable;

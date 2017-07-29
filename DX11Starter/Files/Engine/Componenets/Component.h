@@ -20,7 +20,7 @@ namespace KEngine {
 		private:
 		protected:
 		public:
-			Entity * m_entity;
+			int entityIndex;
 
 		};
 

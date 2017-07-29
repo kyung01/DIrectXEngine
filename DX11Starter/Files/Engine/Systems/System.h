@@ -23,10 +23,10 @@ namespace KEngine {
 				m_components.resize(m_components.size() + 1);
 				Renderable& component = m_components[m_components.size() - 1];
 				//link
-				component.m_entity = &entity;
+				component.entityIndex = m_components.size() - 1;
 				addEntityHandle(entity, component);
 			}
-			virtual void update(float time) {};
+			virtual void update(std::vector<Entity> &entities, float time) {};
 			//virtual void render(ID3D11Device * device, ID3D11DeviceContext * context);
 
 		};
