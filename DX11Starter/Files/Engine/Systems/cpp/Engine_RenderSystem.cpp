@@ -7,6 +7,11 @@ void KEngine::KSystem::RenderSystem::addEntityHandle(Entity & entity, Renderable
 	entity.m_renderable = &componenet;
 }
 
+void KEngine::KSystem::RenderSystem::addEntityLinkRecreate(Entity & entity, Renderable & componenet)
+{
+	entity.m_renderable = &componenet;
+}
+
 void KEngine::KSystem::RenderSystem::init(int renderTargetWidth, int renderTargetHeight)
 {
 	m_camera.setProjParameters((3.14f / 2.0f), renderTargetWidth, renderTargetHeight, 0.1f, 1000.0f);
@@ -88,10 +93,14 @@ void RenderSystem::render(
 
 void RenderSystem::update(std::vector<Entity> &entities, float time)
 {
-}
-Renderable & RenderSystem::getComponent(int n)
-{
-	return m_components[n];
+	for (int i = 0; i < m_components.size(); i++) {
+		if (entities[m_components[i].entityIndex].m_transform3D->isDirty) {
+			m_components[i].setPosition(entities[m_components[i].entityIndex].m_transform3D->position);
+			//std::cout << i << " : " << entities[m_components[i].entityIndex].m_transform3D->position.x << " , " <<
+			//	entities[m_components[i].entityIndex].m_transform3D->position.y << " , " << entities[m_components[i].entityIndex].m_transform3D->position.z << "\n";
+			//system("pause");
+		}
+	}
 }
 
 void KEngine::KSystem::RenderSystem::OnResize(int targetFrameWidth, int targetFrameHeight)

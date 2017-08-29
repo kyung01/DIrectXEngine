@@ -3,29 +3,35 @@
 #include <iostream>		
 #define print(content) std::cout<<"Engine : "<< content << "\n";
 using namespace KEngine;
+
+void Engine::initExample()
+{
+	int ENTITY_NUMBER = 50;
+	for(int i = 0; i < ENTITY_NUMBER; i++)
+	{
+		//m_renderSystemFlawed.addEntity(entity);
+		//Renderable& renderable = m_renderSystemFlawed.getComponent(j * ENTITY_NUMBER + (i));
+		//renderable.setPosition( Vector3(i,j,1));
+		Entity& entity = m_entityFactory.addEntity();
+		m_transform3DSystem.addEntity(m_entityFactory.m_entities, entity);
+		m_renderSystem.addEntity(m_entityFactory.m_entities, entity);
+		//m_renderSystem.getLastComponent().setPosition(Vector3(i, j, 1));
+	}
+
+	int x(0), y(0), z(3);
+	for (int i = m_transform3DSystem.getComponentVectorSize() - 1; i >= 0; i--) {
+		m_transform3DSystem.getComponent(i).setPosition(x++, y, z);
+		if (x > 10) {
+			x = 0;
+			y++;
+		}
+	}
+}
+
 KEngine::Engine::Engine()
 {
 	m_eventHandlers.push_back(&m_handlerKeyboardInput);
 }
-void Engine::initExample()
-{
-	int ENTITY_NUMBER = 10;
-	for (int j = 0; j < ENTITY_NUMBER; j++)for (int i = 0; i < ENTITY_NUMBER; i++)
-	{
-		Entity& entity = m_entityFactory.addEntity();
-
-		//m_renderSystemFlawed.addEntity(entity);
-		//Renderable& renderable = m_renderSystemFlawed.getComponent(j * ENTITY_NUMBER + (i));
-		//renderable.setPosition( Vector3(i,j,1));
-
-		m_renderSystem.addEntity(entity);
-		auto& compRenderable = m_renderSystem.getComponent(j * ENTITY_NUMBER + (i));
-		compRenderable.setPosition(Vector3(i, j, 1));
-
-	}
-}
-
-
 
 void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context, int windowWidth, int windowHeight)
 {
@@ -35,14 +41,13 @@ void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context,
 }
 void Engine::update(float timeElapsed)
 {
-
 	for (auto it = m_eventHandlers.begin(); it != m_eventHandlers.end(); it++) {
 		(*it)->update(timeElapsed);
 	}
 	m_renderSystem.setCameraPosition(m_handlerKeyboardInput.getPosition());
 	m_renderSystem.setCameraRotation(m_handlerKeyboardInput.getRotation());
-
-
+	m_renderSystem.update(m_entityFactory.m_entities, timeElapsed);
+	m_transform3DSystem.update(m_entityFactory.m_entities, timeElapsed);
 	//print("update");
 	//m_renderSystemFlawed.update(timeElapsed);
 	//m_inputSystem.update(timeElapsed);

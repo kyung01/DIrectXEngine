@@ -131,6 +131,7 @@
     <ClCompile Include="Files\DirectX\DXCore.cpp" />
     <ClCompile Include="Files\DirectX\KContext.cpp" />
     <ClCompile Include="Files\Engine\Componenets\cpp\Engine_Renderable.cpp" />
+    <ClCompile Include="Files\Engine\Componenets\cpp\Transform3D.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine_EventHandler.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine_Asset.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine_Camera.cpp" />
@@ -143,6 +144,7 @@
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_LightSystem.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_RenderSystem.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_System.cpp" />
+    <ClCompile Include="Files\Engine\Systems\cpp\Systems_Transform3DSystem.cpp" />
     <ClCompile Include="Files\Game\cpp\ContextExamples Game.cpp" />
     <ClCompile Include="Files\Game\cpp\Context Game.cpp" />
     <ClCompile Include="Files\Engine\cpp\Depth2D.cpp" />
@@ -219,6 +221,7 @@
     <ClInclude Include="Files\Engine\Systems\LightSystem.h" />
     <ClInclude Include="Files\Engine\Systems\RenderSystem.h" />
     <ClInclude Include="Files\Engine\Systems\System.h" />
+    <ClInclude Include="Files\Engine\Systems\Transform3DSystem.h" />
     <ClInclude Include="Files\Engine\Texture2D.h" />
     <ClInclude Include="Files\Game\ContextExamples.h" />
     <ClInclude Include="Files\Game\Entity.h" />

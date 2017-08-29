@@ -20,6 +20,7 @@ namespace KEngine {
 			std::vector<PointLightInfo> m_pointLights;
 			std::vector<SpotLightInfo> m_spotLights;
 			void addEntityHandle(Entity& entity, LightEntity &componenet) override;
+			void addEntityLinkRecreate(Entity& entity, LightEntity &componenet) override;
 		public:
 			void setPointLight(int index,  Vector3 color, float intensity);
 			void setSpotLight (int index, Vector3 color, float intensity, float cornRadius);

@@ -8,7 +8,9 @@
 #include <Engine\EntityFactory.h>
 #include <Engine\Systems\RenderSystem.h>
 #include <Engine\Systems\LightSystem.h>
+#include <Engine\Systems\Transform3DSystem.h>
 #include <Engine\EventHandlers\PlayerInput.h>
+
 //#include "glm\glm.hpp"
 //#include "Shader.h"
 using namespace DirectX::SimpleMath;
@@ -28,6 +30,7 @@ namespace KEngine {
 		//Systems
 		KSystem::RenderSystem	m_renderSystem;
 		KSystem::LightSystem	m_lightSystem;
+		KSystem::Transform3DSystem m_transform3DSystem;
 		//Handlers
 		KHandler::PlayerInput m_handlerKeyboardInput;
 	protected:

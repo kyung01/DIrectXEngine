@@ -28,6 +28,7 @@ namespace KEngine {
 
 			//helper methods
 			void addEntityHandle(Entity& entity, Renderable &componenet) override;
+			void addEntityLinkRecreate(Entity& entity, Renderable &componenet) override;
 		public:
 			void init(int renderTargetWidth, int renderTargetHeight);
 			void setCameraProjectionFOV(float ratio);
@@ -44,7 +45,6 @@ namespace KEngine {
 				SimpleVertexShader & vertexShader, SimpleFragmentShader & fragmentShader,
 				std::map<KEnum, Mesh> &meshes
 			);
-			Renderable& getComponent(int n);
 
 			void OnResize(int targetFrameWidth, int targetFrameHeight);
 		};

@@ -9,7 +9,11 @@ void LightSystem::addEntityHandle(Entity & entity, LightEntity & componenet)
 {
 	componenet.lightType = LightType::PointLight;
 	componenet.index = m_pointLights.size();
-	m_pointLights.push_back({ entity.transform3D->position,Vector3(1,1,1),1.0f});
+	m_pointLights.push_back({ entity.m_transform3D->position,Vector3(1,1,1),1.0f});
+}
+
+void LightSystem::addEntityLinkRecreate(Entity & entity, LightEntity & componenet)
+{
 }
 
 void LightSystem::setPointLight(int index, Vector3 color, float intensity)

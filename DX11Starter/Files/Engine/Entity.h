@@ -27,10 +27,10 @@ namespace KEngine {
 	public:
 		Entity();
 
-		KComponent::Transform3D* transform3D;
-		KComponent::ForwardLight *m_forwardLight;
-		KComponent::SphericalHarmonicProbe *m_sphereicalHarmonicProbe;
-		KComponent::Renderable* m_renderable;
+		KComponent::Transform3D*			m_transform3D;
+		KComponent::ForwardLight*			m_forwardLight;
+		KComponent::SphericalHarmonicProbe*	m_sphereicalHarmonicProbe;
+		KComponent::Renderable*				m_renderable;
 		//Must recreate new entity in order to add new componenet 
 		//Entity(std::vector<byte> m_components, std::vector<ComponentIndex> m_componentIndexs);
 		

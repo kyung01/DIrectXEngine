@@ -198,6 +198,12 @@
     <ClCompile Include="Files\ClusteredFrustum\cpp\ClusteredFrustum_Frustum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Files\Engine\Systems\cpp\Systems_Transform3DSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Engine\Componenets\cpp\Transform3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\imgui\imconfig.h">
@@ -489,6 +495,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\ClusteredFrustum\Translator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Systems\Transform3DSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
