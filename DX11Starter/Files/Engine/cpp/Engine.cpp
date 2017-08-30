@@ -1,12 +1,14 @@
 #include <Engine\Engine.h>
-
 #include <iostream>		
+#include <DirectX\DirectXUtility.h>
+
 #define print(content) std::cout<<"Engine : "<< content << "\n";
 using namespace KEngine;
 
 void Engine::initExample()
 {
 	int ENTITY_NUMBER = 50;
+	int RANDOM_LIGHT_NUMBER = 10;
 	for(int i = 0; i < ENTITY_NUMBER; i++)
 	{
 		//m_renderSystemFlawed.addEntity(entity);
@@ -25,6 +27,17 @@ void Engine::initExample()
 			x = 0;
 			y++;
 		}
+	}
+	for (int i = 0; i < RANDOM_LIGHT_NUMBER; i++) {
+		int selectedEntityIndex;
+		bool isNewEntityAvailable = false;
+		int maxTolerableFailure = 100;
+		do {
+			selectedEntityIndex = DirectX::DirectXUtility::GET_RANDOM() % m_entityFactory.m_entities.size();
+			isNewEntityAvailable = (m_entityFactory.getEntity(selectedEntityIndex).m_lightComponent == 0);
+		} while (!isNewEntityAvailable && maxTolerableFailure-- > 0 );
+		if (!isNewEntityAvailable) continue;
+		m_lightSystem.addEntity(m_entityFactory.m_entities, m_entityFactory.getEntity(selectedEntityIndex));
 	}
 }
 
@@ -46,8 +59,9 @@ void Engine::update(float timeElapsed)
 	}
 	m_renderSystem.setCameraPosition(m_handlerKeyboardInput.getPosition());
 	m_renderSystem.setCameraRotation(m_handlerKeyboardInput.getRotation());
-	m_renderSystem.update(m_entityFactory.m_entities, timeElapsed);
-	m_transform3DSystem.update(m_entityFactory.m_entities, timeElapsed);
+	m_renderSystem		.update(m_entityFactory.m_entities, timeElapsed);
+	m_transform3DSystem	.update(m_entityFactory.m_entities, timeElapsed);
+	m_lightSystem		.update(m_entityFactory.m_entities, timeElapsed);
 	//print("update");
 	//m_renderSystemFlawed.update(timeElapsed);
 	//m_inputSystem.update(timeElapsed);

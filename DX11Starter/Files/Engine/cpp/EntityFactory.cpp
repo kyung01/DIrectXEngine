@@ -19,3 +19,10 @@ Entity & KEngine::EntityFactory::addEntity()
 	return m_entities[m_entities.size() - 1];
 	// TODO: insert return statement here
 }
+
+Entity & KEngine::EntityFactory::getEntity(int n)
+{
+	return m_entities[n];
+	// TODO: insert return statement here
+}
+

@@ -2,9 +2,16 @@
 #include <d3d11.h>
 #include <iostream>
 #include <string>
+#include <stdio.h>      /* printf, NULL */
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
+
 namespace DirectX {
 	struct DirectXUtility {
-
+		static int GET_RANDOM() {
+			srand(time(NULL));
+			return rand();
+		}
 		static bool HRESULT_CHECK(HRESULT hrs) {
 			if (hrs == S_OK)
 				return true;

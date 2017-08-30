@@ -19,6 +19,7 @@ namespace KEngine {
 		struct ForwardLight;
 		struct SphericalHarmonicProbe;
 		struct Renderable;
+		struct LightComponent;
 	}
 	struct Entity {
 		bool m_isAlive;
@@ -27,6 +28,7 @@ namespace KEngine {
 	public:
 		Entity();
 
+		KComponent::LightComponent*			m_lightComponent;
 		KComponent::Transform3D*			m_transform3D;
 		KComponent::ForwardLight*			m_forwardLight;
 		KComponent::SphericalHarmonicProbe*	m_sphereicalHarmonicProbe;

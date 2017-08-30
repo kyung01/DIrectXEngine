@@ -12,15 +12,15 @@ using namespace DirectX::SimpleMath;
 using namespace KEngine::KComponent;
 namespace KEngine {
 	namespace KSystem {
-		class LightSystem : public System<LightEntity> {
+		class LightSystem : public System<LightComponent> {
 		private:
 			static const float RADIUS_PER_LIGHT_INTENSITY;
 		protected:
 			KFrustum::Frustum m_frustum;
 			std::vector<PointLightInfo> m_pointLights;
 			std::vector<SpotLightInfo> m_spotLights;
-			void addEntityHandle(Entity& entity, LightEntity &componenet) override;
-			void addEntityLinkRecreate(Entity& entity, LightEntity &componenet) override;
+			void addEntityHandle(Entity& entity, LightComponent &componenet) override;
+			void addEntityLinkRecreate(Entity& entity, LightComponent &componenet) override;
 		public:
 			void setPointLight(int index,  Vector3 color, float intensity);
 			void setSpotLight (int index, Vector3 color, float intensity, float cornRadius);

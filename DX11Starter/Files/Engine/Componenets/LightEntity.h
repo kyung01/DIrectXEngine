@@ -8,7 +8,7 @@ namespace KEngine {
 		/*
 		this struct should be paired with LightRender system
 		*/
-		struct LightEntity : public Component {
+		struct LightComponent : public Component {
 		private:
 		public:
 			LightType lightType;
