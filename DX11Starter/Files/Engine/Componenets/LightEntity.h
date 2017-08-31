@@ -12,7 +12,7 @@ namespace KEngine {
 		private:
 		public:
 			LightType lightType;
-			int index;
+			int lightIndex;
 		};
 		struct PointLightInfo {
 			Vector3 position;
