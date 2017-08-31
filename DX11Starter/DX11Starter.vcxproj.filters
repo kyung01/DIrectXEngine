@@ -500,6 +500,12 @@
     <ClInclude Include="Files\Engine\Systems\Transform3DSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Files\ClusteredFrustum\Parameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\ClusteredFrustum\DynamicBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

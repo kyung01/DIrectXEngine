@@ -191,6 +191,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\Camera.h" />
+    <ClInclude Include="Files\ClusteredFrustum\DynamicBuffer.h" />
+    <ClInclude Include="Files\ClusteredFrustum\Parameters.h" />
     <ClInclude Include="Files\DirectX\DirectXSimpleMath.h" />
     <ClInclude Include="Files\DirectX\DirectXUtility.h" />
     <ClInclude Include="Files\DirectX\DXCore.h" />
