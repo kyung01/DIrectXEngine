@@ -204,6 +204,9 @@
     <ClCompile Include="Files\Engine\Componenets\cpp\Transform3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Files\ClusteredFrustum\cpp\Translator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\imgui\imconfig.h">

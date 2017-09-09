@@ -106,6 +106,26 @@ void LightSystem::setSpotLight(int index, Vector3 color, float intensity, float 
 {
 }
 
+int KEngine::KSystem::LightSystem::getLightCount()
+{
+	return m_components.size();
+}
+
+LightType KEngine::KSystem::LightSystem::getLightType(int n)
+{
+	return m_components[n].lightType;
+}
+
+PointLightInfo KEngine::KSystem::LightSystem::getPointLight(int n)
+{
+	return m_pointLights[n];
+}
+
+SpotLightInfo KEngine::KSystem::LightSystem::getSpotLight(int n)
+{
+	return m_spotLights[n];
+}
+
 void LightSystem::run()
 {
 	m_frustum.testBegin();

@@ -29,6 +29,10 @@ namespace KEngine {
 			void update(std::vector<Entity> &entities, float time) override;
 			void setPointLight(int index,  Vector3 color, float intensity);
 			void setSpotLight (int index, Vector3 color, float intensity, float cornRadius);
+			int				getLightCount();
+			LightType		getLightType(int n);
+			PointLightInfo	getPointLight(int n);
+			SpotLightInfo	getSpotLight(int n);
 			void run();
 		};
 	}

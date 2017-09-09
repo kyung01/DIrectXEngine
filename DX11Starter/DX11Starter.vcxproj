@@ -127,6 +127,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Files\ClusteredFrustum\cpp\ClusteredFrustum_Frustum.cpp" />
+    <ClCompile Include="Files\ClusteredFrustum\cpp\Translator.cpp" />
     <ClCompile Include="Files\DirectX\DirectXSimpleMath.cpp" />
     <ClCompile Include="Files\DirectX\DXCore.cpp" />
     <ClCompile Include="Files\DirectX\KContext.cpp" />
