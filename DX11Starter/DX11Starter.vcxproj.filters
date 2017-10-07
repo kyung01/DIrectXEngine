@@ -497,9 +497,6 @@
     <ClInclude Include="Files\ClusteredFrustum\Sorter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Files\ClusteredFrustum\Translator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Files\Engine\Systems\Transform3DSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -507,6 +504,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\ClusteredFrustum\DynamicBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\ClusteredFrustum\BufferDataTranslator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

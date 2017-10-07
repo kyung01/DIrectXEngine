@@ -51,6 +51,7 @@ void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context,
 	print("init");
 	m_asset.init(device, context);
 	m_lightSystem.init(windowWidth/windowHeight, 0.01f, 100.0f, 10, 10, 10);
+	m_frustum.init(windowWidth / (float)windowHeight, 0.1f, 100.0f, 10, 10, 10);
 	initExample();
 }
 void Engine::update(float timeElapsed)

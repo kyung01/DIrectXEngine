@@ -11,6 +11,9 @@
 #include <Engine\Systems\Transform3DSystem.h>
 #include <Engine\EventHandlers\PlayerInput.h>
 
+#include <ClusteredFrustum\Frustum.h>
+#include <ClusteredFrustum\BufferDataTranslator.h>
+
 //#include "glm\glm.hpp"
 //#include "Shader.h"
 using namespace DirectX::SimpleMath;
@@ -33,6 +36,9 @@ namespace KEngine {
 		KSystem::Transform3DSystem m_transform3DSystem;
 		//Handlers
 		KHandler::PlayerInput m_handlerKeyboardInput;
+
+		KFrustum::Frustum				m_frustum;
+		KFrustum::BufferDataTranslator	m_dataTranslator;
 	protected:
 		void initExample();
 	public:

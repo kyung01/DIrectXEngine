@@ -201,7 +201,7 @@
     <ClInclude Include="Files\Engine\Asset.h" />
     <ClInclude Include="Files\Engine\Camera.h" />
     <ClInclude Include="Files\ClusteredFrustum\Frustum.h" />
-    <ClInclude Include="Files\ClusteredFrustum\Translator.h" />
+    <ClInclude Include="Files\ClusteredFrustum\BufferDataTranslator.h" />
     <ClInclude Include="Files\ClusteredFrustum\Sorter.h" />
     <ClInclude Include="Files\Engine\Componenets\ClusterLight.h" />
     <ClInclude Include="Files\Engine\Componenets\LightEntity.h" />
