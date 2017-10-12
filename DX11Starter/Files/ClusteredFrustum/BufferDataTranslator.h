@@ -29,4 +29,5 @@ namespace KFrustum {
 		void translate(std::vector<KFrustum::Cluster> &cluster);
 		void transfer(ID3D11DeviceContext * context, ID3D11Buffer* bufferClusterIndex, ID3D11Buffer* bufferClusterItem, ID3D11Buffer* bufferLights, ID3D11Buffer* bufferDecals, ID3D11Buffer* bufferProbes);
 	};
+
 }

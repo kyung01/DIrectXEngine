@@ -31,6 +31,7 @@ namespace KEngine {
 			void addEntityLinkRecreate(Entity& entity, Renderable &componenet) override;
 		public:
 			void init(int renderTargetWidth, int renderTargetHeight);
+			DirectX::SimpleMath::Matrix getCameraViewMatrix();
 			void setCameraProjectionFOV(float ratio);
 			void setCameraPosition(Vector3 position);
 			void setCameraRotation(Quaternion rotation);

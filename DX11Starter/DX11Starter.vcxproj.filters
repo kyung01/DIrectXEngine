@@ -102,9 +102,6 @@
     <ClCompile Include="Files\Graphic\cpp\TextureAtlasSlicer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Files\Graphic\cpp\BufferDataTranslator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Files\Graphic\Scene\cpp\_GraphicScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -204,7 +201,10 @@
     <ClCompile Include="Files\Engine\Componenets\cpp\Transform3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Files\ClusteredFrustum\cpp\Translator.cpp">
+    <ClCompile Include="Files\ClusteredFrustum\cpp\BufferDataTranslator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Graphic\cpp\_BufferDataTranslator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -365,9 +365,6 @@
     <ClInclude Include="Files\Graphic\LightInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Files\Graphic\BufferDataTranslator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Files\Game\Probe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -507,6 +504,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\ClusteredFrustum\BufferDataTranslator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Graphic\BufferDataTranslator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

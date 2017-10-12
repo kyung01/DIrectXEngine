@@ -41,7 +41,8 @@ void Engine::initExample()
 	}
 }
 
-KEngine::Engine::Engine()
+KEngine::Engine::Engine() :
+	m_dataTranslator(10, 10, 10, 10, 10)
 {
 	m_eventHandlers.push_back(&m_handlerKeyboardInput);
 }
@@ -64,6 +65,46 @@ void Engine::update(float timeElapsed)
 	m_renderSystem		.update(m_entityFactory.m_entities, timeElapsed);
 	m_transform3DSystem	.update(m_entityFactory.m_entities, timeElapsed);
 	m_lightSystem		.update(m_entityFactory.m_entities, timeElapsed);
+
+
+	auto camViewMatrix = m_renderSystem.getCameraViewMatrix();
+
+
+	for (int i = 0; i < m_lightSystem.getLightCount(); i++) {
+		Vector3 lightPos, lightDirLook;
+		float lightIntensity, lightFOV;
+		//From Camera's perspective
+		Vector3 pos, posDirLook, dir;
+		LIGHT_TYPE lightType = m_lightSystem.getLightType(i);
+
+		switch (lightType) {
+		case LIGHT_TYPE::POINT_LIGHT:
+			lightPos = m_lightSystem.getPointLight(i).position;
+			lightIntensity = m_lightSystem.getPointLight(i).intensity;
+			break;
+		case LIGHT_TYPE::SPOT_LIGHT:
+			lightPos = m_lightSystem.getSpotLight(i).position;
+			lightDirLook = DirectX::XMVector3Rotate(Vector3(0, 0, 1), m_lightSystem.getSpotLight(i).rotation);
+
+			lightIntensity = m_lightSystem.getSpotLight(i).intensity;
+			lightFOV = m_lightSystem.getSpotLight(i).fov;
+			break;
+		}
+
+		pos = DirectX::XMVector3Transform(lightPos, camViewMatrix);
+		posDirLook = XMVector3Transform(lightPos + lightDirLook, camViewMatrix);
+		dir = posDirLook - pos;
+
+		
+		if (m_lightSystem.getLightType(i) == LIGHT_TYPE::POINT_LIGHT) {
+			m_frustum.testPointlight(i, pos,lightIntensity);
+		}
+		else if (m_lightSystem.getLightType(i) == LIGHT_TYPE::SPOT_LIGHT) {
+			m_frustum.testSpotlight(i, pos, dir, lightIntensity, lightFOV);
+		}
+
+
+	}
 	//print("update");
 	//m_renderSystemFlawed.update(timeElapsed);
 	//m_inputSystem.update(timeElapsed);

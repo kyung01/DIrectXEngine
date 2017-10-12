@@ -4,14 +4,14 @@
 
 namespace KEngine {
 	namespace KComponent {
-		enum LightType{PointLight, SpotLight };
+		enum LIGHT_TYPE{POINT_LIGHT, SPOT_LIGHT };
 		/*
 		this struct should be paired with LightRender system
 		*/
 		struct LightComponent : public Component {
 		private:
 		public:
-			LightType lightType;
+			LIGHT_TYPE lightType;
 			int lightIndex;
 		};
 		struct PointLightInfo {

@@ -17,6 +17,11 @@ void KEngine::KSystem::RenderSystem::init(int renderTargetWidth, int renderTarge
 	m_camera.setProjParameters((3.14f / 2.0f), renderTargetWidth, renderTargetHeight, 0.1f, 1000.0f);
 }
 
+DirectX::SimpleMath::Matrix KEngine::KSystem::RenderSystem::getCameraViewMatrix()
+{
+	return m_camera.getViewMatrix();
+}
+
 void KEngine::KSystem::RenderSystem::setCameraProjectionFOV(float ratio)
 {
 }
