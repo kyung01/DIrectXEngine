@@ -96,10 +96,10 @@ void Engine::update(float timeElapsed)
 		dir = posDirLook - pos;
 
 		
-		if (m_lightSystem.getLightType(i) == LIGHT_TYPE::POINT_LIGHT) {
+		if (lightType == LIGHT_TYPE::POINT_LIGHT) {
 			m_frustum.testPointlight(i, pos,lightIntensity);
 		}
-		else if (m_lightSystem.getLightType(i) == LIGHT_TYPE::SPOT_LIGHT) {
+		else if (lightType == LIGHT_TYPE::SPOT_LIGHT) {
 			m_frustum.testSpotlight(i, pos, dir, lightIntensity, lightFOV);
 		}
 
