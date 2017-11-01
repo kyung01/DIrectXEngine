@@ -2,13 +2,14 @@
 #include <iostream>
 #include <memory>
 
+using namespace std;
 using namespace KFrustum;
 
 BufferDataTranslator::BufferDataTranslator(int clusterSize, int clusterItemMax, int lightMax, int decalMax, int probeMax)
 {
 	m_arrClusterIndexSize = clusterSize;
 	m_arrClusterItemSize = clusterItemMax;
-	m_clusterIndexs = std::make_shared<DynamicBuffer<NBuffer::ClusterIndex>>(clusterSize);
+	m_clusterIndexs = make_shared<DynamicBuffer<NBuffer::ClusterIndex>>(clusterSize);
 	m_clusterItems = std::make_shared<DynamicBuffer<NBuffer::ClusterItem>>(clusterItemMax);
 	m_lights = std::make_shared<DynamicBuffer<NBuffer::LightParameter>>(lightMax);
 	m_decals = std::make_shared<DynamicBuffer<NBuffer::DecalParameter>>(decalMax);
@@ -48,6 +49,9 @@ void BufferDataTranslator::constrcut()
 		std::cout << "NUM " << i << " : " << (int)myCounts[i] << "\n";
 	}
 	delete myCounts;
+}
+void BufferDataTranslator::translate(std::vector<KFrustum::Cluster> &cluster) {
+
 }
 /*
 void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::OldSpotLight>>& lights)

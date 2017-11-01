@@ -70,6 +70,7 @@ void Engine::update(float timeElapsed)
 	auto camViewMatrix = m_renderSystem.getCameraViewMatrix();
 
 
+	m_frustum.testBegin();	
 	for (int i = 0; i < m_lightSystem.getLightCount(); i++) {
 		Vector3 lightPos, lightDirLook;
 		float lightIntensity, lightFOV;
@@ -102,9 +103,9 @@ void Engine::update(float timeElapsed)
 		else if (lightType == LIGHT_TYPE::SPOT_LIGHT) {
 			m_frustum.testSpotlight(i, pos, dir, lightIntensity, lightFOV);
 		}
-
-
 	}
+	m_dataTranslator.translate(m_frustum.m_clusters);
+
 	//print("update");
 	//m_renderSystemFlawed.update(timeElapsed);
 	//m_inputSystem.update(timeElapsed);
