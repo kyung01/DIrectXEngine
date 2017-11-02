@@ -24,6 +24,10 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 {
 	std::list<LoadInfoShader> lst({
 		LoadInfoShader(RENDER_SPHERICAL_HARMONIC_DIFFUSE_MAP,							L"Resource/Shader/Atlas/DiffuseCubeMapVS.hlsl"),
+		LoadInfoShader(RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightVS.hlsl")
+	});
+	/*
+		unused shader files
 		LoadInfoShader(RENDER_SKYBOX,							L"Resource/Shader/SkyVS.hlsl"),
 		LoadInfoShader(RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY,			L"Resource/Shader/defferedVS.hlsl"),
 		LoadInfoShader(RENDER_WORLD,			L"Resource/Shader/worldSpaceVS.hlsl"),
@@ -33,9 +37,8 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 		LoadInfoShader(RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectVS.hlsl"),
 		LoadInfoShader(RENDER_ONE_COLOR,			L"Resource/Shader/OneColorVS.hlsl"),
 		LoadInfoShader(RENDER_TRANSPARENT,			L"Resource/Shader/TransparentVS.hlsl"),
-		LoadInfoShader(RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightVS.hlsl"),
 		LoadInfoShader(SHADER_SIMPLE,			L"Resource/Shader/SimpleShaderVS.hlsl")
-	});
+	*/
 	return lst;
 }
 
@@ -43,16 +46,6 @@ std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 {
 	std::list<LoadInfoShader> lst({
 		LoadInfoShader(RENDER_SPHERICAL_HARMONIC_DIFFUSE_MAP,							L"Resource/Shader/Atlas/DiffuseCubeMapFS.hlsl"),
-		LoadInfoShader(RENDER_SKYBOX,						L"Resource/Shader/SkyFS.hlsl"),
-		LoadInfoShader(RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY,			L"Resource/Shader/defferedFS.hlsl"),
-		LoadInfoShader(RENDER_WORLD,			L"Resource/Shader/worldSpaceFS.hlsl"),
-		LoadInfoShader(RENDER_DIRECT_LIGHT,			L"Resource/Shader/directLightFS.hlsl"),
-		LoadInfoShader(RENDER_LIGHT_SHAFT,			L"Resource/Shader/lightShaftFS.hlsl"),
-		LoadInfoShader(RENDER_FRUSTUM_INSIDE,			L"Resource/Shader/frustumScreenSpaceFS.hlsl"),
-		LoadInfoShader(RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectFS.hlsl"),
-		LoadInfoShader(RENDER_ONE_COLOR,			L"Resource/Shader/OneColorFS.hlsl"),
-		LoadInfoShader(RENDER_TRANSPARENT,			L"Resource/Shader/TransparentFS.hlsl"),
-		LoadInfoShader(SHADER_SIMPLE,			L"Resource/Shader/SimpleShaderFS.hlsl"),
 		LoadInfoShader(RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightFS.hlsl"
 		,{
 			(int)true, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE,
@@ -66,6 +59,19 @@ std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 
 		})
 	});
+	/*
+		unused shader files
+		LoadInfoShader(RENDER_SKYBOX,						L"Resource/Shader/SkyFS.hlsl"),
+		LoadInfoShader(RENDER_WORLD_DIFFUSE_NORMAL_PROPERTY,			L"Resource/Shader/defferedFS.hlsl"),
+		LoadInfoShader(RENDER_WORLD,			L"Resource/Shader/worldSpaceFS.hlsl"),
+		LoadInfoShader(RENDER_DIRECT_LIGHT,			L"Resource/Shader/directLightFS.hlsl"),
+		LoadInfoShader(RENDER_LIGHT_SHAFT,			L"Resource/Shader/lightShaftFS.hlsl"),
+		LoadInfoShader(RENDER_FRUSTUM_INSIDE,			L"Resource/Shader/frustumScreenSpaceFS.hlsl"),
+		LoadInfoShader(RENDER_SKYBOX_REFLECTION,			L"Resource/Shader/skyboxReflectFS.hlsl"),
+		LoadInfoShader(RENDER_ONE_COLOR,			L"Resource/Shader/OneColorFS.hlsl"),
+		LoadInfoShader(RENDER_TRANSPARENT,			L"Resource/Shader/TransparentFS.hlsl"),
+		LoadInfoShader(SHADER_SIMPLE,			L"Resource/Shader/SimpleShaderFS.hlsl"),
+	*/
 	return lst;
 }
 

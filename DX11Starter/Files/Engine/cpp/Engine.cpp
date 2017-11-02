@@ -127,7 +127,7 @@ void Engine::render(
 	m_renderSystem.render(
 		device, context, target, targetDepth, viewport,
 		m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE),
-		m_asset.getVertShader(KEnum::SHADER_SIMPLE), m_asset.getFragShader(KEnum::SHADER_SIMPLE),
+		m_asset.getVertShader(KEnum::RENDER_TEST), m_asset.getFragShader(KEnum::RENDER_TEST),
 		m_asset.m_meshes);
 }
 void Engine::OnMouseMove(WPARAM buttonState, int x, int y)
