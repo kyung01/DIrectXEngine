@@ -132,9 +132,6 @@
     <ClCompile Include="Files\Graphic\Scene\cpp\SphericalCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Files\Graphic\cpp\Frustum.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Files\Graphic\Scene\cpp\Lights.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -192,9 +189,6 @@
     <ClCompile Include="Files\DirectX\DirectXSimpleMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Files\ClusteredFrustum\cpp\ClusteredFrustum_Frustum.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Files\Engine\Systems\cpp\Systems_Transform3DSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -205,6 +199,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Files\Graphic\cpp\_BufferDataTranslator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Graphic\cpp\_Frustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\ClusteredFrustum\cpp\Frustum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

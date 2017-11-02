@@ -105,6 +105,7 @@ void Engine::update(float timeElapsed)
 		}
 	}
 	m_dataTranslator.translate(m_frustum.m_clusters);
+	
 
 	//print("update");
 	//m_renderSystemFlawed.update(timeElapsed);

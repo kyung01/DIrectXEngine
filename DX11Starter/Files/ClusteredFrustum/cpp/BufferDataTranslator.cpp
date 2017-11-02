@@ -1,4 +1,5 @@
 #include <ClusteredFrustum\BufferDataTranslator.h>
+#include <ClusteredFrustum\Frustum.h>
 #include <iostream>
 #include <memory>
 
@@ -51,7 +52,61 @@ void BufferDataTranslator::constrcut()
 	delete myCounts;
 }
 void BufferDataTranslator::translate(std::vector<KFrustum::Cluster> &cluster) {
+	int offset = 0;
+	NBuffer::ClusterIndex	index;
+	for (int i = 0; i < m_arrClusterIndexSize; i++) {
+		int indexLight(0), indexDecal(0), indexProbe(0);
+		int lightCount(cluster[i].light.size()), decalCount(cluster[i].decal.size()), probeCount(cluster[i].reflection.size());
 
+		index.offeset = offset;
+		//index.offeset = 0;
+
+		unsigned int myCount = 0;
+		myCount |= 0;
+		myCount <<= 8;
+		myCount |= probeCount;
+		myCount <<= 8;
+		myCount |= decalCount;
+		myCount <<= 8;
+		myCount |= lightCount;
+
+		index.countLightDecalProbe = myCount;
+		m_clusterIndexs->setData(index, i);
+
+
+
+
+		int offsetOld = offset;
+
+		for (auto itLight = cluster[i].light.begin(); itLight != cluster[i].light.end() && (offset + indexLight) < m_arrClusterItemSize; itLight++) {
+			//m_clusterItems->m_data[offset + indexLight++].light = *itLight;
+			//m_bufferItems->setData(offset + indexLight)
+			//m_arrClusterItems.get()[offset + indexLight]->light = *itLight;
+
+
+
+			int lightCount = *itLight, decalCount = 0, probeCount = 0;
+			unsigned int myCount = 0;
+			myCount |= 0;
+			myCount <<= 8;
+			myCount |= probeCount;
+			myCount <<= 8;
+			myCount |= decalCount;
+			myCount <<= 8;
+			myCount |= lightCount;
+
+			NBuffer::ClusterItem	item;
+			item.lightDecalProbeDummy = myCount;
+
+			m_clusterItems->setData(item, offset + indexLight++);
+		}
+		offset += indexLight;
+		if (offsetOld == offset) {
+			//std::cout << "OFFSET AT " << offset << " MX AT " << m_arrClusterItemSize<<std::endl << "BECAUSE" << indexLight << " , " << indexDecal << " , " << indexProbe << std::endl;
+
+		}
+		offsetOld = offset;
+	}
 }
 /*
 void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::OldSpotLight>>& lights)

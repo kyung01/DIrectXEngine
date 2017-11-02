@@ -126,7 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Files\ClusteredFrustum\cpp\ClusteredFrustum_Frustum.cpp" />
+    <ClCompile Include="Files\ClusteredFrustum\cpp\Frustum.cpp" />
     <ClCompile Include="Files\ClusteredFrustum\cpp\BufferDataTranslator.cpp" />
     <ClCompile Include="Files\DirectX\DirectXSimpleMath.cpp" />
     <ClCompile Include="Files\DirectX\DXCore.cpp" />
@@ -154,7 +154,7 @@
     <ClCompile Include="Files\Engine\cpp\Engine_Texture2D.cpp" />
     <ClCompile Include="Files\Graphic\Buffer\Buffer.cpp" />
     <ClCompile Include="Files\Graphic\cpp\_BufferDataTranslator.cpp" />
-    <ClCompile Include="Files\Graphic\cpp\Frustum.cpp" />
+    <ClCompile Include="Files\Graphic\cpp\_Frustum.cpp" />
     <ClCompile Include="Files\Game\Script\X_Axis_Rotate.cpp" />
     <ClCompile Include="Files\Game\Script\Y_Axis_Rotate.cpp" />
     <ClCompile Include="Files\Graphic\Asset\Asset.cpp" />
