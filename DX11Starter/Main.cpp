@@ -1,13 +1,12 @@
 
 #include <Windows.h>
-#include "DirectX\KContext.h"
+#include <DirectX\KContext.h>
 
 // ImGui - standalone example application for DirectX 11
 // If you are new to ImGui, see examples/README.txt and documentation at the top of imgui.cpp.
 
-#include "imgui\imgui.h"
-#include "imgui\DirectX\imgui_impl_dx11.h"
-#include "imgui\DirectX\KContext.h"
+#include <imgui\imgui.h>
+#include <imgui\DirectX\imgui_impl_dx11.h>
 #include <d3d11.h>
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>

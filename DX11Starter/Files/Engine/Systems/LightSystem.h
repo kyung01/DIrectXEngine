@@ -6,8 +6,6 @@
 #include <Engine\Componenets\LightEntity.h>
 #include <ClusteredFrustum\Frustum.h>
 
-//#include "glm\glm.hpp"
-//#include "Shader.h"
 using namespace DirectX::SimpleMath;
 using namespace KEngine::KComponent;
 namespace KEngine {

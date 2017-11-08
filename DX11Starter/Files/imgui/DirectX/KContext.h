@@ -1,7 +1,5 @@
 #pragma once
 #include "Context.h"
-#include "UIMain.h"
-#include "Graphic\GraphicMain.h"
 /*
 Context class for this project
 */
@@ -9,7 +7,6 @@ namespace NImGui{
 	class KContext : public Context {
 	private:
 	public:
-		UIMain m_uiMain;
 	public:
 		void init(
 			HINSTANCE wc, HWND hwnd,

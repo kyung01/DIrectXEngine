@@ -1,18 +1,14 @@
 #pragma once
 
 #include "DXCore.h"
-#include "Graphic\SimpleShader.h"
 #include <DirectXMath.h>
 #include <memory>
 #include <list>
-#include "WorldMain.h"
 
 
-#include "imgui\DirectX\KContext.h"
+#include <imgui\DirectX\KContext.h>
 #include <Game\Context.h>
 #include <Game\ContextExamples.h>
-#include <Graphic\GraphicMain.h>
-#include <Graphic\Asset\Asset.h>
 
 #include <Engine\Engine.h>
 //TODO Draw triangle with different backgrounds onto three different framebuffers
@@ -27,11 +23,7 @@ namespace NDirectX {
 
 	private:
 		NImGui::KContext m_ui;
-		//World::WorldMain world;
-		NGraphic::Asset m_asset;
 		KEngine::Engine m_engine;
-		//NGraphic::RenderTexture m_texture;
-		//NGraphic::DepthTexture	m_depth;
 	public:
 		const static int INIT_WINDOW_WIDTH, INIT_WINDOW_HEIGHT;
 		//std::list<RenderContext> m_renderContexts;

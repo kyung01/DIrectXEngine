@@ -12,5 +12,5 @@ void NImGui::KContext::init(HINSTANCE wc, HWND hwnd,
 }
 
 void KContext::renderSub() {
-	m_uiMain.render();
+	//m_uiMain.render();
 }

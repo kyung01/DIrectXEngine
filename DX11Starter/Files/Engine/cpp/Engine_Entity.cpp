@@ -44,12 +44,12 @@ byte * KEngine::Entity::GetComponent(ComponentId id)
 			break;
 		}
 	}
-	if (indexAt == -1) return 0;
+	if (indexAt == -1) return 0;	
 	return &m_components[indexAt];
 }
 
 Entity KEngine::Entity::addComponenet(Component componenet, ComponentId id, ComponentType compType, int compSize)
 {
-	return addComponenet(*this, componenet,id, compType, compSize);
+	return addComponenet(*this, componenet,id, compType, compSize); 
 }
 */

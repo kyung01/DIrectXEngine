@@ -63,12 +63,6 @@ void KContext::Init()
 
 	m_engine.init(device, context, INIT_WINDOW_WIDTH, INIT_WINDOW_HEIGHT);
 	m_ui.init(hInstance, hWnd, device, context, swapChain, backBufferRTV);
-	//system("pause");
-	if (!m_asset.init(device, context)) {
-		std::cout << "Failed crucial steps.\n";
-		system("pause");
-	}
-	//LoadShaders();
 	
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives (points, lines or triangles) we want to draw.  
@@ -108,7 +102,6 @@ void KContext::Update(float deltaTime, float totalTime)
 	float x, y, dis_camerMove(1.0*deltaTime);
 	int count = 0;
 	
-	XMVECTOR dir;
 		 
 	if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
 		std::cout << "Quit\n";

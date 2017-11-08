@@ -249,7 +249,9 @@ bool ISimpleShader::loadShaderBlob(LPCWSTR shaderFile, LPCSTR target)
 
 	if (hr != S_OK)
 	{
-		std::cout << "\n" << "NOT OK" << DirectX::DirectXUtility::HRESULT_TO_STRING(hr) << "\n";
+		std::cout << "\n" << "ISimpleShader loadShaderBlob(";
+		std::wcout << shaderFile;
+		std::cout << ") failed : " << DirectX::DirectXUtility::HRESULT_TO_STRING(hr) << "\n";
 		if (error) {
 			std::cout << "ERROR BUFFER IS NOT EMPTY " << error->GetBufferSize() << "\n";
 			OutputDebugString((LPCTSTR)error->GetBufferPointer());
