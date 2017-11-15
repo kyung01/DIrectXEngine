@@ -1,6 +1,6 @@
 #include "ClusterStructs.hlsl"
 #include "..\light.hlsl"
-SamplerState sampler_default	: register(s0);
+SamplerState samplerDefault	: register(s0);
 
 Texture2D textureLightAtlas		: register(t0);
 Texture2D textureProbe		: register(t1);
@@ -223,12 +223,13 @@ float pointLight(
 	if ( uv_depth.x == -1 || uv_depth.y == -1) {
 		return -2;
 	}
-	float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv_depth.xy);
+	float4 lightBaked = textureLightAtlas.Sample(samplerDefault, uv_depth.xy);
 	//return lightBaked.xyz;// *min(1, lightBaked.w);
 
 
 	float isShadow = (uv_depth.z - 0.001)< lightBaked.x;
-	
+	//disable shadow for now
+
 	return light *isShadow;
 }
 
@@ -298,7 +299,7 @@ float3 pointLightDebug(
 	if (uv_depth.x == -1 || uv_depth.y == -1) {
 		return -2;
 	}
-	float4 lightBaked = textureLightAtlas.Sample(sampler_default, uv_depth.xy);
+	float4 lightBaked = textureLightAtlas.Sample(samplerDefault, uv_depth.xy);
 	//return lightBaked.xyz;// *min(1, lightBaked.w);
 
 	return lightBaked.xyz;
@@ -375,10 +376,9 @@ float3 getColor(VertexToPixel input) {
 			if (uv_depth.x == -1 || uv_depth.y == -1) {
 				continue;
 			}
-			float4 lightBaked = textureLightAtlas.Gather(sampler_default, uv_depth.xy);
+			float4 lightBaked = textureLightAtlas.Gather(samplerDefault, uv_depth.xy);
 			float isShadow = (uv_depth.z - 0.001)< lightBaked.x;
 			colorAdd *= isShadow;
-
 		}
 		else {
 			float lightPointLight = pointLight(
@@ -395,8 +395,21 @@ float3 getColor(VertexToPixel input) {
 		}
 
 		color += saturate(colorAdd);
+		color += light.color;
+		break;
 
 	}
+
+	LightParameter lightTemp = lightParameter[1];
+	if (clusterItemLightCount == 0)
+		color += lightTemp.color;
+	else if (clusterItemLightCount == 1)
+		color += float3(0, 1, 0);
+	else if (clusterItemLightCount == 2)
+		color += float3(0, 0, 1);
+	else 
+		color += float3(1, 0, 1);
+	
 	return color;
 }
 float4 main(VertexToPixel input) : SV_TARGET
@@ -407,14 +420,14 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 	if (renderSetting == 1) {
 
-		float4 c122123 = textureProbeArray.Sample(sampler_default, float4(normalize(normal), 0));
+		float4 c122123 = textureProbeArray.Sample(samplerDefault, float4(normalize(normal), 0));
 		return float4(c122123.xyz, 1);
 
 
 	}
 	if (renderSetting == 2) {
 
-		float4 c122123 = textureProbeArray.Sample(sampler_default, float4(normalize(normal), 1));
+		float4 c122123 = textureProbeArray.Sample(samplerDefault, float4(normalize(normal), 1));
 		return float4(c122123.xyz + float3(0.1,0.1,0.1f), 1);
 
 

@@ -21,9 +21,12 @@ const float LightSystem::RADIUS_PER_LIGHT_INTENSITY = 15;
 
 void LightSystem::addEntityHandle(Entity & entity, LightComponent & componenet)
 {
-	Vector3 randomColor(DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM());
+	//Vector3 randomColor(DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM());
+	Vector3 randomColor(rand(), rand(), rand());
 	float biggestRGB = max(randomColor.x, max(randomColor.y, randomColor.z) );
 	randomColor *= 1 / biggestRGB;
+	std::cout << "Random_light_color " << randomColor.x << " " << randomColor.y << " " << randomColor.z << std::endl;
+
 	float lightIntensity = (DirectX::DirectXUtility::GET_RANDOM() % 100)/100.0f * 3.0f;
 	float lightFOV = (DirectX::DirectXUtility::GET_RANDOM() % 100) / 100.0f * 3.14f;
 	Vector3 randomRotationAngle(DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM());

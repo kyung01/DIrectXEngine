@@ -125,6 +125,19 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	//rsDescBack.FrontCounterClockwise = true;
 	rsDescBack.DepthClipEnable = true;
 	device->CreateRasterizerState(&rsDescBack, &m_rasterizers[KEnum::RASTR_CULLBACKFACE]);
+
+	D3D11_SAMPLER_DESC samplerDesc = {};
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC; // Could be anisotropic
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.MaxAnisotropy = 16;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	device->CreateSamplerState(&samplerDesc, &m_sampler);
+	
 }
 
 bool Asset::initShaders(ID3D11Device * device, ID3D11DeviceContext * context, std::list<LoadInfoShader> dataVert, std::list<LoadInfoShader> dataFrag)

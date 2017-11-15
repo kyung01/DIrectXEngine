@@ -127,7 +127,6 @@ void Engine::render(
 		context,
 		m_asset.getFragShader(RENDER_TEST).GetBuffer(0), m_asset.getFragShader(RENDER_TEST).GetBuffer(1),
 		m_asset.getFragShader(RENDER_TEST).GetBuffer(2), 0, 0);
-
 	Matrix matView = m_renderSystem.getCameraViewMatrix();
 	{
 		DirectX::XMFLOAT4X4 MAT_TEMP;
@@ -140,6 +139,7 @@ void Engine::render(
 		m_asset.getFragShader(RENDER_TEST).SetFloat("frustumNear", m_frustum.m_near);
 		m_asset.getFragShader(RENDER_TEST).SetFloat("frustumFar", m_frustum.m_far);
 		m_asset.getFragShader(RENDER_TEST).CopyAllBufferData();
+		m_asset.getFragShader(RENDER_TEST).SetSamplerState("samplerDefault",m_asset.m_sampler);
 	}
 
 	m_renderSystem.render(

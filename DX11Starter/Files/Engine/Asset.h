@@ -55,6 +55,7 @@ namespace KEngine {
 		bool initMeshes(ID3D11Device* device, std::list<LoadInfoMesh> dataMesh);
 	public:
 
+		ID3D11SamplerState* m_sampler;
 		std::map<KEnum, Mesh> m_meshes;
 
 		//ID3D11BlendState * BLEND_STATE_ADDITIVE, *BLEND_STATE_TRANSPARENT;
