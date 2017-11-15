@@ -343,7 +343,7 @@ float3 getColor(VertexToPixel input) {
 	uint clusterItemProbeCount = (clusterIndex.lightDecalProbeCount >> (8 * 2)) & 0xff;
 
 	float3 color = float3(0, 0, 0);
-	[loop ]
+	[loop]
 	for (int i = 0; i < clusterItemLightCount; i++)
 	{
 		float3 colorAdd = float3(0, 0, 0);

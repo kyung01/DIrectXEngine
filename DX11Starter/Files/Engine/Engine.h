@@ -14,16 +14,8 @@
 #include <ClusteredFrustum\Frustum.h>
 #include <ClusteredFrustum\BufferDataTranslator.h>
 
-//#include "glm\glm.hpp"
-//#include "Shader.h"
 using namespace DirectX::SimpleMath;
-//namespace KEngine {
-//	class EntityFactory;
-//	class Entity;
-//	namespace KSystem {
-//		class RenderSystem;
-//	}
-//}
+
 namespace KEngine {
 	class Engine  : EventHandler {
 	private:
@@ -46,6 +38,9 @@ namespace KEngine {
 		Engine();
 		void init(ID3D11Device * device, ID3D11DeviceContext * context, int windowWidth, int windowHeight) override;
 		void update(float timeElapsed) override;
+		void renderUpdate(
+			ID3D11Device * device, ID3D11DeviceContext * context,
+			ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT  viewport);
 		void render(
 			ID3D11Device * device, ID3D11DeviceContext * context,
 			ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT  viewport) override;

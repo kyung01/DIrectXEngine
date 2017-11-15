@@ -105,7 +105,6 @@ void Engine::update(float timeElapsed)
 		}
 	}
 	m_dataTranslator.translate(m_frustum.m_clusters);
-	
 
 	//print("update");
 	//m_renderSystemFlawed.update(timeElapsed);
@@ -114,16 +113,35 @@ void Engine::update(float timeElapsed)
 	//m_renderSystemFlawed.setCameraRotation(m_inputSystem.getRotation());
 }
 
+void Engine::renderUpdate(
+	ID3D11Device * device, ID3D11DeviceContext * context, 
+	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT viewport)
+{
+}
+
 void Engine::render(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
 	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT viewport)
 {
-	//print("render");
-	//m_renderSystemFlawed.render(
-	//	device, context, target, targetDepth, viewport,
-	//	m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE),
-	//	m_asset.getVertShader(KEnum::SHADER_SIMPLE), m_asset.getFragShader(KEnum::SHADER_SIMPLE),
-	//	m_asset.m_meshes);
+	m_dataTranslator.transfer(
+		context,
+		m_asset.getFragShader(RENDER_TEST).GetBuffer(0), m_asset.getFragShader(RENDER_TEST).GetBuffer(1),
+		m_asset.getFragShader(RENDER_TEST).GetBuffer(2), 0, 0);
+
+	Matrix matView = m_renderSystem.getCameraViewMatrix();
+	{
+		DirectX::XMFLOAT4X4 MAT_TEMP;
+		DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(matView));
+		m_asset.getFragShader(RENDER_TEST).SetMatrix4x4("eyeViewMatrix", MAT_TEMP);
+		m_asset.getFragShader(RENDER_TEST).SetInt("frustumX", m_frustum.m_size.x);
+		m_asset.getFragShader(RENDER_TEST).SetInt("frustumY", m_frustum.m_size.y);
+		m_asset.getFragShader(RENDER_TEST).SetInt("frustumZ", m_frustum.m_size.z);
+		m_asset.getFragShader(RENDER_TEST).SetFloat("frustumSizeRatio", m_frustum.m_widthOverHeight);
+		m_asset.getFragShader(RENDER_TEST).SetFloat("frustumNear", m_frustum.m_near);
+		m_asset.getFragShader(RENDER_TEST).SetFloat("frustumFar", m_frustum.m_far);
+		m_asset.getFragShader(RENDER_TEST).CopyAllBufferData();
+	}
+
 	m_renderSystem.render(
 		device, context, target, targetDepth, viewport,
 		m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE),

@@ -214,11 +214,11 @@ void NGraphic::BufferDataTranslator::translate(std::vector<NFrustum::Cluster>& c
 	}
 }
 
-void NGraphic::BufferDataTranslator::transfer(ID3D11DeviceContext * context,
+*/
+void BufferDataTranslator::transfer(ID3D11DeviceContext * context,
 	ID3D11Buffer * bufferClusterIndex, ID3D11Buffer * bufferClusterItem, ID3D11Buffer * bufferLights, ID3D11Buffer * bufferDecals, ID3D11Buffer * bufferProbes)
 {
 	m_clusterIndexs.get()->setData(context, bufferClusterIndex);
 	m_clusterItems.get()->setData(context, bufferClusterItem);
 	m_lights.get()->setData(context, bufferLights);
 }
-*/

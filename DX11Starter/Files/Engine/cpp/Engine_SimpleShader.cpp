@@ -249,6 +249,7 @@ bool ISimpleShader::loadShaderBlob(LPCWSTR shaderFile, LPCSTR target)
 
 	if (hr != S_OK)
 	{
+
 		std::cout << "\n" << "ISimpleShader loadShaderBlob(";
 		std::wcout << shaderFile;
 		std::cout << ") failed : " << DirectX::DirectXUtility::HRESULT_TO_STRING(hr) << "\n";

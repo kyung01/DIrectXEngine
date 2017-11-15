@@ -1,4 +1,5 @@
 #pragma once
+#include <DirectX\DirectXUtility.h>
 #include <memory>
 
 #include <d3d11.h>
@@ -41,7 +42,7 @@ namespace KFrustum {
 		bool setData(ID3D11DeviceContext *context, ID3D11Buffer *m_buffer) {
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 			ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
-			if (!DirectXUtility::HRESULT_CHECK(
+			if (!DirectX::DirectXUtility::HRESULT_CHECK(
 				context->Map(m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
 				return false;
 			memcpy(mappedResource.pData, m_data, sizeof(T) * maxCount);
