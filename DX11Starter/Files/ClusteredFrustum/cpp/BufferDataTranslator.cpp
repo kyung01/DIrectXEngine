@@ -82,9 +82,6 @@ void BufferDataTranslator::translate(std::vector<KFrustum::Cluster> &cluster) {
 			//m_clusterItems->m_data[offset + indexLight++].light = *itLight;
 			//m_bufferItems->setData(offset + indexLight)
 			//m_arrClusterItems.get()[offset + indexLight]->light = *itLight;
-
-
-
 			int lightCount = *itLight, decalCount = 0, probeCount = 0;
 			unsigned int myCount = 0;
 			myCount |= 0;
@@ -107,6 +104,9 @@ void BufferDataTranslator::translate(std::vector<KFrustum::Cluster> &cluster) {
 		}
 		offsetOld = offset;
 	}
+}
+void BufferDataTranslator::translateLight(NBuffer::LightParameter lightParameters, int index) {
+	m_lights.get()->setData(lightParameters, index);
 }
 /*
 void BufferDataTranslator::translate(std::list<std::shared_ptr<NScene::OldSpotLight>>& lights)

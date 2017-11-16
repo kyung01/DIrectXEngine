@@ -27,6 +27,7 @@ namespace KFrustum {
 		BufferDataTranslator(int clusterSize, int clusterItemMax, int lightMax, int decalMax, int probeMax);
 		void constrcut();
 		void translate(std::vector<KFrustum::Cluster> &cluster);
+		void translateLight(NBuffer::LightParameter lightParameter, int index);
 		void transfer(ID3D11DeviceContext * context, ID3D11Buffer* bufferClusterIndex, ID3D11Buffer* bufferClusterItem, ID3D11Buffer* bufferLights, ID3D11Buffer* bufferDecals, ID3D11Buffer* bufferProbes);
 	};
 

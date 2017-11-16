@@ -22,7 +22,7 @@ const float LightSystem::RADIUS_PER_LIGHT_INTENSITY = 15;
 void LightSystem::addEntityHandle(Entity & entity, LightComponent & componenet)
 {
 	//Vector3 randomColor(DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM());
-	Vector3 randomColor(rand(), rand(), rand());
+	Vector3 randomColor(DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM());
 	float biggestRGB = max(randomColor.x, max(randomColor.y, randomColor.z) );
 	randomColor *= 1 / biggestRGB;
 	std::cout << "Random_light_color " << randomColor.x << " " << randomColor.y << " " << randomColor.z << std::endl;
@@ -121,12 +121,13 @@ LIGHT_TYPE KEngine::KSystem::LightSystem::getLightType(int n)
 
 PointLightInfo KEngine::KSystem::LightSystem::getPointLight(int n)
 {
-	return m_pointLights[n];
+	
+	return m_pointLights[m_components[n].lightIndex];
 }
 
 SpotLightInfo KEngine::KSystem::LightSystem::getSpotLight(int n)
 {
-	return m_spotLights[n];
+	return m_spotLights[m_components[n].lightIndex];
 }
 
 void LightSystem::run()

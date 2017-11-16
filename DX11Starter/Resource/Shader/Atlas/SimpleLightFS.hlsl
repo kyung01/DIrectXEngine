@@ -347,12 +347,11 @@ float3 getColor(VertexToPixel input) {
 	[loop]
 	for (int i = 0; i < clusterItemLightCount; i++)
 	{
-		float3 colorAdd = float3(0, 0, 0);
-		int lightIndex2222 = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex) & 0xff);
 
-		LightParameter light = lightParameter[lightIndex2222];
-		//float4x4 worldViewProj = mul(light.matLight, light.matLightProjection);
-		//float4 posFromLight = mul(float4(input.worldPos.xyz, 1.0f), light.matLight);
+		float3 colorAdd = float3(0, 0, 0);
+		int lightIndex = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex) & 0xff);
+
+		LightParameter light = lightParameter[lightIndex];
 		float4 posFromLightPerspective2 = mul(float4(input.worldPos.xyz, 1.0f), light.matLight);
 		float lightDepth = posFromLightPerspective2.w;
 		posFromLightPerspective2 /= 0.00001f + posFromLightPerspective2.w;
@@ -395,20 +394,9 @@ float3 getColor(VertexToPixel input) {
 		}
 
 		color += saturate(colorAdd);
-		color += light.color;
-		break;
 
 	}
 
-	LightParameter lightTemp = lightParameter[1];
-	if (clusterItemLightCount == 0)
-		color += lightTemp.color;
-	else if (clusterItemLightCount == 1)
-		color += float3(0, 1, 0);
-	else if (clusterItemLightCount == 2)
-		color += float3(0, 0, 1);
-	else 
-		color += float3(1, 0, 1);
 	
 	return color;
 }

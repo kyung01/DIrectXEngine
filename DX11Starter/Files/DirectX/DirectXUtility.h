@@ -9,7 +9,7 @@
 namespace DirectX {
 	struct DirectXUtility {
 		static int GET_RANDOM() {
-			srand(time(NULL));
+			srand(time(NULL)+rand());
 			return rand();
 		}
 		static bool HRESULT_CHECK(HRESULT hrs) {
