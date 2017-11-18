@@ -12,26 +12,27 @@ void Engine::initExample()
 	int ENTITY_NUMBER = 50;
 	int RANDOM_MODEL_NUMBER = 5;
 	int RANDOM_LIGHT_NUMBER = 10;
-	for(int i = 0; i < ENTITY_NUMBER; i++)
+	int x(0), y(0), z(3);
+	for (int i = 0; i < ENTITY_NUMBER; i++)
 	{
-		//m_renderSystemFlawed.addEntity(entity);
-		//Renderable& renderable = m_renderSystemFlawed.getComponent(j * ENTITY_NUMBER + (i));
-		//renderable.setPosition( Vector3(i,j,1));
 		Entity& entity = m_entityFactory.addEntity();
 		m_transform3DSystem.addEntity(m_entityFactory.m_entities, entity);
 		m_renderSystem.addEntity(m_entityFactory.m_entities, entity);
 		m_renderSystem.getLastComponent().meshId = getRadnomModelID();
-		//m_renderSystem.getLastComponent().setPosition(Vector3(i, j, 1));
-	}
 
-	int x(0), y(0), z(3);
-	for (int i = m_transform3DSystem.getComponentVectorSize() - 1; i >= 0; i--) {
-		m_transform3DSystem.getComponent(i).setPosition(x++, y, z);
+		m_transform3DSystem.getLastComponent().setPosition(x++, y, z);
 		if (x > 10) {
 			x = 0;
 			y++;
 		}
+		std::cout << i << " POISTION " << m_transform3DSystem.getComponent(i).position.x << " " << m_transform3DSystem.getComponent(i).position.y << std::endl;
+		std::cout << i << " MESH ID " << m_renderSystem.getComponent(i).meshId << std::endl;
+		//std::cout << i << " POISTION " << m_renderSystem.getLastComponent().getPosition().x << " " << m_renderSystem.getLastComponent().getPosition().y << std::endl;
+		//std::cout << i << " MESH ID " << m_renderSystem.getLastComponent().meshId << std::endl;
+		//m_renderSystem.getLastComponent().setPosition(Vector3(i, j, 1));
 	}
+
+	
 	for (int i = 0; i < RANDOM_LIGHT_NUMBER; i++) {
 		int selectedEntityIndex;
 		bool isNewEntityAvailable = false;

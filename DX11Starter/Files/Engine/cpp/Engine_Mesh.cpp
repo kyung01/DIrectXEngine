@@ -59,7 +59,8 @@ void Mesh::getTangent(
 	//A = (-uvDelta01.y * posDelta00 + uvDelta00.y*posDelta01) / (- uvDelta01.y*uvDelta00.x + uvDelta00.y*uvDelta01.x)
 	//
 }
-Mesh::Mesh(ID3D11Device * device, char* objFile) {
+//bool isUniformSize rescales the model vertices to fit into the unit of 1
+Mesh::Mesh(ID3D11Device * device, char* objFile, bool isUniformSize ) {
 	using namespace DirectX;
 	// File input object
 	std::ifstream obj(objFile);
@@ -79,8 +80,8 @@ Mesh::Mesh(ID3D11Device * device, char* objFile) {
 	unsigned int vertCounter = 0;        // Count of vertices/indices
 	char chars[100];                     // String for line reading
 
-										 // Still good?
-	while (obj.good())
+	float longestPositionValue = 0;
+	while (obj.good())// Still good?
 	{
 		// Get the line (100 characters should be more than enough)
 		obj.getline(chars, 100);
@@ -121,6 +122,16 @@ Mesh::Mesh(ID3D11Device * device, char* objFile) {
 
 			// Add to the positions
 			positions.push_back(pos);
+			float posMagSquared = pos.x * pos.x + pos.y* pos.y + pos.z * pos.z;
+			if (abs(pos.x) > longestPositionValue) {
+				longestPositionValue = abs(pos.x);
+			}
+			if (abs(pos.y) > longestPositionValue) {
+				longestPositionValue = abs(pos.y);
+			}
+			if (abs(pos.z) > longestPositionValue) {
+				longestPositionValue = abs(pos.z);
+			}
 		}
 		else if (chars[0] == 'f')
 		{
@@ -200,9 +211,17 @@ Mesh::Mesh(ID3D11Device * device, char* objFile) {
 			//system("pause");
 		}
 	}
-
+	
 	// Close the file and create the actual buffers
 	obj.close();
+
+	if (isUniformSize) {
+		for (auto it = verts.begin(); it != verts.end(); it++) {
+			it->Position.x /= 2 * longestPositionValue;
+			it->Position.y /= 2 * longestPositionValue;
+			it->Position.z /= 2 * longestPositionValue;
+		}
+	}
 	construct(device, &verts[0], verts.size(), (int*)&indices[0], indices.size());
 
 	// - At this point, "verts" is a vector of Vertex structs, and can be used

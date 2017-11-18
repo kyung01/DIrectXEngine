@@ -181,7 +181,7 @@ bool Asset::initShaders(ID3D11Device * device, ID3D11DeviceContext * context, st
 bool Asset::initMeshes(ID3D11Device* device, std::list<LoadInfoMesh> dataMesh) {
 	for (auto it = dataMesh.begin(); it != dataMesh.end(); it++) {
 		
-		m_meshes.emplace(std::piecewise_construct, std::make_tuple(it->id), std::make_tuple(device, it->path));
+		m_meshes.emplace(std::piecewise_construct, std::make_tuple(it->id), std::make_tuple(device, it->path,true));
 		//(it->id,Mesh{device, it->path});
 	}
 	return true;

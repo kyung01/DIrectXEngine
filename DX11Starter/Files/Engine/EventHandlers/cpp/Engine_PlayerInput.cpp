@@ -34,9 +34,9 @@ void PlayerInput::update(float timeElapsed)
 	}
 	moveDir.Normalize();
 	m_playerPosition += moveDir * timeElapsed;
-	if (moveDir.Length() >= 0.1f)
-		//	print("moveDir.x << " , " << moveDir.y << " , " << moveDir.z);
-		print("Move " << m_playerPosition.x << " , " << m_playerPosition.y << " , " << m_playerPosition.z);
+	//if (moveDir.Length() >= 0.1f)
+	//	//	print("moveDir.x << " , " << moveDir.y << " , " << moveDir.z);
+	//	print("Move " << m_playerPosition.x << " , " << m_playerPosition.y << " , " << m_playerPosition.z);
 }
 
 void PlayerInput::render(ID3D11Device * device, ID3D11DeviceContext * context, ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT viewport)

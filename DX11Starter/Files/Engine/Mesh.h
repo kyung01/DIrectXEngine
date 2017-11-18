@@ -34,7 +34,7 @@ namespace KEngine {
 	public:
 		Mesh(ID3D11Device *device,
 			Vertex* verticies_data, int vertices_offsetEnd, int* indicies_data, int indicies_offsetEnd);
-		Mesh(ID3D11Device * device, char* objFile);
+		Mesh(ID3D11Device * device, char* objFile, bool isUniformSize = false);
 		~Mesh();
 
 		ID3D11Buffer*	getBufferVertex();
