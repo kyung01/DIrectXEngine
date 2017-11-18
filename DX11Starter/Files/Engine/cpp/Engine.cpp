@@ -6,10 +6,11 @@
 using namespace KEngine;
 const int CLUSTER_ITEM_SIZE = 3200;
 const int CLUSTER_SIZE = 1000;
+const float LIGHT_INFLUENCE_PER_INTENSITY = 50.0f;
 void Engine::initExample()
 {
 	int ENTITY_NUMBER = 50;
-	int RANDOM_LIGHT_NUMBER = 10;
+	int RANDOM_LIGHT_NUMBER = 1;
 	for(int i = 0; i < ENTITY_NUMBER; i++)
 	{
 		//m_renderSystemFlawed.addEntity(entity);
@@ -100,10 +101,10 @@ void Engine::update(float timeElapsed)
 
 		
 		if (lightType == LIGHT_TYPE::POINT_LIGHT) {
-			m_frustum.testPointlight(i, pos,lightIntensity);
+			m_frustum.testPointlight(i, pos,lightIntensity * LIGHT_INFLUENCE_PER_INTENSITY);
 		}
 		else if (lightType == LIGHT_TYPE::SPOT_LIGHT) {
-			m_frustum.testSpotlight(i, pos, dir, lightIntensity, lightFOV);
+			m_frustum.testSpotlight(i, pos, dir, lightIntensity* LIGHT_INFLUENCE_PER_INTENSITY, lightFOV);
 		}
 	}
 	
@@ -111,12 +112,18 @@ void Engine::update(float timeElapsed)
 		KFrustum::NBuffer::LightParameter lightParameter = {};
 		LIGHT_TYPE lightType = m_lightSystem.getLightType(i);
 		lightParameter.isSpotlight = lightType == LIGHT_TYPE::SPOT_LIGHT;
+		//std::cout << "LIGHT TYPE is spotLight " << ((lightParameter.isSpotlight)?"SPOTLIGHT":"POINTLIGHT") << std::endl;
+		//system("pause");
 		if (lightType == LIGHT_TYPE::POINT_LIGHT) {
+			lightParameter.position = m_lightSystem.getPointLight(i).position;
 			lightParameter.color = m_lightSystem.getPointLight(i).color;
 		}
 		else {
 			//spot light
+			lightParameter.position = m_lightSystem.getSpotLight(i).position;
 			lightParameter.color = m_lightSystem.getSpotLight(i).color;
+			lightParameter.angle = m_lightSystem.getSpotLight(i).fov;
+			lightParameter.axis = (Vector3)DirectX::XMVector3Rotate(Vector3(0, 0, 1), m_lightSystem.getSpotLight(i).rotation);
 		}
 		m_dataTranslator.translateLight(lightParameter, i);
 		//std::cout << "DateTranslator LightColor : " << lightParameter.color.x << " " << lightParameter.color.y << " " << lightParameter.color.z << std::endl;

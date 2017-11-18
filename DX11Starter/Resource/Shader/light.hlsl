@@ -59,12 +59,6 @@ float pointLight(
 	float3 lightToPos = position - lightPos;
 	float lightToPosMag = dot(lightToPos, lightToPos);
 	float brightness = 1 / (1 + lightToPosMag);
-
-																	  //return length(posToLight);
-																						  //return dot(normalize(posToLight), normal) * brightness * (max(0, lightDepth - 0.00001) < lightDepthClosest);
-																						  //return isPixelLit(textureShadow, samplerBoarderZero,
-																						  //	matLightMVP,
-																						  //	position);
 	return  brightness *max(0, dot(normalize(posToLight), normal) );
 }
 float spotLight(

@@ -157,8 +157,25 @@ int getPointLightTextureIndex(float3 lightToPosDir) {
 	return -1;
 
 }
-float pointLight(
 
+float getPointLightIntensity(float3 lightPosition,float3 pixelPosition ,float3 pixelNormal) {
+	float3 posToLight = lightPosition - pixelPosition;
+	float3 lightToPos = pixelPosition - lightPosition;
+	float lightToPosMag = dot(lightToPos, lightToPos);
+	float brightness = 1 / (1 + lightToPosMag);
+	return  brightness *max(0, dot(normalize(posToLight), pixelNormal));
+}
+float getSpotLightIntensity(float3 lightPos, float3 lightDir, float inner, float outter, float3 pixelPosition) {
+	float3 lightToPos = pixelPosition - lightPos;
+	float lightToPosMag = dot(lightToPos, lightToPos);
+	float3 dirLightToPos = lightToPos / sqrt(lightToPosMag);
+
+	float alpha = dot(dirLightToPos, lightDir);
+	float brightness = 1 / (1 + lightToPosMag);
+	return   brightness * saturate(spotLight(alpha, RATIO_FALLOFF, inner, outter));
+}
+
+float pointLight(
 	float4x4 matLight,
 	float viewportTopLeftX, 
 	float viewportTopLeftY,
@@ -347,53 +364,25 @@ float3 getColor(VertexToPixel input) {
 	[loop]
 	for (int i = 0; i < clusterItemLightCount; i++)
 	{
-
-		float3 colorAdd = float3(0, 0, 0);
+		float3	lightColor = float3(0, 0, 0);
+		float	lightIntensity = 1.0f;
+		bool	isShadowed = false;
+	
 		int lightIndex = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex) & 0xff);
-
 		LightParameter light = lightParameter[lightIndex];
-		float4 posFromLightPerspective2 = mul(float4(input.worldPos.xyz, 1.0f), light.matLight);
-		float lightDepth = posFromLightPerspective2.w;
-		posFromLightPerspective2 /= 0.00001f + posFromLightPerspective2.w;
-		//LightParameter light1 = lightParameter[lightIndex+1];
 
-
-
+		lightColor = light.color;
 
 		if (light.isSpotlight) {
-			float3 uv_depth = float3(-1, -1, 1);
-
-
-			colorAdd += light.color * spotLight(light.position, light.axis, light.angle*0.5, light.angle, input.worldPos, inputNormal);
-			uv_depth = getPointlight_UVDepth(
-				light.matLight,
-				light.topLeftX, light.topLeftY,
-				light.viewPortHeight, light.viewPortWidth,
-				1280.0f, 1280.0f,
-				input.worldPos.xyz
-			);
-			if (uv_depth.x == -1 || uv_depth.y == -1) {
-				continue;
-			}
-			float4 lightBaked = textureLightAtlas.Gather(samplerDefault, uv_depth.xy);
-			float isShadow = (uv_depth.z - 0.001)< lightBaked.x;
-			colorAdd *= isShadow;
+			lightIntensity = getPointLightIntensity(light.position, input.worldPos, inputNormal);
+			
 		}
 		else {
-			float lightPointLight = pointLight(
-				light.matLight,
-				light.topLeftX, light.topLeftY,
-				light.viewPortWidth, light.viewPortHeight,
-				1280.0f, 1280.0f,
-
-				light.position,
-				input.worldPos, inputNormal);
-			//if (lightPointLight == -1) return float4(1, 0, 0, 1);
-			//if (lightPointLight == -2) return float4(1, 0, 1, 1);
-			colorAdd += light.color * lightPointLight;
+			lightIntensity = getSpotLightIntensity(light.position, light.axis, light.angle*0.5, light.angle, input.worldPos);
 		}
 
-		color += saturate(colorAdd);
+		if(!isShadowed)
+			color += saturate(lightColor*lightIntensity);
 
 	}
 

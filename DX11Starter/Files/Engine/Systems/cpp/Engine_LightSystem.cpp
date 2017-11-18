@@ -17,7 +17,7 @@ float intensity;
 float fov;
 };
 */
-const float LightSystem::RADIUS_PER_LIGHT_INTENSITY = 15;
+const float LightSystem::RADIUS_PER_LIGHT_INTENSITY = 100;
 
 void LightSystem::addEntityHandle(Entity & entity, LightComponent & componenet)
 {
@@ -33,7 +33,8 @@ void LightSystem::addEntityHandle(Entity & entity, LightComponent & componenet)
 	randomRotationAngle.Normalize();
 	Quaternion lightRotation = Quaternion::CreateFromAxisAngle(randomRotationAngle, DirectX::DirectXUtility::GET_RANDOM()/100.0f);
 
-	if (DirectX::DirectXUtility::GET_RANDOM() % 2 == 0) {
+	//if (DirectX::DirectXUtility::GET_RANDOM() % 2 == 0) {
+	if (true) {
 		//add point light
 		componenet.lightType = LIGHT_TYPE::POINT_LIGHT;
 		componenet.lightIndex = m_pointLights.size();
