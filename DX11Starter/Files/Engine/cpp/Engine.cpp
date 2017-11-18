@@ -6,11 +6,11 @@
 using namespace KEngine;
 const int CLUSTER_ITEM_SIZE = 3200;
 const int CLUSTER_SIZE = 1000;
-const float LIGHT_INFLUENCE_PER_INTENSITY = 50.0f;
+const float LIGHT_INFLUENCE_PER_INTENSITY = 12.0f;
 void Engine::initExample()
 {
 	int ENTITY_NUMBER = 50;
-	int RANDOM_LIGHT_NUMBER = 1;
+	int RANDOM_LIGHT_NUMBER = 10;
 	for(int i = 0; i < ENTITY_NUMBER; i++)
 	{
 		//m_renderSystemFlawed.addEntity(entity);

@@ -374,11 +374,11 @@ float3 getColor(VertexToPixel input) {
 		lightColor = light.color;
 
 		if (light.isSpotlight) {
-			lightIntensity = getPointLightIntensity(light.position, input.worldPos, inputNormal);
+			lightIntensity = getSpotLightIntensity(light.position, light.axis, light.angle*0.5, light.angle, input.worldPos);
 			
 		}
 		else {
-			lightIntensity = getSpotLightIntensity(light.position, light.axis, light.angle*0.5, light.angle, input.worldPos);
+			lightIntensity = getPointLightIntensity(light.position, input.worldPos, inputNormal);
 		}
 
 		if(!isShadowed)
