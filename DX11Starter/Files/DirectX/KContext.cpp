@@ -59,6 +59,7 @@ float scale = 0.9f;
 // --------------------------------------------------------
 void KContext::Init()
 {
+	srand(time(NULL));
 	std::cout << "\n";
 
 	m_engine.init(device, context, INIT_WINDOW_WIDTH, INIT_WINDOW_HEIGHT);

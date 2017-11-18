@@ -76,9 +76,9 @@ void RenderSystem::render(
 	setMatrix(&vertexShader, "view", m_camera.getViewMatrix());
 	setMatrix(&vertexShader, "proj", m_camera.getProjMatrix());
 	for (auto it = m_components.begin(); it != m_components.end(); it++) {
-
+		if (it->meshId == KEnum::UNDEFINED) 
+			continue;
 		Mesh& mesh = meshes.find(it->meshId)->second;
-		//create model matrix
 		setMatrix(&vertexShader, "world", it->getWorldMatrix());
 		vertexShader.CopyAllBufferData();
 		fragmentShader.CopyAllBufferData();
@@ -91,7 +91,6 @@ void RenderSystem::render(
 		//send the new world matrix information
 		//renderMesh(context, mesh, 0, sizeof(Vertex));
 	}
-
 }
 
 
@@ -112,9 +111,3 @@ void KEngine::KSystem::RenderSystem::OnResize(int targetFrameWidth, int targetFr
 {
 	m_camera.setProjParameters((3.14f / 2.0f), targetFrameWidth, targetFrameHeight, 0.1f, 1000.0f);
 }
-
-/*
-
-
-
-*/

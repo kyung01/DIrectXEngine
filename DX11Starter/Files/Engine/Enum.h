@@ -1,8 +1,7 @@
 #pragma once
 namespace KEngine {
-
 	enum KEnum {
-
+		UNDEFINED,
 		RASTR_CULLBACKFACE,
 		SHADERTYPE_VERTEX,
 		SHADERTYPE_FRAGMENT,
@@ -83,4 +82,5 @@ namespace KEngine {
 
 
 	};
+	KEnum getRadnomModelID();
 }

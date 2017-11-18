@@ -141,6 +141,7 @@
     <ClCompile Include="Files\Engine\cpp\Engine.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine_Entity.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine_SimpleShader.cpp" />
+    <ClCompile Include="Files\Engine\cpp\Enum.cpp" />
     <ClCompile Include="Files\Engine\EventHandlers\cpp\Engine_PlayerInput.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_LightSystem.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_RenderSystem.cpp" />

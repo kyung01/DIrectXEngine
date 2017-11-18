@@ -10,6 +10,7 @@ const float LIGHT_INFLUENCE_PER_INTENSITY = 12.0f;
 void Engine::initExample()
 {
 	int ENTITY_NUMBER = 50;
+	int RANDOM_MODEL_NUMBER = 5;
 	int RANDOM_LIGHT_NUMBER = 10;
 	for(int i = 0; i < ENTITY_NUMBER; i++)
 	{
@@ -19,6 +20,7 @@ void Engine::initExample()
 		Entity& entity = m_entityFactory.addEntity();
 		m_transform3DSystem.addEntity(m_entityFactory.m_entities, entity);
 		m_renderSystem.addEntity(m_entityFactory.m_entities, entity);
+		m_renderSystem.getLastComponent().meshId = getRadnomModelID();
 		//m_renderSystem.getLastComponent().setPosition(Vector3(i, j, 1));
 	}
 
@@ -40,8 +42,8 @@ void Engine::initExample()
 		} while (!isNewEntityAvailable && maxTolerableFailure-- > 0 );
 		if (!isNewEntityAvailable) continue;
 		m_lightSystem.addEntity(m_entityFactory.m_entities, m_entityFactory.getEntity(selectedEntityIndex));
-		
 	}
+
 }
 
 KEngine::Engine::Engine() :

@@ -2,7 +2,7 @@
 using namespace  KEngine::KComponent;
 #include <iostream>
 Renderable::Renderable() {
-	meshId = KEnum::MESH_SPHERE;
+	meshId = KEnum::UNDEFINED;
 	m_scale = Vector3(1, 1, 1);
 }
 Matrix KEngine::KComponent::Renderable::getWorldMatrix()
