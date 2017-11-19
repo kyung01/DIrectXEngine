@@ -22,16 +22,14 @@ const float LightSystem::RADIUS_PER_LIGHT_INTENSITY = 100;
 void LightSystem::addEntityHandle(Entity & entity, LightComponent & componenet)
 {
 	//Vector3 randomColor(DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM());
-	Vector3 randomColor(DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM());
+	Vector3 randomColor(rand(), rand(), rand());
 	float biggestRGB = max(randomColor.x, max(randomColor.y, randomColor.z) );
 	randomColor *= 1 / biggestRGB;
 	std::cout << "Random_light_color " << randomColor.x << " " << randomColor.y << " " << randomColor.z << std::endl;
 
-	float lightIntensity = (DirectX::DirectXUtility::GET_RANDOM() % 100)/100.0f * 3.0f;
-	float lightFOV = (DirectX::DirectXUtility::GET_RANDOM() % 100) / 100.0f * 3.14f;
-	Vector3 randomRotationAngle(DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM(), DirectX::DirectXUtility::GET_RANDOM());
-	randomRotationAngle.Normalize();
-	Quaternion lightRotation = Quaternion::CreateFromAxisAngle(randomRotationAngle, DirectX::DirectXUtility::GET_RANDOM()/100.0f);
+	float lightIntensity = 1+ (DirectX::DirectXUtility::GET_RANDOM() % 100)/100.0f * 3.0f;
+	float lightFOV = 3.14f / 2.0f;
+	Quaternion lightRotation;
 
 	if (DirectX::DirectXUtility::GET_RANDOM() % 2 == 0) {
 	//if (true) {
@@ -75,6 +73,7 @@ void LightSystem::update(std::vector<Entity>& entities, float time)
 			}
 			else {
 				m_spotLights[m_components[i].lightIndex].position = entity.m_transform3D->position;
+				m_spotLights[m_components[i].lightIndex].rotation = entity.m_transform3D->rotation;
 			}
 		}
 	}

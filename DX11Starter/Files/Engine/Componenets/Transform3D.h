@@ -17,6 +17,9 @@ namespace KEngine {
 			Quaternion rotation;
 			Transform3D();
 			void setPosition(float x, float y, float z);
+			void setPosition(Vector3 position);
+			void setScale(Vector3 position);
+			void setRotation(Quaternion quaternion);
 
 		};
 	}

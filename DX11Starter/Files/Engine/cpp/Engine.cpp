@@ -21,13 +21,13 @@ void Engine::initExample()
 		m_renderSystem.addEntity(m_entityFactory.m_entities, entity, entityIndex);
 		m_renderSystem.getLastComponent().meshId = getRadnomModelID();
 
-		m_transform3DSystem.getLastComponent().setPosition(x++, y, z);
-		if (x > 10) {
+		m_transform3DSystem.getLastComponent().setPosition(-4+x++, y, z);
+		if (x > 8) {
 			x = 0;
 			y++;
 		}
-		std::cout << i << " POISTION " << m_transform3DSystem.getComponent(i).position.x << " " << m_transform3DSystem.getComponent(i).position.y << std::endl;
-		std::cout << i << " MESH ID " << m_renderSystem.getComponent(i).meshId << std::endl;
+		//std::cout << i << " POISTION " << m_transform3DSystem.getComponent(i).position.x << " " << m_transform3DSystem.getComponent(i).position.y << std::endl;
+		//std::cout << i << " MESH ID " << m_renderSystem.getComponent(i).meshId << std::endl;
 		//std::cout << i << " POISTION " << m_renderSystem.getLastComponent().getPosition().x << " " << m_renderSystem.getLastComponent().getPosition().y << std::endl;
 		//std::cout << i << " MESH ID " << m_renderSystem.getLastComponent().meshId << std::endl;
 		//m_renderSystem.getLastComponent().setPosition(Vector3(i, j, 1));
@@ -45,8 +45,39 @@ void Engine::initExample()
 		if (!isNewEntityAvailable) continue;
 			std::cout << "SELECTED LIGHT INDEX " << selectedEntityIndex << std::endl;
 		m_lightSystem.addEntity(m_entityFactory.m_entities, m_entityFactory.getEntity(selectedEntityIndex), selectedEntityIndex);
-	}
+	} 
+	{
 
+		Vector3 positions[4] = { Vector3(0, 0, -5) ,Vector3(0, 0, +5) ,Vector3(-5, 0, 0),Vector3(+5, 0, 0) };
+		float rotations[4] = { 0,3.14f,3.14f / 2.0f,-3.14f / 2.0f };
+		for (int i = 0; i < 4; i++)
+		{
+			Entity& entity = m_entityFactory.addEntity();
+			int entityIndex = m_entityFactory.m_entities.size() - 1;
+			m_transform3DSystem.addEntity(m_entityFactory.m_entities, entity, entityIndex);
+			m_renderSystem.addEntity(m_entityFactory.m_entities, entity, entityIndex);
+			m_renderSystem.getLastComponent().meshId = MESH_PLANE;
+			m_transform3DSystem.getLastComponent().setPosition(positions[i]);
+			m_transform3DSystem.getLastComponent().setRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), rotations[i]));
+			m_transform3DSystem.getLastComponent().setScale(Vector3(10, 10, 10));
+		}
+	}
+	{
+
+		Vector3 positions[2] = { Vector3(0, 5, 0) ,Vector3(0, -5, 0) };
+		float rotations[2] = { 3.14f/2,-3.14f/2};
+		for (int i = 0; i < 4; i++)
+		{
+			Entity& entity = m_entityFactory.addEntity();
+			int entityIndex = m_entityFactory.m_entities.size() - 1;
+			m_transform3DSystem.addEntity(m_entityFactory.m_entities, entity, entityIndex);
+			m_renderSystem.addEntity(m_entityFactory.m_entities, entity, entityIndex);
+			m_renderSystem.getLastComponent().meshId = MESH_PLANE;
+			m_transform3DSystem.getLastComponent().setPosition(positions[i]);
+			m_transform3DSystem.getLastComponent().setRotation(Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), rotations[i]));
+			m_transform3DSystem.getLastComponent().setScale(Vector3(10, 10, 10));
+		}
+	}
 }
 
 KEngine::Engine::Engine() :

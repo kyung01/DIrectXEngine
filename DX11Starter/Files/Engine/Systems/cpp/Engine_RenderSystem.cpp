@@ -109,6 +109,8 @@ void RenderSystem::update(std::vector<Entity> &entities, float time)
 		Entity& entity = entities[m_components[i].entityIndex];
 		if (entity.m_transform3D->isDirty) {
 			m_components[i].setPosition(entity.m_transform3D->position);
+			m_components[i].setScale(entity.m_transform3D->size);
+			m_components[i].setRotation(entity.m_transform3D->rotation);
 			//std::cout << i << " : " << entities[m_components[i].entityIndex].m_transform3D->position.x << " , " <<
 			//	entities[m_components[i].entityIndex].m_transform3D->position.y << " , " << entities[m_components[i].entityIndex].m_transform3D->position.z << "\n";
 			//system("pause");
