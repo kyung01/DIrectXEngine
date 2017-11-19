@@ -49,9 +49,9 @@ void LightSystem::addEntityHandle(Entity & entity, LightComponent & componenet)
 
 }
 
-void LightSystem::addEntityLinkRecreate(Entity & entity, LightComponent & componenet)
+void LightSystem::addEntityLinkRecreate(std::vector<Entity> & entityVectors, LightComponent & componenet)
 {
-	entity.m_lightComponent = &componenet;
+	entityVectors[componenet.entityIndex].m_lightComponent = &componenet;
 }
 
 LightSystem::LightSystem()
@@ -67,13 +67,14 @@ void KEngine::KSystem::LightSystem::init(float widthOverHeight, float nearDistan
 void LightSystem::update(std::vector<Entity>& entities, float time)
 {
 	for (int i = 0; i < m_components.size(); i++) {
-		if (entities[m_components[i].entityIndex].m_transform3D->isDirty) {
+		Entity& entity = entities[m_components[i].entityIndex];
+		if (entity.m_transform3D->isDirty) {
 			m_isFrustumNeedUpdate = true;
 			if (m_components[i].lightType == LIGHT_TYPE::POINT_LIGHT) {
-				m_pointLights[m_components[i].lightIndex].position = entities[m_components[i].entityIndex].m_transform3D->position;
+				m_pointLights[m_components[i].lightIndex].position = entity.m_transform3D->position;
 			}
 			else {
-				m_spotLights[m_components[i].lightIndex].position = entities[m_components[i].entityIndex].m_transform3D->position;
+				m_spotLights[m_components[i].lightIndex].position = entity.m_transform3D->position;
 			}
 		}
 	}

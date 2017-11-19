@@ -5,9 +5,9 @@ void KEngine::KSystem::Transform3DSystem::addEntityHandle(Entity & entity, Trans
 	entity.m_transform3D = &componenet;
 }
 
-void KEngine::KSystem::Transform3DSystem::addEntityLinkRecreate(Entity & entity, Transform3D & componenet)
+void KEngine::KSystem::Transform3DSystem::addEntityLinkRecreate(std::vector<Entity> & entity, Transform3D & componenet)
 {
-	entity.m_transform3D = &componenet;
+	entity[componenet.entityIndex] .m_transform3D = &componenet;
 }
 
 void KEngine::KSystem::Transform3DSystem::update(std::vector<Entity>& entities, float timeElapsed)

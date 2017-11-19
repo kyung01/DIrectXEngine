@@ -16,8 +16,9 @@ void Engine::initExample()
 	for (int i = 0; i < ENTITY_NUMBER; i++)
 	{
 		Entity& entity = m_entityFactory.addEntity();
-		m_transform3DSystem.addEntity(m_entityFactory.m_entities, entity);
-		m_renderSystem.addEntity(m_entityFactory.m_entities, entity);
+		int entityIndex = m_entityFactory.m_entities.size() - 1;
+		m_transform3DSystem.addEntity(m_entityFactory.m_entities, entity, entityIndex);
+		m_renderSystem.addEntity(m_entityFactory.m_entities, entity, entityIndex);
 		m_renderSystem.getLastComponent().meshId = getRadnomModelID();
 
 		m_transform3DSystem.getLastComponent().setPosition(x++, y, z);
@@ -38,11 +39,12 @@ void Engine::initExample()
 		bool isNewEntityAvailable = false;
 		int maxTolerableFailure = 100;
 		do {
-			selectedEntityIndex = DirectX::DirectXUtility::GET_RANDOM() % m_entityFactory.m_entities.size();
+			selectedEntityIndex = rand() % m_entityFactory.m_entities.size();
 			isNewEntityAvailable = (m_entityFactory.getEntity(selectedEntityIndex).m_lightComponent == 0);
 		} while (!isNewEntityAvailable && maxTolerableFailure-- > 0 );
 		if (!isNewEntityAvailable) continue;
-		m_lightSystem.addEntity(m_entityFactory.m_entities, m_entityFactory.getEntity(selectedEntityIndex));
+			std::cout << "SELECTED LIGHT INDEX " << selectedEntityIndex << std::endl;
+		m_lightSystem.addEntity(m_entityFactory.m_entities, m_entityFactory.getEntity(selectedEntityIndex), selectedEntityIndex);
 	}
 
 }
@@ -173,7 +175,7 @@ void Engine::render(
 		device, context, target, targetDepth, viewport,
 		m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE),
 		m_asset.getVertShader(KEnum::RENDER_TEST), m_asset.getFragShader(KEnum::RENDER_TEST),
-		m_asset.m_meshes);
+		m_asset.m_meshes,m_entityFactory);
 }
 void Engine::OnMouseMove(WPARAM buttonState, int x, int y)
 {

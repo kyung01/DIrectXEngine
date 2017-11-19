@@ -38,8 +38,9 @@ cbuffer global : register(b3)
 	float frustumSizeRatio;
 	float frustumNear;
 	float frustumFar;
-	float dummy00;
-	float dummy01;
+	float3 diffuseColor;
+	//float dummy00;
+	//float dummy01;
 
 	float probeSliceSize;
 	int renderSetting;
@@ -360,7 +361,7 @@ float3 getColor(VertexToPixel input) {
 	uint clusterItemDecalCount = (clusterIndex.lightDecalProbeCount >> (8 * 1)) & 0xff;
 	uint clusterItemProbeCount = (clusterIndex.lightDecalProbeCount >> (8 * 2)) & 0xff;
 
-	float3 color = float3(0, 0, 0);
+	float3 color = float3(0, 0, 0) + diffuseColor;
 	[loop]
 	for (int i = 0; i < clusterItemLightCount; i++)
 	{

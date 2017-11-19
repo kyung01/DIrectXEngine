@@ -16,7 +16,7 @@ namespace KEngine {
 		protected:
 			//helper methods
 			void addEntityHandle(Entity& entity, Transform3D &componenet) override;
-			void addEntityLinkRecreate(Entity& entity, Transform3D &componenet) override;
+			void addEntityLinkRecreate(std::vector<Entity> & entityVectors, Transform3D &componenet) override;
 		public:
 			 void update(std::vector<Entity> &entities, float timeElapsed) override;
 		};

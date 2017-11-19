@@ -1,4 +1,5 @@
 #include <Engine\Systems\RenderSystem.h>
+#include <Engine\Componenets\LightEntity.h>
 using namespace KEngine;
 using namespace KEngine::KSystem;
 
@@ -7,9 +8,9 @@ void KEngine::KSystem::RenderSystem::addEntityHandle(Entity & entity, Renderable
 	entity.m_renderable = &componenet;
 }
 
-void KEngine::KSystem::RenderSystem::addEntityLinkRecreate(Entity & entity, Renderable & componenet)
+void KEngine::KSystem::RenderSystem::addEntityLinkRecreate(std::vector<Entity> & entityVectors, Renderable & componenet)
 {
-	entity.m_renderable = &componenet;
+	entityVectors[componenet.entityIndex].m_renderable = &componenet;
 }
 
 void KEngine::KSystem::RenderSystem::init(int renderTargetWidth, int renderTargetHeight)
@@ -63,7 +64,8 @@ void RenderSystem::render(
 	ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
 	ID3D11RasterizerState *cullBackFace,
 	SimpleVertexShader & vertexShader, SimpleFragmentShader & fragmentShader,
-	std::map<KEnum, Mesh> &meshes
+	std::map<KEnum, Mesh> &meshes,
+	KEngine::EntityFactory & entityFactory
 )
 {
 	float colorClean[4] = { 0.1f,0.1f,0.1f,1 };
@@ -81,6 +83,12 @@ void RenderSystem::render(
 		Mesh& mesh = meshes.find(it->meshId)->second;
 		setMatrix(&vertexShader, "world", it->getWorldMatrix());
 		vertexShader.CopyAllBufferData();
+		auto lightComponent = entityFactory.getEntity(it->entityIndex).m_lightComponent;
+		if(lightComponent == 0)
+			fragmentShader.SetFloat3("diffuseColor", Vector3());
+		else
+			fragmentShader.SetFloat3("diffuseColor", Vector3(1) );
+
 		fragmentShader.CopyAllBufferData();
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
@@ -98,8 +106,9 @@ void RenderSystem::render(
 void RenderSystem::update(std::vector<Entity> &entities, float time)
 {
 	for (int i = 0; i < m_components.size(); i++) {
-		if (entities[m_components[i].entityIndex].m_transform3D->isDirty) {
-			m_components[i].setPosition(entities[m_components[i].entityIndex].m_transform3D->position);
+		Entity& entity = entities[m_components[i].entityIndex];
+		if (entity.m_transform3D->isDirty) {
+			m_components[i].setPosition(entity.m_transform3D->position);
 			//std::cout << i << " : " << entities[m_components[i].entityIndex].m_transform3D->position.x << " , " <<
 			//	entities[m_components[i].entityIndex].m_transform3D->position.y << " , " << entities[m_components[i].entityIndex].m_transform3D->position.z << "\n";
 			//system("pause");

@@ -9,6 +9,7 @@
 #include <Engine\Componenets\Renderable.h>
 #include <Engine\SimpleShader.h>
 #include <Engine\Mesh.h>
+#include <Engine\EntityFactory.h>
 //#include "glm\glm.hpp"
 //#include "Shader.h"
 using namespace DirectX::SimpleMath;
@@ -28,7 +29,7 @@ namespace KEngine {
 
 			//helper methods
 			void addEntityHandle(Entity& entity, Renderable &componenet) override;
-			void addEntityLinkRecreate(Entity& entity, Renderable &componenet) override;
+			void addEntityLinkRecreate(std::vector<Entity> & entityVectors, Renderable &componenet) override;
 		public:
 			void init(int renderTargetWidth, int renderTargetHeight);
 			DirectX::SimpleMath::Matrix getCameraViewMatrix();
@@ -44,7 +45,8 @@ namespace KEngine {
 				ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
 				ID3D11RasterizerState *cullBackFace,
 				SimpleVertexShader & vertexShader, SimpleFragmentShader & fragmentShader,
-				std::map<KEnum, Mesh> &meshes
+				std::map<KEnum, Mesh> &meshes,
+				EntityFactory& entityFactory
 			);
 
 			void OnResize(int targetFrameWidth, int targetFrameHeight);

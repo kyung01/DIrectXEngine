@@ -17,18 +17,17 @@ namespace KEngine {
 		protected:
 			std::vector<BaseComponent> m_components;
 
-			virtual void addEntityLinkRecreate(Entity& entity, BaseComponent &componenet) {};
 			virtual void addEntityHandle(Entity& entity, BaseComponent &componenet) {};
+			virtual void addEntityLinkRecreate(std::vector<Entity> &entities, BaseComponent &componenet) {};
 		public:
-			void addEntity(std::vector<Entity> & entityVectors, Entity& entity) {
-				int componentSizeOld = m_components.size();
-				m_components.resize(componentSizeOld + 1);
-				for (int i = 0; i < componentSizeOld; i++) {
-					addEntityLinkRecreate(entityVectors[m_components[i].entityIndex], m_components[i]);
+			void addEntity(std::vector<Entity> & entityVectors, Entity& entity, int entityIndex) {
+				m_components.resize(m_components.size() + 1);
+				for (int i = 0; i < m_components.size()-1; i++) {
+					addEntityLinkRecreate(entityVectors, m_components[i]);
 				}
-				BaseComponent& component = m_components[componentSizeOld];
-				//link
-				component.entityIndex = m_components.size() - 1;
+				BaseComponent& component = m_components[m_components.size()-1];
+				//linkaddEntityLinkRecreate
+				component.entityIndex = entityIndex;
 				addEntityHandle(entity, component);
 			}
 			virtual void update(std::vector<Entity> &entities, float time) {};
