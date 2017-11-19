@@ -5,7 +5,7 @@ using namespace KEngine::KSystem;
 
 void KEngine::KSystem::RenderSystem::addEntityHandle(Entity & entity, Renderable & componenet)
 {
-	entity.m_renderable = &componenet;
+	//no handler codes required
 }
 
 void KEngine::KSystem::RenderSystem::addEntityLinkRecreate(std::vector<Entity> & entityVectors, Renderable & componenet)

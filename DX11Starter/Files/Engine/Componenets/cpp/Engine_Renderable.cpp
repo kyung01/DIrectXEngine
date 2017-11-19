@@ -40,12 +40,14 @@ void KEngine::KComponent::Renderable::setPosition(Vector3 position)
 	m_isWorldMatrixDirty = true;
 }
 
-void KEngine::KComponent::Renderable::setScale(Vector3 position)
+void KEngine::KComponent::Renderable::setScale(Vector3 scale)
 {
+	m_scale = scale;
 	m_isWorldMatrixDirty = true;
 }
 
-void KEngine::KComponent::Renderable::setRotation(Quaternion quaternion)
+void KEngine::KComponent::Renderable::setRotation(Quaternion rotation)
 {
+	m_rotation = rotation;
 	m_isWorldMatrixDirty = true;
 }
