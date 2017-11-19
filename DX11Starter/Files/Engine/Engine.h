@@ -14,11 +14,14 @@
 #include <ClusteredFrustum\Frustum.h>
 #include <ClusteredFrustum\BufferDataTranslator.h>
 
+#include <Physics\PhysicsMain.h>
+
 using namespace DirectX::SimpleMath;
 
 namespace KEngine {
 	class Engine  : EventHandler {
 	private:
+		Physics::PhysicsMain m_physicsMain;
 		Asset		m_asset;
 		EntityFactory m_entityFactory;
 		std::list<EventHandler*> m_eventHandlers;

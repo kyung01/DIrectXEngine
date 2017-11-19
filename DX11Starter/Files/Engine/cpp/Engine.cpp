@@ -78,6 +78,7 @@ void Engine::initExample()
 			m_transform3DSystem.getLastComponent().setScale(Vector3(10, 10, 10));
 		}
 	}
+	m_physicsMain.init();
 }
 
 KEngine::Engine::Engine() :

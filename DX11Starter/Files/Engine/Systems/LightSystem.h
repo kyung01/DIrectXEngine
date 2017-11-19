@@ -28,7 +28,7 @@ namespace KEngine {
 			void setPointLight(int index,  Vector3 color, float intensity);
 			void setSpotLight (int index, Vector3 color, float intensity, float cornRadius);
 			int				getLightCount();
-			LIGHT_TYPE		getLightType(int n);
+			KComponent::LIGHT_TYPE		getLightType(int n);
 			PointLightInfo	getPointLight(int n);
 			SpotLightInfo	getSpotLight(int n);
 			void run();
