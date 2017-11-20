@@ -640,14 +640,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\bullet3\build3\vs2010\Bullet3Dynamics.vcxproj">
-      <Project>{c7202ce8-470f-6649-9938-8fc5a4bad3ba}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\bullet3\build3\vs2010\LinearMath.vcxproj">
-      <Project>{578f1f0e-5909-db41-a19a-3541e0b7fb70}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\directxtk_desktop_2015.2017.9.22.1\build\native\directxtk_desktop_2015.targets" Condition="Exists('packages\directxtk_desktop_2015.2017.9.22.1\build\native\directxtk_desktop_2015.targets')" />

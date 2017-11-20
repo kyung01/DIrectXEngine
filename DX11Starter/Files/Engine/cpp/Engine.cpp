@@ -44,6 +44,8 @@ void Engine::initExample()
 		} while (!isNewEntityAvailable && maxTolerableFailure-- > 0 );
 		if (!isNewEntityAvailable) continue;
 			std::cout << "SELECTED LIGHT INDEX " << selectedEntityIndex << std::endl;
+
+		m_renderSystem.getComponent(selectedEntityIndex).meshId = MESH_SPOTLIGHT;
 		m_lightSystem.addEntity(m_entityFactory.m_entities, m_entityFactory.getEntity(selectedEntityIndex), selectedEntityIndex);
 	} 
 	{
@@ -166,12 +168,6 @@ void Engine::update(float timeElapsed)
 		//std::cout << "DateTranslator LightColor : " << lightParameter.color.x << " " << lightParameter.color.y << " " << lightParameter.color.z << std::endl;
 	}
 	m_dataTranslator.translate(m_frustum.m_clusters);
-
-	//print("update");
-	//m_renderSystemFlawed.update(timeElapsed);
-	//m_inputSystem.update(timeElapsed);
-	//m_renderSystemFlawed.setCameraPosition(m_inputSystem.getPosition());
-	//m_renderSystemFlawed.setCameraRotation(m_inputSystem.getRotation());
 }
 
 void Engine::renderUpdate(
