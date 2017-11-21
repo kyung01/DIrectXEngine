@@ -16,8 +16,10 @@ namespace KEngine {
 		protected:
 			bool m_isFrustumNeedUpdate; 
 			KFrustum::Frustum m_frustum;
+			/*
 			std::vector<PointLightInfo> m_pointLights;
 			std::vector<SpotLightInfo> m_spotLights;
+			*/
 			void addEntityHandle(Entity& entity, LightComponent &componenet) override;
 			void addEntityLinkRecreate(std::vector<Entity> & entityVectors, LightComponent &componenet) override;
 		public:
@@ -25,12 +27,14 @@ namespace KEngine {
 			void init(float widthOverHeight, float nearDistance, float farDistance, int divisionX, int divisionY, int divisionZ);
 
 			void update(std::vector<Entity> &entities, float time) override;
-			void setPointLight(int index,  Vector3 color, float intensity);
-			void setSpotLight (int index, Vector3 color, float intensity, float cornRadius);
+			//void setPointLight(int index,  Vector3 color, float intensity);
+			//void setSpotLight (int index, Vector3 color, float intensity, float cornRadius);
 			int				getLightCount();
-			KComponent::LIGHT_TYPE		getLightType(int n);
+			//KComponent::LIGHT_TYPE		getLightType(int n);
+			/*
 			PointLightInfo	getPointLight(int n);
 			SpotLightInfo	getSpotLight(int n);
+			*/
 			void run();
 		};
 	}

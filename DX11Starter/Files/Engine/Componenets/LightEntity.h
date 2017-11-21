@@ -12,8 +12,13 @@ namespace KEngine {
 		private:
 		public:
 			LIGHT_TYPE lightType;
-			int lightIndex;
+			Vector3 position;
+			Quaternion rotation;
+			Vector3 color;
+			float intensity;
+			float fov;
 		};
+		/*
 		struct PointLightInfo {
 			Vector3 position;
 			Vector3 color;
@@ -26,6 +31,7 @@ namespace KEngine {
 			float intensity;
 			float fov;
 		};
+		*/
 
 	}
 }

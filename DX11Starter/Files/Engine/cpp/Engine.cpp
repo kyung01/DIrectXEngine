@@ -32,8 +32,6 @@ void Engine::initExample()
 		//std::cout << i << " MESH ID " << m_renderSystem.getLastComponent().meshId << std::endl;
 		//m_renderSystem.getLastComponent().setPosition(Vector3(i, j, 1));
 	}
-
-	
 	for (int i = 0; i < RANDOM_LIGHT_NUMBER; i++) {
 		int selectedEntityIndex;
 		bool isNewEntityAvailable = false;
@@ -41,12 +39,16 @@ void Engine::initExample()
 		do {
 			selectedEntityIndex = rand() % m_entityFactory.m_entities.size();
 			isNewEntityAvailable = (m_entityFactory.getEntity(selectedEntityIndex).m_lightComponent == 0);
-		} while (!isNewEntityAvailable && maxTolerableFailure-- > 0 );
-		if (!isNewEntityAvailable) continue;
-			std::cout << "SELECTED LIGHT INDEX " << selectedEntityIndex << std::endl;
-
-		m_renderSystem.getComponent(selectedEntityIndex).meshId = MESH_SPOTLIGHT;
+		} 
+		while (!isNewEntityAvailable && maxTolerableFailure-- > 0 );
+		if (!isNewEntityAvailable) 
+			continue;
+		std::cout << "SELECTED LIGHT INDEX " << selectedEntityIndex << std::endl;
 		m_lightSystem.addEntity(m_entityFactory.m_entities, m_entityFactory.getEntity(selectedEntityIndex), selectedEntityIndex);
+		if(m_lightSystem.getLastComponent().lightType == LIGHT_TYPE::POINT_LIGHT)
+			m_renderSystem.getComponent(selectedEntityIndex).meshId = MESH_SPHERE;
+		else
+			m_renderSystem.getComponent(selectedEntityIndex).meshId = MESH_SPOTLIGHT;
 	} 
 	{
 
@@ -118,19 +120,19 @@ void Engine::update(float timeElapsed)
 		float lightIntensity, lightFOV;
 		//From Camera's perspective
 		Vector3 pos, posDirLook, dir;
-		LIGHT_TYPE lightType = m_lightSystem.getLightType(i);
+		LIGHT_TYPE lightType = m_lightSystem.getComponent(i).lightType;
 
 		switch (lightType) {
 		case LIGHT_TYPE::POINT_LIGHT:
-			lightPos = m_lightSystem.getPointLight(i).position;
-			lightIntensity = m_lightSystem.getPointLight(i).intensity;
+			lightPos = m_lightSystem.getComponent(i).position;
+			lightIntensity = m_lightSystem.getComponent(i).intensity;
 			break;
 		case LIGHT_TYPE::SPOT_LIGHT:
-			lightPos = m_lightSystem.getSpotLight(i).position;
-			lightDirLook = DirectX::XMVector3Rotate(Vector3(0, 0, 1), m_lightSystem.getSpotLight(i).rotation);
+			lightPos = m_lightSystem.getComponent(i).position;
+			lightDirLook = DirectX::XMVector3Rotate(Vector3(0, 0, 1), m_lightSystem.getComponent(i).rotation);
 
-			lightIntensity = m_lightSystem.getSpotLight(i).intensity;
-			lightFOV = m_lightSystem.getSpotLight(i).fov;
+			lightIntensity = m_lightSystem.getComponent(i).intensity;
+			lightFOV = m_lightSystem.getComponent(i).fov;
 			break;
 		}
 
@@ -149,20 +151,20 @@ void Engine::update(float timeElapsed)
 	
 	for (int i = 0; i < m_lightSystem.getLightCount(); i++) {
 		KFrustum::NBuffer::LightParameter lightParameter = {};
-		LIGHT_TYPE lightType = m_lightSystem.getLightType(i);
+		LIGHT_TYPE lightType = m_lightSystem.getComponent(i).lightType;
 		lightParameter.isSpotlight = lightType == LIGHT_TYPE::SPOT_LIGHT;
 		//std::cout << "LIGHT TYPE is spotLight " << ((lightParameter.isSpotlight)?"SPOTLIGHT":"POINTLIGHT") << std::endl;
 		//system("pause");
 		if (lightType == LIGHT_TYPE::POINT_LIGHT) {
-			lightParameter.position = m_lightSystem.getPointLight(i).position;
-			lightParameter.color = m_lightSystem.getPointLight(i).color;
+			lightParameter.position = m_lightSystem.getComponent(i).position;
+			lightParameter.color = m_lightSystem.getComponent(i).color;
 		}
 		else {
 			//spot light
-			lightParameter.position = m_lightSystem.getSpotLight(i).position;
-			lightParameter.color = m_lightSystem.getSpotLight(i).color;
-			lightParameter.angle = m_lightSystem.getSpotLight(i).fov;
-			lightParameter.axis = (Vector3)DirectX::XMVector3Rotate(Vector3(0, 0, 1), m_lightSystem.getSpotLight(i).rotation);
+			lightParameter.position = m_lightSystem.getComponent(i).position;
+			lightParameter.color = m_lightSystem.getComponent(i).color;
+			lightParameter.angle = m_lightSystem.getComponent(i).fov;
+			lightParameter.axis = (Vector3)DirectX::XMVector3Rotate(Vector3(0, 0, 1), m_lightSystem.getComponent(i).rotation);
 		}
 		m_dataTranslator.translateLight(lightParameter, i);
 		//std::cout << "DateTranslator LightColor : " << lightParameter.color.x << " " << lightParameter.color.y << " " << lightParameter.color.z << std::endl;

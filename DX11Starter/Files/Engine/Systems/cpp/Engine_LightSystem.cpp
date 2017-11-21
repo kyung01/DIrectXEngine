@@ -35,15 +35,16 @@ void LightSystem::addEntityHandle(Entity & entity, LightComponent & componenet)
 	//if (true) {
 		//add point light
 		componenet.lightType = LIGHT_TYPE::POINT_LIGHT;
-		componenet.lightIndex = m_pointLights.size();
-		m_pointLights.push_back({ entity.m_transform3D->position,randomColor,lightIntensity });
 	}
 	else {
 		//otherwise add spot light
 		componenet.lightType = LIGHT_TYPE::SPOT_LIGHT;
-		componenet.lightIndex = m_spotLights.size();
-		m_spotLights.push_back({ entity.m_transform3D->position,lightRotation,randomColor,lightIntensity ,lightFOV });
 	}
+	componenet.position = entity.m_transform3D->position;
+	componenet.rotation = entity.m_transform3D->rotation;
+	componenet.fov = lightFOV;
+	componenet.color = randomColor;
+	componenet.intensity = lightIntensity;
 
 }
 
@@ -68,37 +69,31 @@ void LightSystem::update(std::vector<Entity>& entities, float time)
 		Entity& entity = entities[m_components[i].entityIndex];
 		if (entity.m_transform3D->isDirty) {
 			m_isFrustumNeedUpdate = true;
-			if (m_components[i].lightType == LIGHT_TYPE::POINT_LIGHT) {
-				m_pointLights[m_components[i].lightIndex].position = entity.m_transform3D->position;
-			}
-			else {
-				m_spotLights[m_components[i].lightIndex].position = entity.m_transform3D->position;
-				m_spotLights[m_components[i].lightIndex].rotation = entity.m_transform3D->rotation;
-			}
+
+			m_components[i].position = entity.m_transform3D->position;
+			m_components[i].rotation = entity.m_transform3D->rotation;
 		}
 	}
 	if (!m_isFrustumNeedUpdate) return;
 
 	m_frustum.testBegin();
 	for (int i = 0; i < m_components.size(); i++) {
-		int lightIndex = i;
 		if (m_components[i].lightType == LIGHT_TYPE::POINT_LIGHT) {
-			auto& pointLight = m_pointLights[m_components[i].lightIndex];
-			m_frustum.testPointlight(lightIndex, pointLight.position, pointLight.intensity * RADIUS_PER_LIGHT_INTENSITY);
+			m_frustum.testPointlight(i, m_components[i].position, m_components[i].intensity * RADIUS_PER_LIGHT_INTENSITY);
 		}
 		else {
-			auto& spotLight = m_spotLights[m_components[i].lightIndex];
-			Vector3 directionLook( DirectX::XMVector3Rotate(Vector3(0, 0, 1), spotLight.rotation ) ) ;
-			m_frustum.testSpotlight(lightIndex, spotLight.position, directionLook,spotLight.intensity * RADIUS_PER_LIGHT_INTENSITY, spotLight.fov);
+			Vector3 directionLook( DirectX::XMVector3Rotate(Vector3(0, 0, 1), m_components[i].rotation ) ) ;
+			m_frustum.testSpotlight(i, m_components[i].position, directionLook, m_components[i].intensity * RADIUS_PER_LIGHT_INTENSITY, m_components[i].fov);
 		}
 	}
 	m_isFrustumNeedUpdate = false;
 }
 
+/*
 void LightSystem::setPointLight(int index, Vector3 color, float intensity)
 {
 	if (m_components[index].lightType == LIGHT_TYPE::POINT_LIGHT) {
-		m_pointLights[m_components[index].lightIndex].color = color;
+		m_components[i].color = color;
 		m_pointLights[m_components[index].lightIndex].intensity = intensity;
 		return;
 	}
@@ -109,17 +104,18 @@ void LightSystem::setPointLight(int index, Vector3 color, float intensity)
 void LightSystem::setSpotLight(int index, Vector3 color, float intensity, float cornRadius)
 {
 }
+*/
 
 int KEngine::KSystem::LightSystem::getLightCount()
 {
 	return m_components.size();
 }
 
+/* 
 LIGHT_TYPE KEngine::KSystem::LightSystem::getLightType(int n)
 {
 	return m_components[n].lightType;
 }
-
 PointLightInfo KEngine::KSystem::LightSystem::getPointLight(int n)
 {
 	
@@ -130,16 +126,22 @@ SpotLightInfo KEngine::KSystem::LightSystem::getSpotLight(int n)
 {
 	return m_spotLights[m_components[n].lightIndex];
 }
+*/
 
 void LightSystem::run()
 {
 	m_frustum.testBegin();
-	for (int i = 0; i < m_pointLights.size(); i++) {
+	int i = 0;
+	for (auto it = m_components.begin(); it != m_components.end(); it++) {
+		if (it->lightType == LIGHT_TYPE::POINT_LIGHT)
+		{
+			m_frustum.testPointlight(i, it->position, it->intensity * RADIUS_PER_LIGHT_INTENSITY);
 
-		m_frustum.testPointlight(i, m_pointLights[i].position, m_pointLights[i].intensity * RADIUS_PER_LIGHT_INTENSITY);
-	}
-	for (int i = 0; i < m_spotLights.size(); i++) {
+		}
+		else {
+			m_frustum.testSpotlight(i, it->position, Vector3::Forward, it->intensity * RADIUS_PER_LIGHT_INTENSITY, it->fov);
 
-		m_frustum.testSpotlight(i, m_spotLights[i].position, Vector3::Forward, m_spotLights[i].intensity * RADIUS_PER_LIGHT_INTENSITY, m_spotLights[i].fov);
+		}
+		i++;
 	}
 }

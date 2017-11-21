@@ -84,10 +84,14 @@ void RenderSystem::render(
 		setMatrix(&vertexShader, "world", it->getWorldMatrix());
 		vertexShader.CopyAllBufferData();
 		auto lightComponent = entityFactory.getEntity(it->entityIndex).m_lightComponent;
-		if(lightComponent == 0)
+		if (lightComponent == 0) {
 			fragmentShader.SetFloat3("diffuseColor", Vector3());
-		else
-			fragmentShader.SetFloat3("diffuseColor", Vector3(1) );
+
+		}
+		else {
+			fragmentShader.SetFloat3("diffuseColor", lightComponent->color );
+
+		}
 
 		fragmentShader.CopyAllBufferData();
 		UINT stride = sizeof(Vertex);
