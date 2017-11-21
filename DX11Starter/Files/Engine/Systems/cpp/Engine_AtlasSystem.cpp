@@ -8,14 +8,15 @@ AtlasSystem::AtlasSystem()
 {
 }
 
-void KEngine::KSystem::AtlasSystem::init(int width, int height, int sliceWidth, int sliceHeight)
+void AtlasSystem::init(int width, int height, int sliceWidth, int sliceHeight)
 {
 	m_width = width;
 	m_height = height;
 	m_sliceWidth = sliceWidth;
 	m_sliceHeight = sliceHeight;
-	xBegin = 0;
-	yBegin = 0;
+	//leave an empty pixel
+	xBegin = 1;
+	yBegin = 1;
 }
 
 void AtlasSystem::addEntityHandle(Entity & entity, AtlasComponent & componenet)
@@ -28,9 +29,10 @@ void AtlasSystem::addEntityHandle(Entity & entity, AtlasComponent & componenet)
 	{
 		offsetX = xBegin;
 		offsetY = yBegin;
+		
 		//check if this is renderable size
 		if (offsetX + m_sliceWidth + 1 > m_width) {
-			xBegin = 0;
+			xBegin = 1;
 			yBegin += m_sliceHeight+2; 
 			continue;
 		}

@@ -43,14 +43,14 @@ void Engine::initExample()
 		while (!isNewEntityAvailable && maxTolerableFailure-- > 0 );
 		if (!isNewEntityAvailable) 
 			continue;
-		std::cout << "SELECTED LIGHT INDEX " << selectedEntityIndex << std::endl;
+		//std::cout << "SELECTED LIGHT INDEX " << selectedEntityIndex << std::endl;
 		m_lightSystem.addEntity(m_entityFactory.m_entities, m_entityFactory.getEntity(selectedEntityIndex), selectedEntityIndex);
 		if(m_lightSystem.getLastComponent().lightType == LIGHT_TYPE::POINT_LIGHT)
 			m_renderSystem.getComponent(selectedEntityIndex).meshId = MESH_SPHERE;
 		else
 			m_renderSystem.getComponent(selectedEntityIndex).meshId = MESH_SPOTLIGHT;
 		m_atlasSystem.addEntity(m_entityFactory.m_entities, m_entityFactory.getEntity(selectedEntityIndex), selectedEntityIndex);
-		std::cout << "ATLAS " << m_atlasSystem.getLastComponent().x << " , " << m_atlasSystem.getLastComponent().y << " (" << m_atlasSystem.getLastComponent().width << "," << m_atlasSystem.getLastComponent().height << ")" << std::endl;
+		//std::cout << "ATLAS " << m_atlasSystem.getLastComponent().x << " , " << m_atlasSystem.getLastComponent().y << " (" << m_atlasSystem.getLastComponent().width << "," << m_atlasSystem.getLastComponent().height << ")" << std::endl;
 
 	} 
 	{
