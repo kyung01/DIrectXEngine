@@ -53,7 +53,7 @@ BenchmarkDotNet.Artifacts/
 # .NET Core
 project.lock.json
 project.fragment.lock.json
-artifacts/
+DX11Starter/artifacts/
 **/Properties/launchSettings.json
 
 *_i.c
@@ -85,7 +85,7 @@ artifacts/
 _Chutzpah*
 
 # Visual C++ cache files
-ipch/
+DX11Starter/ipch/
 *.aps
 *.ncb
 *.opendb
@@ -148,17 +148,17 @@ AutoTest.Net/
 [Ee]xpress/
 
 # DocProject is a documentation generator add-in
-DocProject/buildhelp/
-DocProject/Help/*.HxT
-DocProject/Help/*.HxC
-DocProject/Help/*.hhc
-DocProject/Help/*.hhk
-DocProject/Help/*.hhp
-DocProject/Help/Html2
-DocProject/Help/html
+DX11Starter/DocProject/buildhelp/
+DX11Starter/DocProject/Help/*.HxT
+DX11Starter/DocProject/Help/*.HxC
+DX11Starter/DocProject/Help/*.hhc
+DX11Starter/DocProject/Help/*.hhk
+DX11Starter/DocProject/Help/*.hhp
+DX11Starter/DocProject/Help/Html2
+DX11Starter/DocProject/Help/html
 
 # Click-Once directory
-publish/
+DX11Starter/publish/
 
 # Publish Web Output
 *.[Pp]ublish.xml
@@ -186,16 +186,16 @@ PublishScripts/
 *.nuget.targets
 
 # Microsoft Azure Build Output
-csx/
+DX11Starter/csx/
 *.build.csdef
 
 # Microsoft Azure Emulator
-ecf/
-rcf/
+DX11Starter/ecf/
+DX11Starter/rcf/
 
 # Windows Store app package directories and files
-AppPackages/
-BundleArtifacts/
+DX11Starter/AppPackages/
+DX11Starter/BundleArtifacts/
 Package.StoreAssociation.xml
 _pkginfo.txt
 *.appx
