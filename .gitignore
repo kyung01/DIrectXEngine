@@ -18,16 +18,16 @@ DX11Starter/packages.config
 *.userprefs
 
 # Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-bld/
-[Bb]in/
-[Oo]bj/
-[Ll]og/
+DX11Starter/[Dd]ebug/
+DX11Starter/[Dd]ebugPublic/
+DX11Starter/[Rr]elease/
+DX11Starter/[Rr]eleases/
+DX11Starter/x64/
+DX11Starter/x86/
+DX11Starter/bld/
+DX11Starter/[Bb]in/
+DX11Starter/[Oo]bj/
+DX11Starter/[Ll]og/
 
 # Visual Studio 2015/2017 cache/options directory
 DX11Starter/.vs/
@@ -35,16 +35,16 @@ DX11Starter/.vs/
 #wwwroot/
 
 # MSTest test Results
-[Tt]est[Rr]esult*/
-[Bb]uild[Ll]og.*
+DX11Starter/[Tt]est[Rr]esult*/
+DX11Starter/[Bb]uild[Ll]og.*
 
 # NUNIT
 *.VisualState.xml
 TestResult.xml
 
 # Build Results of an ATL Project
-[Dd]ebugPS/
-[Rr]eleasePS/
+DX11Starter/[Dd]ebugPS/
+DX11Starter/[Rr]eleasePS/
 dlldata.c
 
 # Benchmark Results
