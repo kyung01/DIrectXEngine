@@ -19,6 +19,7 @@ namespace KEngine {
 		struct ForwardLight;
 		struct SphericalHarmonicProbe;
 		struct Renderable;
+		struct AtlasComponent;
 		struct LightComponent;
 	}
 	struct Entity {
@@ -33,6 +34,7 @@ namespace KEngine {
 		KComponent::ForwardLight*			m_forwardLight;
 		KComponent::SphericalHarmonicProbe*	m_sphereicalHarmonicProbe;
 		KComponent::Renderable*				m_renderable;
+		KComponent::AtlasComponent*			m_atlasComponent;
 		//Must recreate new entity in order to add new componenet 
 		//Entity(std::vector<byte> m_components, std::vector<ComponentIndex> m_componentIndexs);
 		

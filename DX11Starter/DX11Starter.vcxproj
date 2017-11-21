@@ -132,6 +132,7 @@
     <ClCompile Include="Files\DirectX\DirectXSimpleMath.cpp" />
     <ClCompile Include="Files\DirectX\DXCore.cpp" />
     <ClCompile Include="Files\DirectX\KContext.cpp" />
+    <ClCompile Include="Files\Engine\Systems\cpp\Engine_AtlasSystem.cpp" />
     <ClCompile Include="Files\Engine\Componenets\cpp\Engine_Renderable.cpp" />
     <ClCompile Include="Files\Engine\Componenets\cpp\Transform3D.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine_EventHandler.cpp" />
@@ -326,6 +327,7 @@
     <ClInclude Include="Files\ClusteredFrustum\Frustum.h" />
     <ClInclude Include="Files\ClusteredFrustum\BufferDataTranslator.h" />
     <ClInclude Include="Files\ClusteredFrustum\Sorter.h" />
+    <ClInclude Include="Files\Engine\Componenets\AtlasComponent.h" />
     <ClInclude Include="Files\Engine\Componenets\ClusterLight.h" />
     <ClInclude Include="Files\Engine\Componenets\LightEntity.h" />
     <ClInclude Include="Files\Engine\Componenets\Renderable.h" />
@@ -343,6 +345,7 @@
     <ClInclude Include="Files\Engine\Mesh.h" />
     <ClInclude Include="Files\Engine\SimpleShader.h" />
     <ClInclude Include="Files\Engine\System.h" />
+    <ClInclude Include="Files\Engine\Systems\AtlasSystem.h" />
     <ClInclude Include="Files\Engine\Systems\ClusteredFrustumLightCoolingSystem.h" />
     <ClInclude Include="Files\Engine\Systems\LightSystem.h" />
     <ClInclude Include="Files\Engine\Systems\RenderSystem.h" />

@@ -573,6 +573,9 @@
     <ClCompile Include="srcBullet\Bullet3Geometry\b3GeometryUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Files\Engine\Systems\cpp\Engine_AtlasSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\imgui\imconfig.h">
@@ -1539,6 +1542,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="srcBullet\Bullet3Geometry\b3GrahamScan2dConvexHull.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Systems\AtlasSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Componenets\AtlasComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

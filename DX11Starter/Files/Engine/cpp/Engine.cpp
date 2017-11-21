@@ -49,6 +49,9 @@ void Engine::initExample()
 			m_renderSystem.getComponent(selectedEntityIndex).meshId = MESH_SPHERE;
 		else
 			m_renderSystem.getComponent(selectedEntityIndex).meshId = MESH_SPOTLIGHT;
+		m_atlasSystem.addEntity(m_entityFactory.m_entities, m_entityFactory.getEntity(selectedEntityIndex), selectedEntityIndex);
+		std::cout << "ATLAS " << m_atlasSystem.getLastComponent().x << " , " << m_atlasSystem.getLastComponent().y << " (" << m_atlasSystem.getLastComponent().width << "," << m_atlasSystem.getLastComponent().height << ")" << std::endl;
+
 	} 
 	{
 
@@ -96,6 +99,7 @@ void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context,
 	print("init");
 	m_asset.init(device, context);
 	m_lightSystem.init(windowWidth/windowHeight, 0.01f, 100.0f, 10, 10, 10);
+	m_atlasSystem.init(5000, 5000, 512, 512);
 	m_frustum.init(windowWidth / (float)windowHeight, 0.1f, 100.0f, 10, 10, 10);
 	initExample();
 }

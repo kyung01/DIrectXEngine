@@ -6,6 +6,7 @@
 #include <Engine\EventHandler.h>
 #include <Engine\Asset.h>
 #include <Engine\EntityFactory.h>
+#include <Engine\Systems\AtlasSystem.h>
 #include <Engine\Systems\RenderSystem.h>
 #include <Engine\Systems\LightSystem.h>
 #include <Engine\Systems\Transform3DSystem.h>
@@ -27,6 +28,7 @@ namespace KEngine {
 		std::list<EventHandler*> m_eventHandlers;
 		//Systems
 		KSystem::RenderSystem	m_renderSystem;
+		KSystem::AtlasSystem	m_atlasSystem;
 		KSystem::LightSystem	m_lightSystem;
 		KSystem::Transform3DSystem m_transform3DSystem;
 		//Handlers
