@@ -7,6 +7,14 @@ using namespace KEngine;
 const int CLUSTER_ITEM_SIZE = 3200;
 const int CLUSTER_SIZE = 1000;
 const float LIGHT_INFLUENCE_PER_INTENSITY = 12.0f;
+
+//What is the size of the atals shadow map?
+const int ATLAS_SHADOW_MAP_WIDTH = 5000;
+const int ATLAS_SHADOW_MAP_HEIGHT = 5000;
+//How much do I slice per light from the atlas map?
+const int ATLAS_SHADOW_MAP_SLICE_WIDTH = 512;
+const int ATLAS_SHADOW_MAP_SLICE_HEIGHT = 512;
+
 void Engine::initExample()
 {
 	int ENTITY_NUMBER = 50;
@@ -188,27 +196,27 @@ void Engine::render(
 {
 	m_dataTranslator.transfer(
 		context,
-		m_asset.getFragShader(RENDER_TEST).GetBuffer(0), m_asset.getFragShader(RENDER_TEST).GetBuffer(1),
-		m_asset.getFragShader(RENDER_TEST).GetBuffer(2), 0, 0);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).GetBuffer(0), m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).GetBuffer(1),
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).GetBuffer(2), 0, 0);
 	Matrix matView = m_renderSystem.getCameraViewMatrix();
 	{
 		DirectX::XMFLOAT4X4 MAT_TEMP;
 		DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(matView));
-		m_asset.getFragShader(RENDER_TEST).SetMatrix4x4("eyeViewMatrix", MAT_TEMP);
-		m_asset.getFragShader(RENDER_TEST).SetInt("frustumX", m_frustum.m_size.x);
-		m_asset.getFragShader(RENDER_TEST).SetInt("frustumY", m_frustum.m_size.y);
-		m_asset.getFragShader(RENDER_TEST).SetInt("frustumZ", m_frustum.m_size.z);
-		m_asset.getFragShader(RENDER_TEST).SetFloat("frustumSizeRatio", m_frustum.m_widthOverHeight);
-		m_asset.getFragShader(RENDER_TEST).SetFloat("frustumNear", m_frustum.m_near);
-		m_asset.getFragShader(RENDER_TEST).SetFloat("frustumFar", m_frustum.m_far);
-		m_asset.getFragShader(RENDER_TEST).CopyAllBufferData();
-		m_asset.getFragShader(RENDER_TEST).SetSamplerState("samplerDefault",m_asset.m_sampler);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetMatrix4x4("eyeViewMatrix", MAT_TEMP);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetInt("frustumX", m_frustum.m_size.x);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetInt("frustumY", m_frustum.m_size.y);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetInt("frustumZ", m_frustum.m_size.z);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetFloat("frustumSizeRatio", m_frustum.m_widthOverHeight);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetFloat("frustumNear", m_frustum.m_near);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetFloat("frustumFar", m_frustum.m_far);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).CopyAllBufferData();
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("samplerDefault",m_asset.m_sampler);
 	}
 
 	m_renderSystem.render(
 		device, context, target, targetDepth, viewport,
 		m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE),
-		m_asset.getVertShader(KEnum::RENDER_TEST), m_asset.getFragShader(KEnum::RENDER_TEST),
+		m_asset.getVertShader(KEnum::RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM), m_asset.getFragShader(KEnum::RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM),
 		m_asset.m_meshes,m_entityFactory);
 }
 void Engine::OnMouseMove(WPARAM buttonState, int x, int y)

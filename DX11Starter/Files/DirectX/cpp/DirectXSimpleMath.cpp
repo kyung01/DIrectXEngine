@@ -1,4 +1,4 @@
-#include "DirectXSimpleMath.h"
+#include <DirectX\DirectXSimpleMath.h>
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;

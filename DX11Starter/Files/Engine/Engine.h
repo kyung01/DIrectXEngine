@@ -36,6 +36,8 @@ namespace KEngine {
 
 		KFrustum::Frustum				m_frustum;
 		KFrustum::BufferDataTranslator	m_dataTranslator;
+
+		
 	protected:
 		void initExample();
 	public:

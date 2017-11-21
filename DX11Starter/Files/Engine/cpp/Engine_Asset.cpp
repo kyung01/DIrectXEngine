@@ -24,7 +24,7 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 {
 	std::list<LoadInfoShader> lst({
 		LoadInfoShader(RENDER_SPHERICAL_HARMONIC_DIFFUSE_MAP,							L"Resource/Shader/Atlas/DiffuseCubeMapVS.hlsl"),
-		LoadInfoShader(RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightVS.hlsl")
+		LoadInfoShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM,			L"Resource/Shader/Atlas/SimpleLightVS.hlsl")
 	});
 	/*
 		unused shader files
@@ -46,7 +46,7 @@ std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 {
 	std::list<LoadInfoShader> lst({
 		LoadInfoShader(RENDER_SPHERICAL_HARMONIC_DIFFUSE_MAP,							L"Resource/Shader/Atlas/DiffuseCubeMapFS.hlsl"),
-		LoadInfoShader(RENDER_TEST,			L"Resource/Shader/Atlas/SimpleLightFS.hlsl"
+		LoadInfoShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM,			L"Resource/Shader/Atlas/SimpleLightFS.hlsl"
 		,{
 			(int)true, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE,
 			(int)true, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE,

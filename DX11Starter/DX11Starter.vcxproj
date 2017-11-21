@@ -129,9 +129,10 @@
   <ItemGroup>
     <ClCompile Include="Files\ClusteredFrustum\cpp\Frustum.cpp" />
     <ClCompile Include="Files\ClusteredFrustum\cpp\BufferDataTranslator.cpp" />
-    <ClCompile Include="Files\DirectX\DirectXSimpleMath.cpp" />
-    <ClCompile Include="Files\DirectX\DXCore.cpp" />
-    <ClCompile Include="Files\DirectX\KContext.cpp" />
+    <ClCompile Include="Files\DirectX\cpp\RenderTexture.cpp" />
+    <ClCompile Include="Files\DirectX\cpp\DirectXSimpleMath.cpp" />
+    <ClCompile Include="Files\DirectX\cpp\DXCore.cpp" />
+    <ClCompile Include="Files\DirectX\cpp\KContext.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_AtlasSystem.cpp" />
     <ClCompile Include="Files\Engine\Componenets\cpp\Engine_Renderable.cpp" />
     <ClCompile Include="Files\Engine\Componenets\cpp\Transform3D.cpp" />
@@ -322,6 +323,7 @@
     <ClInclude Include="Files\DirectX\DirectXUtility.h" />
     <ClInclude Include="Files\DirectX\DXCore.h" />
     <ClInclude Include="Files\DirectX\KContext.h" />
+    <ClInclude Include="Files\DirectX\RenderTexture.h" />
     <ClInclude Include="Files\Engine\Asset.h" />
     <ClInclude Include="Files\Engine\Camera.h" />
     <ClInclude Include="Files\ClusteredFrustum\Frustum.h" />
