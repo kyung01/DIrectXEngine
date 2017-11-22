@@ -121,7 +121,7 @@ void KEngine::KSystem::RenderSystem::renderSpotLightShadowMap(
 	fragmentShader.SetShader();
 	m_cameraLight.setPosition(position);
 	m_cameraLight.setQuaternion(rotation);
-	m_cameraLight.setProjParameters(fov, viewport.Width, viewport.Height, 0.1f, 1000.0f);
+	m_cameraLight.setProjParameters(fov,1,1, 0.1f, 1000.0f);
 	setMatrix(&vertexShader, "view", m_cameraLight.getViewMatrix());
 	setMatrix(&vertexShader, "proj", m_cameraLight.getProjMatrix());
 	for (auto it = m_components.begin(); it != m_components.end(); it++) {
