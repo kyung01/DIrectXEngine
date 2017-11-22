@@ -196,8 +196,8 @@ void Engine::render(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
 	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT viewport)
 {
+	
 	{
-
 		//Prepare rendering the atlas
 		D3D11_VIEWPORT atlasViewport = {};
 		auto &vertShader = m_asset.getVertShader(RENDER_WORLD_POSITION);
@@ -211,15 +211,23 @@ void Engine::render(
 
 		for (int i = 0; i < m_lightSystem.getComponentVectorSize(); i++) {
 			LightComponent& lightComponent = m_lightSystem.getComponent(i);
+			Transform3D&	transform = m_transform3DSystem.getComponent(i);
 			AtlasComponent& atalsComponent = *m_entityFactory.getEntity(lightComponent.entityIndex).m_atlasComponent;
 			atlasViewport.TopLeftX = atalsComponent.x;
 			atlasViewport.TopLeftY = atalsComponent.y;
 			atlasViewport.Width = atalsComponent.width;
 			atlasViewport.Height = atalsComponent.height;
-			m_renderSystem.renderShadowMap(
-				device, context, 
-				m_textureAtlasShadowMap.getRenderTargetView(), m_textureAtalsShadowMapDepth.getDepthStencilView(), atlasViewport,
-				m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE), vertShader, fragShader, m_asset.m_meshes, m_entityFactory);
+			if (lightComponent.lightType == LIGHT_TYPE::POINT_LIGHT) {
+
+			}
+			else {
+				m_renderSystem.renderSpotLightShadowMap(
+					device, context,
+					transform.position, transform.rotation, lightComponent.fov,
+					m_textureAtlasShadowMap.getRenderTargetView(), m_textureAtalsShadowMapDepth.getDepthStencilView(), atlasViewport,
+					m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE), vertShader, fragShader, m_asset.m_meshes, m_entityFactory);
+
+			}
 		}
 	}
 	//Render the scene

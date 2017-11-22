@@ -19,7 +19,7 @@ namespace KEngine {
 		class RenderSystem : public System<Renderable>{
 		private:
 		protected:
-			Camera m_camera;
+			Camera m_camera,m_cameraLight;
 			DirectX::XMFLOAT4X4 matTemp; //temporary mat to store modified matrixs
 			void setMatrix(ISimpleShader * shader, std::string name, DirectX::XMMATRIX matrix);
 			void setRenderTarget(
@@ -48,8 +48,9 @@ namespace KEngine {
 				std::map<KEnum, Mesh> &meshes,
 				EntityFactory& entityFactory
 			);
-			void renderShadowMap(
+			void renderSpotLightShadowMap(
 				ID3D11Device * device, ID3D11DeviceContext * context,
+				Vector3 position, Quaternion rotation,float fov,
 				ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
 				ID3D11RasterizerState *cullBackFace,
 				SimpleVertexShader & vertexShader, SimpleFragmentShader & fragmentShader,

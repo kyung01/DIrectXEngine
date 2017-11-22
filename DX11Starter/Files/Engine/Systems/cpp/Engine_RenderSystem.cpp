@@ -75,6 +75,7 @@ void RenderSystem::render(
 	setRenderTarget(context, renderTargetView, depthStencilView, viewport);
 	vertexShader.SetShader();
 	fragmentShader.SetShader();
+	
 	setMatrix(&vertexShader, "view", m_camera.getViewMatrix());
 	setMatrix(&vertexShader, "proj", m_camera.getProjMatrix());
 	for (auto it = m_components.begin(); it != m_components.end(); it++) {
@@ -105,7 +106,11 @@ void RenderSystem::render(
 	}
 }
 
-void KEngine::KSystem::RenderSystem::renderShadowMap(ID3D11Device * device, ID3D11DeviceContext * context, ID3D11RenderTargetView * renderTargetView, ID3D11DepthStencilView * depthStencilView, D3D11_VIEWPORT & viewport, ID3D11RasterizerState * cullBackFace, SimpleVertexShader & vertexShader, SimpleFragmentShader & fragmentShader, std::map<KEnum, Mesh>& meshes, EntityFactory & entityFactory)
+void KEngine::KSystem::RenderSystem::renderSpotLightShadowMap(
+	ID3D11Device * device, ID3D11DeviceContext * context, 
+
+	Vector3 position, Quaternion rotation, float fov,
+	ID3D11RenderTargetView * renderTargetView, ID3D11DepthStencilView * depthStencilView, D3D11_VIEWPORT & viewport, ID3D11RasterizerState * cullBackFace, SimpleVertexShader & vertexShader, SimpleFragmentShader & fragmentShader, std::map<KEnum, Mesh>& meshes, EntityFactory & entityFactory)
 {
 	//float colorClean[4] = { 0.1f,0.1f,0.1f,1 };
 	//context->ClearRenderTargetView(renderTargetView, colorClean);
@@ -114,8 +119,11 @@ void KEngine::KSystem::RenderSystem::renderShadowMap(ID3D11Device * device, ID3D
 	setRenderTarget(context, renderTargetView, depthStencilView, viewport);
 	vertexShader.SetShader();
 	fragmentShader.SetShader();
-	setMatrix(&vertexShader, "view", m_camera.getViewMatrix());
-	setMatrix(&vertexShader, "proj", m_camera.getProjMatrix());
+	m_cameraLight.setPosition(position);
+	m_cameraLight.setQuaternion(rotation);
+	m_cameraLight.setProjParameters(fov, viewport.Width, viewport.Height, 0.1f, 1000.0f);
+	setMatrix(&vertexShader, "view", m_cameraLight.getViewMatrix());
+	setMatrix(&vertexShader, "proj", m_cameraLight.getProjMatrix());
 	for (auto it = m_components.begin(); it != m_components.end(); it++) {
 		if (it->meshId == KEnum::UNDEFINED)
 			continue;
