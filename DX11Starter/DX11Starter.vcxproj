@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="Files\ClusteredFrustum\cpp\Frustum.cpp" />
     <ClCompile Include="Files\ClusteredFrustum\cpp\BufferDataTranslator.cpp" />
+    <ClCompile Include="Files\DirectX\cpp\DepthTexture.cpp" />
     <ClCompile Include="Files\DirectX\cpp\RenderTexture.cpp" />
     <ClCompile Include="Files\DirectX\cpp\DirectXSimpleMath.cpp" />
     <ClCompile Include="Files\DirectX\cpp\DXCore.cpp" />
@@ -319,6 +320,7 @@
     <ClInclude Include="Files\Camera.h" />
     <ClInclude Include="Files\ClusteredFrustum\DynamicBuffer.h" />
     <ClInclude Include="Files\ClusteredFrustum\Parameters.h" />
+    <ClInclude Include="Files\DirectX\DepthTexture.h" />
     <ClInclude Include="Files\DirectX\DirectXSimpleMath.h" />
     <ClInclude Include="Files\DirectX\DirectXUtility.h" />
     <ClInclude Include="Files\DirectX\DXCore.h" />

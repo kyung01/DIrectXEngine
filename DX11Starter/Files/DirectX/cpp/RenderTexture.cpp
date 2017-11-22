@@ -349,7 +349,7 @@ ID3D11Texture2D * RenderTexture::getShaderResource()
 	return m_renderTargetTexture;
 }
 
-ID3D11RenderTargetView * RenderTexture::getRenderTargetView() {
+ID3D11RenderTargetView *& RenderTexture::getRenderTargetView() {
 	return m_renderTargetView;
 }
 
@@ -367,6 +367,7 @@ void RenderTexture::setViewport(D3D11_VIEWPORT viewport)
 {
 	this->viewport = viewport;
 }
+
 
 void RenderTexture::setRenderTargetView(ID3D11RenderTargetView * view, D3D11_VIEWPORT &viewport)
 {

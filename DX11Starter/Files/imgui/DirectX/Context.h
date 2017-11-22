@@ -7,6 +7,10 @@
 #include <d3dcompiler.h>
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
+
+#include <Engine\Engine.h>
+
+
 /*
 TODO learn how to display resourceview into an image and make an example
 TODO UI should display current loaded/saved shaders
@@ -75,7 +79,7 @@ namespace NImGui {
 		);
 		void renderDrawLists(ImDrawData* draw_data);
 		virtual void renderSub();
-		void render();
+		void render(KEngine::Engine &engine);
 
 	};
 

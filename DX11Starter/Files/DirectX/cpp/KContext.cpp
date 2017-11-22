@@ -131,7 +131,7 @@ void KContext::Draw(float deltaTime, float totalTime)
 
 	context->OMSetRenderTargets(1,&this-> backBufferRTV, depthStencilView);
 	m_engine.render(device, context, this->backBufferRTV, depthStencilView, viewport);
-	m_ui.render();
+	m_ui.render(m_engine);
 	swapChain->Present(0, 0);
 }
 

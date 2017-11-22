@@ -110,6 +110,8 @@ void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context,
 	m_atlasSystem.init(5000, 5000, 512, 512);
 	m_frustum.init(windowWidth / (float)windowHeight, 0.1f, 100.0f, 10, 10, 10);
 	initExample();
+	m_textureAtlasShadowMap.init(device, ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT);
+	m_textureAtalsShadowMapDepth.init(device, ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT);
 }
 void Engine::update(float timeElapsed)
 {
@@ -194,6 +196,33 @@ void Engine::render(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
 	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT viewport)
 {
+	{
+
+		//Prepare rendering the atlas
+		D3D11_VIEWPORT atlasViewport = {};
+		auto &vertShader = m_asset.getVertShader(RENDER_WORLD_POSITION);
+		auto &fragShader = m_asset.getFragShader(RENDER_WORLD_POSITION);
+		atlasViewport.MinDepth = 0;
+		atlasViewport.MaxDepth = 1;
+
+		float colorClean[4] = { 0.1f,0.1f,0.1f,1 };
+		context->ClearRenderTargetView(m_textureAtlasShadowMap.getRenderTargetView(), colorClean);
+		context->ClearDepthStencilView(m_textureAtalsShadowMapDepth.getDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+		for (int i = 0; i < m_lightSystem.getComponentVectorSize(); i++) {
+			LightComponent& lightComponent = m_lightSystem.getComponent(i);
+			AtlasComponent& atalsComponent = *m_entityFactory.getEntity(lightComponent.entityIndex).m_atlasComponent;
+			atlasViewport.TopLeftX = atalsComponent.x;
+			atlasViewport.TopLeftY = atalsComponent.y;
+			atlasViewport.Width = atalsComponent.width;
+			atlasViewport.Height = atalsComponent.height;
+			m_renderSystem.renderShadowMap(
+				device, context, 
+				m_textureAtlasShadowMap.getRenderTargetView(), m_textureAtalsShadowMapDepth.getDepthStencilView(), atlasViewport,
+				m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE), vertShader, fragShader, m_asset.m_meshes, m_entityFactory);
+		}
+	}
+	//Render the scene
 	m_dataTranslator.transfer(
 		context,
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).GetBuffer(0), m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).GetBuffer(1),

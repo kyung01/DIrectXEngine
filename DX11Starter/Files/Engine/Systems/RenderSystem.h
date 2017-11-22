@@ -48,6 +48,14 @@ namespace KEngine {
 				std::map<KEnum, Mesh> &meshes,
 				EntityFactory& entityFactory
 			);
+			void renderShadowMap(
+				ID3D11Device * device, ID3D11DeviceContext * context,
+				ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
+				ID3D11RasterizerState *cullBackFace,
+				SimpleVertexShader & vertexShader, SimpleFragmentShader & fragmentShader,
+				std::map<KEnum, Mesh> &meshes,
+				EntityFactory& entityFactory
+			);
 
 			void OnResize(int targetFrameWidth, int targetFrameHeight);
 		};

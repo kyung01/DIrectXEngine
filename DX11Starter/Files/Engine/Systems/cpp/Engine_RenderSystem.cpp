@@ -105,6 +105,38 @@ void RenderSystem::render(
 	}
 }
 
+void KEngine::KSystem::RenderSystem::renderShadowMap(ID3D11Device * device, ID3D11DeviceContext * context, ID3D11RenderTargetView * renderTargetView, ID3D11DepthStencilView * depthStencilView, D3D11_VIEWPORT & viewport, ID3D11RasterizerState * cullBackFace, SimpleVertexShader & vertexShader, SimpleFragmentShader & fragmentShader, std::map<KEnum, Mesh>& meshes, EntityFactory & entityFactory)
+{
+	//float colorClean[4] = { 0.1f,0.1f,0.1f,1 };
+	//context->ClearRenderTargetView(renderTargetView, colorClean);
+	//context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	context->RSSetState(cullBackFace);
+	setRenderTarget(context, renderTargetView, depthStencilView, viewport);
+	vertexShader.SetShader();
+	fragmentShader.SetShader();
+	setMatrix(&vertexShader, "view", m_camera.getViewMatrix());
+	setMatrix(&vertexShader, "proj", m_camera.getProjMatrix());
+	for (auto it = m_components.begin(); it != m_components.end(); it++) {
+		if (it->meshId == KEnum::UNDEFINED)
+			continue;
+		Mesh& mesh = meshes.find(it->meshId)->second;
+		setMatrix(&vertexShader, "world", it->getWorldMatrix());
+		vertexShader.CopyAllBufferData();
+		auto lightComponent = entityFactory.getEntity(it->entityIndex).m_lightComponent;
+		if (lightComponent != 0) {
+			//There is light.
+			//For now don't do anything and just skip this case
+			continue;
+		}
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+		context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);
+		context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(mesh.getBufferIndexCount(), 0, 0);
+	}
+}
+
 
 
 void RenderSystem::update(std::vector<Entity> &entities, float time)

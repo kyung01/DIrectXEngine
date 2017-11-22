@@ -17,6 +17,9 @@
 
 #include <Physics\PhysicsMain.h>
 
+#include <DirectX\RenderTexture.h>
+#include <DirectX\DepthTexture.h>
+
 using namespace DirectX::SimpleMath;
 
 namespace KEngine {
@@ -33,14 +36,22 @@ namespace KEngine {
 		KSystem::Transform3DSystem m_transform3DSystem;
 		//Handlers
 		KHandler::PlayerInput m_handlerKeyboardInput;
-
+		//Test all kinds of light into this frustum
 		KFrustum::Frustum				m_frustum;
+		//Then translate all kinds of light and frustum data into this buffer
 		KFrustum::BufferDataTranslator	m_dataTranslator;
+		/// //Atals texture for rendering shadow maps for each light
+		/// NDirectX::RenderTexture m_textureAtlasShadowMap;
+		/// NDirectX::DepthTexture	m_textureAtalsShadowMapDepth;
 
-		
 	protected:
 		void initExample();
 	public:
+		//Put on public temporarily for debug purpose
+		//Atals texture for rendering shadow maps for each light
+		NDirectX::RenderTexture m_textureAtlasShadowMap;
+		NDirectX::DepthTexture	m_textureAtalsShadowMapDepth;
+
 		//pure data update
 		Engine();
 		void init(ID3D11Device * device, ID3D11DeviceContext * context, int windowWidth, int windowHeight) override;

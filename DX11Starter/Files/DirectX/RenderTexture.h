@@ -3,8 +3,8 @@ Original Filename: rendertextureclass.h
 from http://www.rastertek.com/dx11tut22.html
 */
 
-#ifndef _RENDERTEXTURECLASS_H_
-#define _RENDERTEXTURECLASS_H_
+#pragma once
+
 
 #include <d3d11.h>
 
@@ -35,7 +35,7 @@ namespace NDirectX {
 		void clear(ID3D11DeviceContext*, float, float, float, float);
 		ID3D11Texture2D* getShaderResource();
 		ID3D11ShaderResourceView* getShaderResourceView();
-		ID3D11RenderTargetView * getRenderTargetView();
+		ID3D11RenderTargetView *& getRenderTargetView();
 
 		int getWidth();
 		int getHeight();
@@ -46,4 +46,3 @@ namespace NDirectX {
 
 
 }
-#endif
