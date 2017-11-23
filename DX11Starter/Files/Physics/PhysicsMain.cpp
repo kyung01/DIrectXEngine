@@ -3,6 +3,7 @@
 #include <iostream>
 
 void Physics::PhysicsMain::init() {
+	return;
 	std::cout << "Hello World!" << std::endl;
 
 	// Build the broadphase

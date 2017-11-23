@@ -31,8 +31,9 @@ void LightSystem::addEntityHandle(Entity & entity, LightComponent & componenet)
 	float lightFOV = 3.14f / 2.0f;
 	Quaternion lightRotation;
 
-	if (DirectX::DirectXUtility::GET_RANDOM() % 2 == 0) {
-	//if (true) {
+	//if(false){
+	//if (DirectX::DirectXUtility::GET_RANDOM() % 2 == 0) {
+	if (true) {
 		//add point light
 		componenet.lightType = LIGHT_TYPE::POINT_LIGHT;
 	}

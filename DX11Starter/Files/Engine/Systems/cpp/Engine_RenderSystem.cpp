@@ -106,6 +106,176 @@ void RenderSystem::render(
 	}
 }
 
+void KEngine::KSystem::RenderSystem::renderPointLightShadowMap(
+	ID3D11Device * device, ID3D11DeviceContext * context,
+
+	Vector3 position, 
+	ID3D11RenderTargetView * renderTargetView, ID3D11DepthStencilView * depthStencilView, D3D11_VIEWPORT & viewport, ID3D11RasterizerState * cullBackFace, SimpleVertexShader & vertexShader, SimpleFragmentShader & fragmentShader, std::map<KEnum, Mesh>& meshes, EntityFactory & entityFactory)
+{
+	float viewportOriginalX = viewport.TopLeftX;
+	float viewportOriginalWidth = viewport.Width;
+
+	viewport.Width = (int)((viewportOriginalWidth-5) / 6.0f);
+	context->RSSetState(cullBackFace);
+	setRenderTarget(context, renderTargetView, depthStencilView, viewport);
+	vertexShader.SetShader();
+	fragmentShader.SetShader();
+	m_cameraLight.setPosition(position);
+	m_cameraLight.setQuaternion(Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), 3.14f / 2.0f));
+	m_cameraLight.setProjParameters(3.14f/2.0f, 1,1, 0.1f, 1000.0f);
+	setMatrix(&vertexShader, "view", m_cameraLight.getViewMatrix());
+	setMatrix(&vertexShader, "proj", m_cameraLight.getProjMatrix());
+	std::cout << "VIEWPORT BEGIN " << viewport.TopLeftX << "," << viewport.TopLeftY << "(" << viewport.Width << "," << viewport.Height << std::endl;
+	for (auto it = m_components.begin(); it != m_components.end(); it++) {
+		if (it->meshId == KEnum::UNDEFINED)
+			continue;
+		Mesh& mesh = meshes.find(it->meshId)->second;
+		setMatrix(&vertexShader, "world", it->getWorldMatrix());
+		vertexShader.CopyAllBufferData();
+		auto lightComponent = entityFactory.getEntity(it->entityIndex).m_lightComponent;
+		if (lightComponent != 0) {
+			//There is light.
+			//For now don't do anything and just skip this case
+			continue;
+		}
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+		context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);
+		context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(mesh.getBufferIndexCount(), 0, 0);
+	}
+	//-x direction
+	viewport.TopLeftX += 1 + (int)((viewportOriginalWidth - 5) / 6.0f);
+	context->RSSetViewports(1, &viewport);
+	m_cameraLight.setQuaternion(Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), -3.14f / 2.0f));
+	setMatrix(&vertexShader, "view", m_cameraLight.getViewMatrix());
+	for (auto it = m_components.begin(); it != m_components.end(); it++) {
+		if (it->meshId == KEnum::UNDEFINED)
+			continue;
+		Mesh& mesh = meshes.find(it->meshId)->second;
+		setMatrix(&vertexShader, "world", it->getWorldMatrix());
+		vertexShader.CopyAllBufferData();
+		auto lightComponent = entityFactory.getEntity(it->entityIndex).m_lightComponent;
+		if (lightComponent != 0) {
+			//There is light.
+			//For now don't do anything and just skip this case
+			continue;
+		}
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+		context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);
+		context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(mesh.getBufferIndexCount(), 0, 0);
+	}
+
+	//Y direction
+	viewport.TopLeftX += 1 + (int)((viewportOriginalWidth - 5) / 6.0f);
+	context->RSSetViewports(1, &viewport);
+	m_cameraLight.setQuaternion(Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), -3.14f / 2.0f));
+	setMatrix(&vertexShader, "view", m_cameraLight.getViewMatrix());
+	for (auto it = m_components.begin(); it != m_components.end(); it++) {
+		if (it->meshId == KEnum::UNDEFINED)
+			continue;
+		Mesh& mesh = meshes.find(it->meshId)->second;
+		setMatrix(&vertexShader, "world", it->getWorldMatrix());
+		vertexShader.CopyAllBufferData();
+		auto lightComponent = entityFactory.getEntity(it->entityIndex).m_lightComponent;
+		if (lightComponent != 0) {
+			//There is light.
+			//For now don't do anything and just skip this case
+			continue;
+		}
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+		context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);
+		context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(mesh.getBufferIndexCount(), 0, 0);
+	}
+
+	//-Y direction
+	viewport.TopLeftX += 1 + (int)((viewportOriginalWidth - 5) / 6.0f);
+	context->RSSetViewports(1, &viewport);
+	m_cameraLight.setQuaternion(Quaternion::CreateFromAxisAngle(Vector3(1, 0, 0), 3.14f / 2.0f));
+	setMatrix(&vertexShader, "view", m_cameraLight.getViewMatrix());
+	for (auto it = m_components.begin(); it != m_components.end(); it++) {
+		if (it->meshId == KEnum::UNDEFINED)
+			continue;
+		Mesh& mesh = meshes.find(it->meshId)->second;
+		setMatrix(&vertexShader, "world", it->getWorldMatrix());
+		vertexShader.CopyAllBufferData();
+		auto lightComponent = entityFactory.getEntity(it->entityIndex).m_lightComponent;
+		if (lightComponent != 0) {
+			//There is light.
+			//For now don't do anything and just skip this case
+			continue;
+		}
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+		context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);
+		context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(mesh.getBufferIndexCount(), 0, 0);
+	}
+
+	//z direction
+	viewport.TopLeftX += 1 + (int)((viewportOriginalWidth - 5) / 6.0f);
+	context->RSSetViewports(1, &viewport);
+	m_cameraLight.setQuaternion(Quaternion::Identity);
+	setMatrix(&vertexShader, "view", m_cameraLight.getViewMatrix());
+	for (auto it = m_components.begin(); it != m_components.end(); it++) {
+		if (it->meshId == KEnum::UNDEFINED)
+			continue;
+		Mesh& mesh = meshes.find(it->meshId)->second;
+		setMatrix(&vertexShader, "world", it->getWorldMatrix());
+		vertexShader.CopyAllBufferData();
+		auto lightComponent = entityFactory.getEntity(it->entityIndex).m_lightComponent;
+		if (lightComponent != 0) {
+			//There is light.
+			//For now don't do anything and just skip this case
+			continue;
+		}
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+		context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);
+		context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(mesh.getBufferIndexCount(), 0, 0);
+	}
+
+	//-Z direction
+	viewport.TopLeftX += 1 + (int)((viewportOriginalWidth - 5) / 6.0f);
+	context->RSSetViewports(1, &viewport);
+	m_cameraLight.setQuaternion(Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), 3.14f ));
+	setMatrix(&vertexShader, "view", m_cameraLight.getViewMatrix());
+
+	std::cout << "VIEWPORT END " << viewport.TopLeftX << "," << viewport.TopLeftY << "(" << viewport.Width << "," << viewport.Height << std::endl;
+	for (auto it = m_components.begin(); it != m_components.end(); it++) {
+		if (it->meshId == KEnum::UNDEFINED)
+			continue;
+		Mesh& mesh = meshes.find(it->meshId)->second;
+		setMatrix(&vertexShader, "world", it->getWorldMatrix());
+		vertexShader.CopyAllBufferData();
+		auto lightComponent = entityFactory.getEntity(it->entityIndex).m_lightComponent;
+		if (lightComponent != 0) {
+			//There is light.
+			//For now don't do anything and just skip this case
+			continue;
+		}
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+		context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);
+		context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(mesh.getBufferIndexCount(), 0, 0);
+	}
+
+
+	viewport.TopLeftX = viewportOriginalX;
+	viewport.Width = viewportOriginalWidth;
+}
 void KEngine::KSystem::RenderSystem::renderSpotLightShadowMap(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
 
@@ -121,7 +291,7 @@ void KEngine::KSystem::RenderSystem::renderSpotLightShadowMap(
 	fragmentShader.SetShader();
 	m_cameraLight.setPosition(position);
 	m_cameraLight.setQuaternion(rotation);
-	m_cameraLight.setProjParameters(fov,1,1, 0.1f, 1000.0f);
+	m_cameraLight.setProjParameters(fov,viewport.Width,viewport.Height, 0.1f, 1000.0f);
 	setMatrix(&vertexShader, "view", m_cameraLight.getViewMatrix());
 	setMatrix(&vertexShader, "proj", m_cameraLight.getProjMatrix());
 	for (auto it = m_components.begin(); it != m_components.end(); it++) {

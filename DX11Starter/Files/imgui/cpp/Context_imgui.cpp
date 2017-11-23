@@ -84,7 +84,7 @@ void Context::render(KEngine::Engine &engine) {
 	ImTextureID tex_id = engine.m_textureAtlasShadowMap.getShaderResourceView();
 	//ImTextureID tex_id = ImGui::GetIO().Fonts->TexID;
 	ImGui::Text("%.0fx%.0f", 500, 500);
-	ImGui::Image(tex_id, ImVec2(500, 500), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+	ImGui::Image(tex_id, ImVec2(1000, 1000), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
 	ImGui::End();
 
 	// Rendering

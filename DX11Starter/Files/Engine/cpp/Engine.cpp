@@ -9,17 +9,18 @@ const int CLUSTER_SIZE = 1000;
 const float LIGHT_INFLUENCE_PER_INTENSITY = 12.0f;
 
 //What is the size of the atals shadow map?
-const int ATLAS_SHADOW_MAP_WIDTH = 5000;
-const int ATLAS_SHADOW_MAP_HEIGHT = 5000;
+const int ATLAS_SHADOW_MAP_WIDTH = 700;
+const int ATLAS_SHADOW_MAP_HEIGHT = 700;
 //How much do I slice per light from the atlas map?
-const int ATLAS_SHADOW_MAP_SLICE_WIDTH = 512;
-const int ATLAS_SHADOW_MAP_SLICE_HEIGHT = 512;
+const int ATLAS_SHADOW_MAP_SLICE_WIDTH = 6*100+ 5;
+const int ATLAS_SHADOW_MAP_SLICE_HEIGHT = 6 * 100 + 5;
 
 void Engine::initExample()
 {
+	bool isFirstObject = true;
 	int ENTITY_NUMBER = 50;
 	int RANDOM_MODEL_NUMBER = 5;
-	int RANDOM_LIGHT_NUMBER = 10;
+	int RANDOM_LIGHT_NUMBER = 1;
 	int x(0), y(0), z(3);
 	for (int i = 0; i < ENTITY_NUMBER; i++)
 	{
@@ -29,7 +30,14 @@ void Engine::initExample()
 		m_renderSystem.addEntity(m_entityFactory.m_entities, entity, entityIndex);
 		m_renderSystem.getLastComponent().meshId = getRadnomModelID();
 
-		m_transform3DSystem.getLastComponent().setPosition(-4+x++, y, z);
+		if (isFirstObject) {
+			m_transform3DSystem.getLastComponent().setPosition(0, 0, 0);
+			isFirstObject = false;
+		}
+		else {
+
+			m_transform3DSystem.getLastComponent().setPosition(-4 + x++, y, z);
+		}
 		if (x > 8) {
 			x = 0;
 			y++;
@@ -107,7 +115,7 @@ void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context,
 	print("init");
 	m_asset.init(device, context);
 	m_lightSystem.init(windowWidth/windowHeight, 0.01f, 100.0f, 10, 10, 10);
-	m_atlasSystem.init(5000, 5000, 512, 512);
+	m_atlasSystem.init(ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT, ATLAS_SHADOW_MAP_SLICE_WIDTH, ATLAS_SHADOW_MAP_SLICE_HEIGHT);
 	m_frustum.init(windowWidth / (float)windowHeight, 0.1f, 100.0f, 10, 10, 10);
 	initExample();
 	m_textureAtlasShadowMap.init(device, ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT);
@@ -192,11 +200,12 @@ void Engine::renderUpdate(
 {
 }
 
+int renderAtalsOnce = 100;
 void Engine::render(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
 	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT viewport)
 {
-	
+	if(renderAtalsOnce++ > 0)
 	{
 		//Prepare rendering the atlas
 		D3D11_VIEWPORT atlasViewport = {};
@@ -211,13 +220,19 @@ void Engine::render(
 
 		for (int i = 0; i < m_lightSystem.getComponentVectorSize(); i++) {
 			LightComponent& lightComponent = m_lightSystem.getComponent(i);
-			Transform3D&	transform = m_transform3DSystem.getComponent(i);
+			Transform3D&	transform = m_transform3DSystem.getComponent(lightComponent.entityIndex);
 			AtlasComponent& atalsComponent = *m_entityFactory.getEntity(lightComponent.entityIndex).m_atlasComponent;
 			atlasViewport.TopLeftX = atalsComponent.x;
 			atlasViewport.TopLeftY = atalsComponent.y;
 			atlasViewport.Width = atalsComponent.width;
 			atlasViewport.Height = atalsComponent.height;
 			if (lightComponent.lightType == LIGHT_TYPE::POINT_LIGHT) {
+
+				m_renderSystem.renderPointLightShadowMap(
+					device, context,
+					transform.position, 
+					m_textureAtlasShadowMap.getRenderTargetView(), m_textureAtalsShadowMapDepth.getDepthStencilView(), atlasViewport,
+					m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE), vertShader, fragShader, m_asset.m_meshes, m_entityFactory);
 
 			}
 			else {
@@ -229,6 +244,7 @@ void Engine::render(
 
 			}
 		}
+		renderAtalsOnce = -100;
 	}
 	//Render the scene
 	m_dataTranslator.transfer(

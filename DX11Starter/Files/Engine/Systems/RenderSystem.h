@@ -48,9 +48,18 @@ namespace KEngine {
 				std::map<KEnum, Mesh> &meshes,
 				EntityFactory& entityFactory
 			);
+			void renderPointLightShadowMap(
+				ID3D11Device * device, ID3D11DeviceContext * context,
+				Vector3 position,
+				ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
+				ID3D11RasterizerState *cullBackFace,
+				SimpleVertexShader & vertexShader, SimpleFragmentShader & fragmentShader,
+				std::map<KEnum, Mesh> &meshes,
+				EntityFactory& entityFactory
+			);
 			void renderSpotLightShadowMap(
 				ID3D11Device * device, ID3D11DeviceContext * context,
-				Vector3 position, Quaternion rotation,float fov,
+				Vector3 position, Quaternion rotation, float fov,
 				ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
 				ID3D11RasterizerState *cullBackFace,
 				SimpleVertexShader & vertexShader, SimpleFragmentShader & fragmentShader,

@@ -39,8 +39,10 @@ VertexToPixel main(VertexShaderInput input)
 
 
 	matrix worldViewProj = mul(mul(world, view), proj);
+	float4 origin = mul(float4(float3(0,0,0), 1.0f), world);
 
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);
-	output.worldPos = mul(float4(input.position, 1.0f), world);
+	output.worldPos = mul(float4(input.position, 1.0f), world) - origin;
+	output.worldPos = abs(output.worldPos);
 	return output;
 }
