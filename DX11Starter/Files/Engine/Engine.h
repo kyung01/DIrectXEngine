@@ -50,7 +50,7 @@ namespace KEngine {
 		//Put on public temporarily for debug purpose
 		//Atals texture for rendering shadow maps for each light
 		NDirectX::RenderTexture m_textureAtlasShadowMap;
-		NDirectX::DepthTexture	m_textureAtalsShadowMapDepth;
+		NDirectX::DepthTexture	m_textureAtlasShadowMapDepth;
 
 		//pure data update
 		Engine();

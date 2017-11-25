@@ -256,6 +256,7 @@ bool ISimpleShader::loadShaderBlob(LPCWSTR shaderFile, LPCSTR target)
 		if (error) {
 			std::cout << "ERROR BUFFER IS NOT EMPTY " << error->GetBufferSize() << "\n";
 			OutputDebugString((LPCTSTR)error->GetBufferPointer());
+			std::cout << "OutputDebugString COMPLETED\n";
 			error->Release();
 		}
 		else std::cout << "ERROR BUFFER IS EMPTY" << "\n";

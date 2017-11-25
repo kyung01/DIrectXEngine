@@ -33,6 +33,7 @@ cbuffer ProbeParameter : register(b4)
 
 cbuffer global : register(b3)
 {
+	int LIGHT_ATLAS_WIDTH, LIGHT_ATLAS_HEIGHT;
 	matrix eyeViewMatrix;
 	int frustumX, frustumY, frustumZ;
 	float frustumSizeRatio;
@@ -83,21 +84,21 @@ int getClusterBelong(
 }	
 float3 getPointlight_UVDepth(
 	float4x4 matLight,
-	float uBegin , float vBegin, 
-	float uSize , float vSize, 
-	float uScale, float vScale,		
+	float uBegin, float vBegin,
+	float uSize, float vSize,
+	float uScale, float vScale,
 	float3 position) {
 	float4 posFromLightPerspective = mul(float4(position.x, position.y, position.z, 1.0f), matLight);
-	posFromLightPerspective /=  posFromLightPerspective.w;
+	posFromLightPerspective /= posFromLightPerspective.w;
 	float depthLight = posFromLightPerspective.z;
-	float u = posFromLightPerspective.x * 0.5 + 0.5; 
-	float v = posFromLightPerspective.y * 0.5 + 0.5; 
+	float u = posFromLightPerspective.x * 0.5 + 0.5;
+	float v = posFromLightPerspective.y * 0.5 + 0.5;
 	float MIN_UV_ERROR = 0.0000000001;
 
 	if (u < 0) {
 		if (u > -MIN_UV_ERROR)
 			u = 0;
-		else 
+		else
 			return float3(-1, -1, 0);
 	}
 	if (v < 0) {
@@ -119,11 +120,12 @@ float3 getPointlight_UVDepth(
 			return float3(-1, -1, 0);
 	}
 
-	u = (uBegin + u * uSize) / uScale; 
-	v = (vBegin + (1-v) * vSize) / vScale; 
-	
-	return float3(u,v,depthLight);
+	u = (uBegin + u * uSize) / uScale;
+	v = (vBegin + (1 - v) * vSize) / vScale;
+
+	return float3(u, v, depthLight);
 }
+
 float4 spotLight(
 
 	float4x4 matLight,
@@ -326,7 +328,52 @@ float3 pointLightDebug(
 	return light *isShadow;
 }
 // Entry point for this pixel shader
+float3 getUVDepthSpotLight(
+	float3 position,
+	float4x4 matLight,
+	float uBegin, float vBegin,
+	float uSize, float vSize,
+	float uScale, float vScale
+) {
+	float bias = 0.094f;
+	float4 posFromLightPerspective = mul(float4(position.x, position.y, position.z, 1.0f), matLight);
+	float depthLight =( posFromLightPerspective.z- bias) / posFromLightPerspective.w;
+	posFromLightPerspective /= posFromLightPerspective.w;
+	float u = posFromLightPerspective.x * 0.5 + 0.5;
+	float v = posFromLightPerspective.y * 0.5 + 0.5;
+	//return float3(u, v, 0);
 
+
+	float MIN_UV_ERROR = 0.001;
+	if (u < 0) {
+		if (u > -MIN_UV_ERROR)
+			u = 0;
+		else
+			return float3(-1, -1, 0);
+	}
+	if (v < 0) {
+		if (v > -MIN_UV_ERROR)
+			v = 0;
+		else
+			return float3(-1, -1, 0);
+	}
+	if (u > 1) {
+		if (u < 1 + MIN_UV_ERROR)
+			u = 1;
+		else
+			return float3(-1, -1, 0);
+	}
+	if (v > 1) {
+		if (v < 1 + MIN_UV_ERROR)
+			v = 1;
+		else
+			return float3(-1, -1, 0);
+	}
+	u = (uBegin + u * uSize) / uScale;
+	v = (vBegin + (1 - v) * vSize) / vScale;
+
+	return float3(u, v, depthLight);
+}
 float3 getColor(VertexToPixel input) {
 
 	//return float4(length(posFromCamera.xyz), 0, 0, 1);
@@ -363,7 +410,7 @@ float3 getColor(VertexToPixel input) {
 
 	float3 color = float3(0, 0, 0) + diffuseColor;
 	[loop]
-	for (int i = 0; i < clusterItemLightCount; i++)
+	for (int i = 0; i < (int)clusterItemLightCount; i++)
 	{
 		float3	lightColor = float3(0, 0, 0);
 		float	lightIntensity = 1.0f;
@@ -375,15 +422,33 @@ float3 getColor(VertexToPixel input) {
 		lightColor = light.color;
 
 		if (light.isSpotlight) {
-			lightIntensity = getSpotLightIntensity(light.position, light.axis, light.angle*0.5, light.angle, input.worldPos);
+			lightIntensity = max(0,getSpotLightIntensity(light.position, light.axis, light.angle*0.5, light.angle, input.worldPos));
+			float3 uv_depth = float3(-1, -1, 1);
+			uv_depth = getUVDepthSpotLight(
+				input.worldPos.xyz,
+				light.matLight,
+				light.topLeftX, light.topLeftY,
+				light.viewPortWidth, light.viewPortHeight,
+				LIGHT_ATLAS_WIDTH, LIGHT_ATLAS_HEIGHT
+			);
+			if (uv_depth.x == -1 || uv_depth.y == -1) {
+				//color += float3(.3f, 0, 0);
+				continue;
+			}
+			float4 lightBaked = textureLightAtlas.Sample(samplerDefault, uv_depth.xy);
+			float isLit = (uv_depth.z) < lightBaked.x;
+			//color += (1- isShadow);
+			//color = float3(uv_depth.z, lightBaked.x, isLit);
+			color += isLit*lightIntensity*lightColor;// *saturate(lightColor*lightIntensity);
+			//color += (1 - isShadow)*lightIntensity*lightColor;// *saturate(lightColor*lightIntensity);
+			//color += lightBaked.xyz;// *saturate(lightColor*lightIntensity);
+			//color += float3(uv_depth.x, uv_depth.y, 0);
+			//color += float3(0, isShadow,0);// .xyz;
 			
 		}
 		else {
-			lightIntensity = getPointLightIntensity(light.position, input.worldPos, inputNormal);
 		}
 
-		if(!isShadowed)
-			color += saturate(lightColor*lightIntensity);
 
 	}
 
@@ -396,21 +461,6 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float3 color = getColor(input);
 	float3 normal = normalize(input.reflectedViewVector);
 
-	if (renderSetting == 1) {
-
-		float4 c122123 = textureProbeArray.Sample(samplerDefault, float4(normalize(normal), 0));
-		return float4(c122123.xyz, 1);
-
-
-	}
-	if (renderSetting == 2) {
-
-		float4 c122123 = textureProbeArray.Sample(samplerDefault, float4(normalize(normal), 1));
-		return float4(c122123.xyz + float3(0.1,0.1,0.1f), 1);
-
-
-	}
-	
 	
 
 	return float4(color,1);

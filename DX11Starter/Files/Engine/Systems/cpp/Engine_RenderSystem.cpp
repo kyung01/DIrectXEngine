@@ -125,7 +125,7 @@ void KEngine::KSystem::RenderSystem::renderPointLightShadowMap(
 	m_cameraLight.setProjParameters(3.14f/2.0f, 1,1, 0.1f, 1000.0f);
 	setMatrix(&vertexShader, "view", m_cameraLight.getViewMatrix());
 	setMatrix(&vertexShader, "proj", m_cameraLight.getProjMatrix());
-	std::cout << "VIEWPORT BEGIN " << viewport.TopLeftX << "," << viewport.TopLeftY << "(" << viewport.Width << "," << viewport.Height << std::endl;
+	//std::cout << "VIEWPORT BEGIN " << viewport.TopLeftX << "," << viewport.TopLeftY << "(" << viewport.Width << "," << viewport.Height << std::endl;
 	for (auto it = m_components.begin(); it != m_components.end(); it++) {
 		if (it->meshId == KEnum::UNDEFINED)
 			continue;
@@ -251,7 +251,7 @@ void KEngine::KSystem::RenderSystem::renderPointLightShadowMap(
 	m_cameraLight.setQuaternion(Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), 3.14f ));
 	setMatrix(&vertexShader, "view", m_cameraLight.getViewMatrix());
 
-	std::cout << "VIEWPORT END " << viewport.TopLeftX << "," << viewport.TopLeftY << "(" << viewport.Width << "," << viewport.Height << std::endl;
+	//std::cout << "VIEWPORT END " << viewport.TopLeftX << "," << viewport.TopLeftY << "(" << viewport.Width << "," << viewport.Height << std::endl;
 	for (auto it = m_components.begin(); it != m_components.end(); it++) {
 		if (it->meshId == KEnum::UNDEFINED)
 			continue;

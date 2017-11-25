@@ -27,13 +27,13 @@ void LightSystem::addEntityHandle(Entity & entity, LightComponent & componenet)
 	randomColor *= 1 / biggestRGB;
 	std::cout << "Random_light_color " << randomColor.x << " " << randomColor.y << " " << randomColor.z << std::endl;
 
-	float lightIntensity = 1+ (DirectX::DirectXUtility::GET_RANDOM() % 100)/100.0f * 3.0f;
+	float lightIntensity = 5+ (DirectX::DirectXUtility::GET_RANDOM() % 100)/100.0f * 5.0f;
 	float lightFOV = 3.14f / 2.0f;
 	Quaternion lightRotation;
 
-	//if(false){
+	if(false){
 	//if (DirectX::DirectXUtility::GET_RANDOM() % 2 == 0) {
-	if (true) {
+	//if (true) {
 		//add point light
 		componenet.lightType = LIGHT_TYPE::POINT_LIGHT;
 	}

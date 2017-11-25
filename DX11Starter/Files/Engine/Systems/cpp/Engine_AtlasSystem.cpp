@@ -1,4 +1,6 @@
 #include <Engine\Systems\AtlasSystem.h>
+#include <Engine\Entity.h>
+#include <Engine\Componenets\LightEntity.h>
 #include <iostream>
 
 using namespace KEngine;
@@ -8,12 +10,14 @@ AtlasSystem::AtlasSystem()
 {
 }
 
-void AtlasSystem::init(int width, int height, int sliceWidth, int sliceHeight)
+void AtlasSystem::init(int width, int height, int spotLightWidth, int spotLightHeight, int pointLightWidth, int pointLightHeight)
 {
 	m_width = width;
 	m_height = height;
-	m_sliceWidth = sliceWidth;
-	m_sliceHeight = sliceHeight;
+	m_spotLight_Width = spotLightWidth;
+	m_spotLight_Height = spotLightHeight;
+	m_pointLight_Width = pointLightWidth;
+	m_pointLight_Height = pointLightHeight;
 	//leave an empty pixel
 	xBegin = 1;
 	yBegin = 1;
@@ -25,18 +29,27 @@ void AtlasSystem::addEntityHandle(Entity & entity, AtlasComponent & componenet)
 	bool isAtalsTextureNotBigEnough = false;
 	int offsetX, offsetY; 
 	int width, height;
+	float sliceWidth, sliceHeight;
+	if (entity.m_lightComponent->lightType == LIGHT_TYPE::SPOT_LIGHT) {
+		sliceWidth = m_spotLight_Width;
+		sliceHeight = m_spotLight_Width;
+	}
+	else {
+		sliceWidth = m_pointLight_Width;
+		sliceHeight = m_pointLight_Height;
+	}
 	do
 	{
 		offsetX = xBegin;
 		offsetY = yBegin;
 		
 		//check if this is renderable size
-		if (offsetX + m_sliceWidth + 1 > m_width) {
+		if (offsetX + sliceWidth + 1 > m_width) {
 			xBegin = 1;
-			yBegin += m_sliceHeight+2; 
+			yBegin += sliceHeight +2;
 			continue;
 		}
-		if (offsetY + m_sliceHeight + 1 > m_height) {
+		if (offsetY + sliceHeight + 1 > m_height) {
 			isAtalsTextureNotBigEnough = true;
 		}
 
@@ -46,9 +59,9 @@ void AtlasSystem::addEntityHandle(Entity & entity, AtlasComponent & componenet)
 		}
 		componenet.x = xBegin;
 		componenet.y = yBegin;
-		componenet.width = m_sliceWidth;
-		componenet.height = m_sliceHeight;
-		xBegin += (2 + m_sliceWidth);
+		componenet.width = sliceWidth;
+		componenet.height = sliceHeight;
+		xBegin += (2 + sliceWidth);
 		isValidCoordinateFound = true;
 
 	} while (!isValidCoordinateFound);

@@ -9,16 +9,17 @@ const int CLUSTER_SIZE = 1000;
 const float LIGHT_INFLUENCE_PER_INTENSITY = 12.0f;
 
 //What is the size of the atals shadow map?
-const int ATLAS_SHADOW_MAP_WIDTH = 700;
-const int ATLAS_SHADOW_MAP_HEIGHT = 700;
+const int ATLAS_SHADOW_MAP_WIDTH = 5000;
+const int ATLAS_SHADOW_MAP_HEIGHT = 5000;
 //How much do I slice per light from the atlas map?
-const int ATLAS_SHADOW_MAP_SLICE_WIDTH = 6*100+ 5;
-const int ATLAS_SHADOW_MAP_SLICE_HEIGHT = 6 * 100 + 5;
+const int ATLAS_SHADOW_MAP_SLICE_SPOTLIGHT_WIDTH = 512*2;
+const int ATLAS_SHADOW_MAP_SLICE_POINTLIGHT_WIDTH = 512*6;
+const int ATLAS_SHADOW_MAP_SLICE_HEIGHT = 512*2;
 
 void Engine::initExample()
 {
 	bool isFirstObject = true;
-	int ENTITY_NUMBER = 50;
+	int ENTITY_NUMBER = 64;
 	int RANDOM_MODEL_NUMBER = 5;
 	int RANDOM_LIGHT_NUMBER = 1;
 	int x(0), y(0), z(3);
@@ -36,7 +37,7 @@ void Engine::initExample()
 		}
 		else {
 
-			m_transform3DSystem.getLastComponent().setPosition(-4 + x++, y, z);
+			m_transform3DSystem.getLastComponent().setPosition(-4 + x++, -4+y, z);
 		}
 		if (x > 8) {
 			x = 0;
@@ -66,6 +67,11 @@ void Engine::initExample()
 		else
 			m_renderSystem.getComponent(selectedEntityIndex).meshId = MESH_SPOTLIGHT;
 		m_atlasSystem.addEntity(m_entityFactory.m_entities, m_entityFactory.getEntity(selectedEntityIndex), selectedEntityIndex);
+		m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->
+			setPosition(
+				m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->position.x,
+				m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->position.y, 
+				m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->position.z -3);
 		//std::cout << "ATLAS " << m_atlasSystem.getLastComponent().x << " , " << m_atlasSystem.getLastComponent().y << " (" << m_atlasSystem.getLastComponent().width << "," << m_atlasSystem.getLastComponent().height << ")" << std::endl;
 
 	} 
@@ -115,23 +121,24 @@ void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context,
 	print("init");
 	m_asset.init(device, context);
 	m_lightSystem.init(windowWidth/windowHeight, 0.01f, 100.0f, 10, 10, 10);
-	m_atlasSystem.init(ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT, ATLAS_SHADOW_MAP_SLICE_WIDTH, ATLAS_SHADOW_MAP_SLICE_HEIGHT);
+	m_atlasSystem.init(
+		ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT, 
+		ATLAS_SHADOW_MAP_SLICE_SPOTLIGHT_WIDTH, ATLAS_SHADOW_MAP_SLICE_HEIGHT,
+		ATLAS_SHADOW_MAP_SLICE_POINTLIGHT_WIDTH, ATLAS_SHADOW_MAP_SLICE_HEIGHT);
 	m_frustum.init(windowWidth / (float)windowHeight, 0.1f, 100.0f, 10, 10, 10);
 	initExample();
 	m_textureAtlasShadowMap.init(device, ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT);
-	m_textureAtalsShadowMapDepth.init(device, ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT);
+	m_textureAtlasShadowMapDepth.init(device, ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT);
 }
-void Engine::update(float timeElapsed)
-{
+void Engine::update(float timeElapsed){
 	for (auto it = m_eventHandlers.begin(); it != m_eventHandlers.end(); it++) {
 		(*it)->update(timeElapsed);
 	}
 	m_renderSystem.setCameraPosition(m_handlerKeyboardInput.getPosition());
 	m_renderSystem.setCameraRotation(m_handlerKeyboardInput.getRotation());
 	m_renderSystem		.update(m_entityFactory.m_entities, timeElapsed);
-	m_transform3DSystem	.update(m_entityFactory.m_entities, timeElapsed);
 	m_lightSystem		.update(m_entityFactory.m_entities, timeElapsed);
-
+	m_transform3DSystem	.update(m_entityFactory.m_entities, timeElapsed);
 
 	auto camViewMatrix = m_renderSystem.getCameraViewMatrix();
 
@@ -173,20 +180,41 @@ void Engine::update(float timeElapsed)
 	
 	for (int i = 0; i < m_lightSystem.getLightCount(); i++) {
 		KFrustum::NBuffer::LightParameter lightParameter = {};
-		LIGHT_TYPE lightType = m_lightSystem.getComponent(i).lightType;
-		lightParameter.isSpotlight = lightType == LIGHT_TYPE::SPOT_LIGHT;
-		//std::cout << "LIGHT TYPE is spotLight " << ((lightParameter.isSpotlight)?"SPOTLIGHT":"POINTLIGHT") << std::endl;
-		//system("pause");
-		if (lightType == LIGHT_TYPE::POINT_LIGHT) {
-			lightParameter.position = m_lightSystem.getComponent(i).position;
-			lightParameter.color = m_lightSystem.getComponent(i).color;
-		}
-		else {
+		LightComponent& light = m_lightSystem.getComponent(i);
+		AtlasComponent & atlasCompo = *m_entityFactory.getEntity(light.entityIndex).m_atlasComponent;
+		lightParameter.isSpotlight = light.lightType == LIGHT_TYPE::SPOT_LIGHT;
+
+		
+
+
+		lightParameter.position = m_lightSystem.getComponent(i).position;
+		lightParameter.color = m_lightSystem.getComponent(i).color;
+
+		lightParameter.topLeftX = atlasCompo.x;
+		lightParameter.topLeftY = atlasCompo.y;
+		lightParameter.viewPortWidth = atlasCompo.width;
+		lightParameter.viewPortHeight = atlasCompo.height;
+
+		if (light.lightType == LIGHT_TYPE::SPOT_LIGHT) {
 			//spot light
-			lightParameter.position = m_lightSystem.getComponent(i).position;
-			lightParameter.color = m_lightSystem.getComponent(i).color;
 			lightParameter.angle = m_lightSystem.getComponent(i).fov;
 			lightParameter.axis = (Vector3)DirectX::XMVector3Rotate(Vector3(0, 0, 1), m_lightSystem.getComponent(i).rotation);
+
+			Vector3 lookDir = DirectX::XMVector3Rotate(Vector3(0, 0, 1), light.rotation);
+			DirectX::SimpleMath::Matrix viewMatrix = DirectX::XMMatrixLookToLH(light.position, lookDir, Vector3::Up);
+			DirectX::SimpleMath::Matrix projMatrix = DirectX::XMMatrixPerspectiveFovLH(
+				light.fov,		// Field of View Angle
+				atlasCompo.width / atlasCompo.height,		// Aspect ratio
+				0.01f,100.0f);					// Far clip plane distance
+
+			//DirectX::SimpleMath::Matrix projMatrix = DirectX::XMMatrixPerspectiveLH(atlasCompo.width, atlasCompo.height,0.1, 100);
+			auto matViewProj = DirectX::XMMatrixMultiply(viewMatrix, projMatrix);
+			DirectX::XMStoreFloat4x4(&lightParameter.matLight, XMMatrixTranspose(matViewProj));
+
+		}
+		if (light.lightType == LIGHT_TYPE::POINT_LIGHT) {
+			DirectX::SimpleMath::Matrix projMatrix = DirectX::XMMatrixPerspectiveLH(atlasCompo.width / 6.0f, atlasCompo.height, 0.1, 100);
+			DirectX::XMStoreFloat4x4(&lightParameter.matLight, XMMatrixTranspose(projMatrix));
 		}
 		m_dataTranslator.translateLight(lightParameter, i);
 		//std::cout << "DateTranslator LightColor : " << lightParameter.color.x << " " << lightParameter.color.y << " " << lightParameter.color.z << std::endl;
@@ -205,7 +233,8 @@ void Engine::render(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
 	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT viewport)
 {
-	if(renderAtalsOnce++ > 0)
+
+	if (renderAtalsOnce++ > 0)
 	{
 		//Prepare rendering the atlas
 		D3D11_VIEWPORT atlasViewport = {};
@@ -216,7 +245,7 @@ void Engine::render(
 
 		float colorClean[4] = { 0.1f,0.1f,0.1f,1 };
 		context->ClearRenderTargetView(m_textureAtlasShadowMap.getRenderTargetView(), colorClean);
-		context->ClearDepthStencilView(m_textureAtalsShadowMapDepth.getDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		context->ClearDepthStencilView(m_textureAtlasShadowMapDepth.getDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 		for (int i = 0; i < m_lightSystem.getComponentVectorSize(); i++) {
 			LightComponent& lightComponent = m_lightSystem.getComponent(i);
@@ -230,8 +259,8 @@ void Engine::render(
 
 				m_renderSystem.renderPointLightShadowMap(
 					device, context,
-					transform.position, 
-					m_textureAtlasShadowMap.getRenderTargetView(), m_textureAtalsShadowMapDepth.getDepthStencilView(), atlasViewport,
+					transform.position,
+					m_textureAtlasShadowMap.getRenderTargetView(), m_textureAtlasShadowMapDepth.getDepthStencilView(), atlasViewport,
 					m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE), vertShader, fragShader, m_asset.m_meshes, m_entityFactory);
 
 			}
@@ -239,14 +268,22 @@ void Engine::render(
 				m_renderSystem.renderSpotLightShadowMap(
 					device, context,
 					transform.position, transform.rotation, lightComponent.fov,
-					m_textureAtlasShadowMap.getRenderTargetView(), m_textureAtalsShadowMapDepth.getDepthStencilView(), atlasViewport,
+					m_textureAtlasShadowMap.getRenderTargetView(), m_textureAtlasShadowMapDepth.getDepthStencilView(), atlasViewport,
 					m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE), vertShader, fragShader, m_asset.m_meshes, m_entityFactory);
 
 			}
 		}
 		renderAtalsOnce = -100;
 	}
+
+
 	//Render the scene
+	context->OMSetRenderTargets(1, &target, targetDepth);
+	context->RSSetViewports(1, &viewport);
+	{
+		//LIGHT_ATLAS_WIDTH
+		//m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("textureProbe", textureProbe);
+	}
 	m_dataTranslator.transfer(
 		context,
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).GetBuffer(0), m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).GetBuffer(1),
@@ -255,6 +292,9 @@ void Engine::render(
 	{
 		DirectX::XMFLOAT4X4 MAT_TEMP;
 		DirectX::XMStoreFloat4x4(&MAT_TEMP, XMMatrixTranspose(matView));
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("textureLightAtlas", m_textureAtlasShadowMapDepth.getShaderResourceView());
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetInt("LIGHT_ATLAS_WIDTH", ATLAS_SHADOW_MAP_WIDTH);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetInt("LIGHT_ATLAS_HEIGHT", ATLAS_SHADOW_MAP_HEIGHT);
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetMatrix4x4("eyeViewMatrix", MAT_TEMP);
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetInt("frustumX", m_frustum.m_size.x);
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetInt("frustumY", m_frustum.m_size.y);
@@ -271,6 +311,14 @@ void Engine::render(
 		m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE),
 		m_asset.getVertShader(KEnum::RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM), m_asset.getFragShader(KEnum::RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM),
 		m_asset.m_meshes,m_entityFactory);
+	{
+		//LIGHT_ATLAS_WIDTH
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("textureLightAtlas", 0);
+		//m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("textureProbe", textureProbe);
+	}
+
+
+
 }
 void Engine::OnMouseMove(WPARAM buttonState, int x, int y)
 {
