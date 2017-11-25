@@ -437,9 +437,12 @@ float3 getColor(VertexToPixel input) {
 			}
 			float4 lightBaked = textureLightAtlas.Sample(samplerDefault, uv_depth.xy);
 			float isLit = (uv_depth.z) < lightBaked.x;
+			
+			float3 posToLight = light.position - input.worldPos.xyz;
+			float reflectedLightAmount = max(0, dot(normalize(posToLight), input.normal));
 			//color += (1- isShadow);
 			//color = float3(uv_depth.z, lightBaked.x, isLit);
-			color += isLit*lightIntensity*lightColor;// *saturate(lightColor*lightIntensity);
+			color += isLit*lightIntensity*3*lightColor*reflectedLightAmount;// *saturate(lightColor*lightIntensity);
 			//color += (1 - isShadow)*lightIntensity*lightColor;// *saturate(lightColor*lightIntensity);
 			//color += lightBaked.xyz;// *saturate(lightColor*lightIntensity);
 			//color += float3(uv_depth.x, uv_depth.y, 0);

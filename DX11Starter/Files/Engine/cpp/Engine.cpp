@@ -12,9 +12,9 @@ const float LIGHT_INFLUENCE_PER_INTENSITY = 12.0f;
 const int ATLAS_SHADOW_MAP_WIDTH = 5000;
 const int ATLAS_SHADOW_MAP_HEIGHT = 5000;
 //How much do I slice per light from the atlas map?
-const int ATLAS_SHADOW_MAP_SLICE_SPOTLIGHT_WIDTH = 512*2;
+const int ATLAS_SHADOW_MAP_SLICE_SPOTLIGHT_WIDTH = 512*1;
 const int ATLAS_SHADOW_MAP_SLICE_POINTLIGHT_WIDTH = 512*6;
-const int ATLAS_SHADOW_MAP_SLICE_HEIGHT = 512*2;
+const int ATLAS_SHADOW_MAP_SLICE_HEIGHT = 512*1;
 
 void Engine::initExample()
 {
