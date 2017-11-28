@@ -52,10 +52,30 @@ cbuffer global : register(b3)
 struct VertexToPixel
 {
 	float4 position		: SV_POSITION;
+	float3 normal		: NORMAL0;
+	float3 tangent		: NORMAL1;
+	float3 biTangent	: NORMAL2;
 	float4 worldPos		: POSITION;
-	float3 normal			: NORMAL0;
-	float3 reflectedViewVector : NORMAL1;
+	float2 uv			: TEXCOORD;
 };
+
+struct Attributes
+{
+	float3 position;
+	float2 uv;
+	float3 normal;
+	float3 binormal;
+	float3 tangent;
+};
+
+struct Material
+{
+	float4 albedo;
+	float3 specular;
+	float roughness;
+	float3 normal;
+};
+
 
 int getClusterBelong(
 	float dirHorBegin, float dirHorEnd,
@@ -462,10 +482,6 @@ float4 main(VertexToPixel input) : SV_TARGET
 {
 	//color.x = color.x*0.001f + input.position.x / (512 * 6.0f);
 	float3 color = getColor(input);
-	float3 normal = normalize(input.reflectedViewVector);
-
-	
-
 	return float4(color,1);
 }
 

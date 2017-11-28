@@ -19,14 +19,16 @@ struct VertexShaderInput
 };
 
 // Out of the vertex shader (and eventually input to the PS)
+
 struct VertexToPixel
 {
 	float4 position		: SV_POSITION;
+	float3 normal		: NORMAL0;
+	float3 tangent		: NORMAL1;
+	float3 biTangent	: NORMAL2;
 	float4 worldPos		: POSITION;
-	float3 normal			: NORMAL0;
-	float3 reflectedViewVector: NORMAL1;
+	float2 uv			: TEXCOORD;
 };
-
 // --------------------------------------------------------
 // The entry point (main method) for our vertex shader
 // --------------------------------------------------------
@@ -43,8 +45,11 @@ VertexToPixel main(VertexShaderInput input)
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);
 	output.worldPos = float4(worldPos.xyz, output.position.w);
 	output.normal = mul(input.normal, (float3x3)world); // ASSUMING UNIFORM SCALE HERE!!!  If not, use inverse transpose of world matrix
-	float3 reflectedViewVector = worldPos.xyz - cameraPosition;
-	output.reflectedViewVector = reflect(reflectedViewVector, output.normal);
+	output.tangent = mul(input.tangent, (float3x3)world); // ASSUMING UNIFORM SCALE HERE!!!  If not, use inverse transpose of world matrix
+	output.biTangent = mul(input.biTangent, (float3x3)world); // ASSUMING UNIFORM SCALE HERE!!!  If not, use inverse transpose of world matrix
+
+														//float3 reflectedViewVector = worldPos.xyz - cameraPosition;
+	//output.reflectedViewVector = reflect(reflectedViewVector, output.normal);
 	//output.worldPos = float4(worldPos.xyz, output.position.w);
 	//output.worldPos = float4(worldPos.xyz, output.position.w);
 
