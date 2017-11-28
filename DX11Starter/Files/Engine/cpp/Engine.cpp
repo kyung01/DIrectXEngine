@@ -29,7 +29,7 @@ void Engine::initExample()
 		int entityIndex = m_entityFactory.m_entities.size() - 1;
 		m_transform3DSystem.addEntity(m_entityFactory.m_entities, entity, entityIndex);
 		m_renderSystem.addEntity(m_entityFactory.m_entities, entity, entityIndex);
-		m_renderSystem.getLastComponent().meshId = getRadnomModelID();
+		m_renderSystem.getLastComponent().meshId = MESH_SPHERE;
 
 		if (isFirstObject) {
 			m_transform3DSystem.getLastComponent().setPosition(0, 0, 0);

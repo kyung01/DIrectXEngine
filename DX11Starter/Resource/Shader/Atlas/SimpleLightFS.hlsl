@@ -70,6 +70,7 @@ struct Attributes
 	float3 position;
 	float2 uv;
 	float3 normal;
+	float3 dirToEye;
 	float3 binormal;
 	float3 tangent;
 };
@@ -317,11 +318,53 @@ float3 getUVDepthSpotLight(
 
 	return float3(u, v, depthLight);
 }
-float3 processLight(Attributes attr, Material mat, LightParameter light) {
-	float3 lightColor = light.color;
 
+static float PI = 3.14159265359;
+
+float DistributionGGX(float3 N, float3 H, float roughness)
+{
+	float a = roughness*roughness;
+	float a2 = a*a;
+	float NdotH = max(dot(N, H), 0.0);
+	float NdotH2 = NdotH*NdotH;
+
+	float nom = a2;
+	float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+	denom = PI * denom * denom;
+
+	return nom / denom;
+}
+
+float GeometrySchlickGGX(float NdotV, float roughness)
+{
+	float r = (roughness + 1.0);
+	float k = (r*r) / 8.0;
+
+	float nom = NdotV;
+	float denom = NdotV * (1.0 - k) + k;
+
+	return nom / denom;
+}
+float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
+{
+	float NdotV = max(dot(N, V), 0.0);
+	float NdotL = max(dot(N, L), 0.0);
+	float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+	float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+
+	return ggx1 * ggx2;
+}
+float3 fresnelSchlick(float cosTheta, float3 F0)
+{
+	return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+}
+
+
+float3 processLight(Attributes attr, Material mat, LightParameter light) {
+	float attenuation = 0;
+	float isLit = 1;
 	if (light.isSpotlight) {
-		float lightIntensity = max(0, getSpotLightIntensity(light.position, light.axis, light.angle*0.5, light.angle, attr.position));
+		attenuation = max(0, getSpotLightIntensity(light.position, light.axis, light.angle*0.5, light.angle, attr.position));
 		float3 uv_depth = float3(-1, -1, 1);
 		uv_depth = getUVDepthSpotLight(
 			attr.position.xyz,
@@ -334,23 +377,48 @@ float3 processLight(Attributes attr, Material mat, LightParameter light) {
 			return float3(0, 0, 0);
 		}
 		float4 lightBaked = textureLightAtlas.Sample(samplerDefault, uv_depth.xy);
-		float isLit = (uv_depth.z) < lightBaked.x;
-
-		float3 posToLight = light.position - attr.position.xyz;
-		float reflectedLightAmount = max(0, dot(normalize(posToLight), attr.normal));
-		//color += (1- isShadow);
-		//color = float3(uv_depth.z, lightBaked.x, isLit);
-		return isLit*lightIntensity * 3 * lightColor*reflectedLightAmount;// *saturate(lightColor*lightIntensity);
-																			//color += (1 - isShadow)*lightIntensity*lightColor;// *saturate(lightColor*lightIntensity);
-																			//color += lightBaked.xyz;// *saturate(lightColor*lightIntensity);
-																			//color += float3(uv_depth.x, uv_depth.y, 0);
-																			//color += float3(0, isShadow,0);// .xyz;
-
+		isLit = (uv_depth.z) < lightBaked.x;
 	}
 	else {
 	}
-	return float3(0, 0, 0);
 
+	float3 F0 = float3(
+		lerp(0.04, mat.albedo.x, mat.metalness), 
+		lerp(0.04, mat.albedo.y, mat.metalness), 
+		lerp(0.04, mat.albedo.z, mat.metalness)
+		);
+	attenuation *= 10.0f;
+
+	// calculate per-light radiance
+	float3 L = normalize(light.position - attr.position);
+	float3 H = normalize(attr.dirToEye + L);
+	float distance = length(light.position - attr.position);
+	float3 radiance = light.color * attenuation;
+
+	// cook-torrance brdf
+	float NDF = DistributionGGX(attr.normal, H, mat.roughness);
+	float G = GeometrySmith(attr.normal, attr.dirToEye, L, mat.roughness);
+	float3 F = fresnelSchlick(max(dot(H, attr.dirToEye), 0.0), F0);
+
+	float3 kS = F;
+	float3 kD = float3(1,1,1.0) - kS;
+	kD *= 1.0 - mat.metalness;
+
+	float3 nominator = NDF * G * F;
+	float denominator = 4.0 * max(dot(attr.normal, attr.dirToEye), 0.0) * max(dot(attr.normal, L), 0.0);
+	float3 specular = nominator / max(denominator, 0.001);
+
+	// add to outgoing radiance Lo
+	float NdotL = max(dot(attr.normal, L), 0.0);
+	//float3 color = float3(
+	//	((kD.x*mat.albedo.x)/PI +specular.x), 
+	//	((kD.y*mat.albedo.y)/PI +specular.y), 
+	//	((kD.z*mat.albedo.z)/PI +specular.z)
+	//	);
+	////color /= PI;
+	//return color;
+	//return float3(kD.x*mat.albedo.x, kD.y*mat.albedo.y, kD.z*mat.albedo.z);
+	return isLit * (  (kD * mat.albedo.xyz / PI + specular) * radiance * NdotL );
 }
 float3 getColor(VertexToPixel input) {
 	float x = cos(3.14f / 4.0f) * (1 / sin(3.14f / 4.0f));
@@ -385,11 +453,14 @@ float3 getColor(VertexToPixel input) {
 
 	attr.position = input.worldPos;
 	attr.normal = normalize(input.normal);
+	attr.dirToEye = normalize(EYE_POS - input.position);
 	attr.uv = input.uv;
 	attr.binormal = input.biTangent;
 	attr.tangent = input.tangent;
 
 	mat.albedo = AlbedoMap.Sample(AlbedoSampler, attr.uv);
+	mat.albedo = float4( pow(mat.albedo.xyz, 2.2),mat.albedo.a);
+
 	mat.normal = NormalMap.Sample(NormalSampler, attr.uv);
 	mat.metalness = MetalMap.Sample(MetalSampler, attr.uv).x;
 	mat.roughness = RoughMap.Sample(RoughSampler, attr.uv).x;
@@ -412,7 +483,13 @@ float3 getColor(VertexToPixel input) {
 
 	}
 
-	
+
+	float3 ambient = float3(0.001, 0.001, 0.001) * mat.albedo * mat.ao;
+	color += ambient;
+
+	color = color / (color + float3(1.0,1,1));
+	color = pow(color, float3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));
+
 	return color;
 }
 float4 main(VertexToPixel input) : SV_TARGET
