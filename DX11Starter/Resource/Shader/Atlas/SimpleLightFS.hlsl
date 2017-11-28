@@ -477,8 +477,8 @@ float3 getColor(VertexToPixel input) {
 	}
 
 
-	//float3 ambient = float3(0.0001, 0.0001, 0.0001) * mat.albedo * mat.ao;
-	//color += ambient;
+	float3 ambient = float3(0.001, 0.001, 0.001) * mat.albedo * mat.ao;
+	color += ambient;
 
 	color = color / (color + float3(1,1,1));
 	color = pow(color, float3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));

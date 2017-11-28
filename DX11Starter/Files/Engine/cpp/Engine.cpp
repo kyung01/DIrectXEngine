@@ -21,7 +21,7 @@ void Engine::initExample()
 	bool isFirstObject = true;
 	int ENTITY_NUMBER = 64;
 	int RANDOM_MODEL_NUMBER = 5;
-	int RANDOM_LIGHT_NUMBER = 1;
+	int RANDOM_LIGHT_NUMBER = 10;
 	int x(0), y(0), z(3);
 	for (int i = 0; i < ENTITY_NUMBER; i++)
 	{
