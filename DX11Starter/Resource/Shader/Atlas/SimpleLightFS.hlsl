@@ -1,10 +1,20 @@
 #include "ClusterStructs.hlsl"
 #include "..\light.hlsl"
-SamplerState samplerDefault	: register(s0);
+Texture2D AlbedoMap			: register(t0);
+SamplerState AlbedoSampler	: register(s0);
+Texture2D SpecularMap		: register(t1);
+SamplerState SpecularSampler: register(s1);
+Texture2D GlossMap			: register(t2);
+SamplerState GlossSampler	: register(s2);
+Texture2D NormalMap			: register(t3);
+SamplerState NormalSampler	: register(s3);
 
-Texture2D textureLightAtlas		: register(t0);
-Texture2D textureProbe		: register(t1);
-TextureCubeArray textureProbeArray		: register(t2);
+
+Texture2D textureLightAtlas			: register(t4);
+SamplerState samplerDefault			: register(s4);
+
+Texture2D textureProbe				: register(t5);
+TextureCubeArray textureProbeArray	: register(t6);
 
 cbuffer ClusterList : register(b0)
 {
