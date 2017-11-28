@@ -143,7 +143,7 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	device->CreateRasterizerState(&rsDescBack, &m_rasterizers[KEnum::RASTR_CULLBACKFACE]);
 
 	D3D11_SAMPLER_DESC samplerDesc = {};
-	samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT; // Could be anisotropic
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT; // Could be anisotropic
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;

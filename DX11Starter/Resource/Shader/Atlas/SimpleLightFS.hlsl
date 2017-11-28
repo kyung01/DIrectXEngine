@@ -318,7 +318,37 @@ float3 getUVDepthSpotLight(
 	return float3(u, v, depthLight);
 }
 float3 processLight(Attributes attr, Material mat, LightParameter light) {
+	float3 lightColor = light.color;
 
+	if (light.isSpotlight) {
+		float lightIntensity = max(0, getSpotLightIntensity(light.position, light.axis, light.angle*0.5, light.angle, attr.position));
+		float3 uv_depth = float3(-1, -1, 1);
+		uv_depth = getUVDepthSpotLight(
+			attr.position.xyz,
+			light.matLight,
+			light.topLeftX, light.topLeftY,
+			light.viewPortWidth, light.viewPortHeight,
+			LIGHT_ATLAS_WIDTH, LIGHT_ATLAS_HEIGHT
+		);
+		if (uv_depth.x == -1 || uv_depth.y == -1) {
+			return float3(0, 0, 0);
+		}
+		float4 lightBaked = textureLightAtlas.Sample(samplerDefault, uv_depth.xy);
+		float isLit = (uv_depth.z) < lightBaked.x;
+
+		float3 posToLight = light.position - attr.position.xyz;
+		float reflectedLightAmount = max(0, dot(normalize(posToLight), attr.normal));
+		//color += (1- isShadow);
+		//color = float3(uv_depth.z, lightBaked.x, isLit);
+		return isLit*lightIntensity * 3 * lightColor*reflectedLightAmount;// *saturate(lightColor*lightIntensity);
+																			//color += (1 - isShadow)*lightIntensity*lightColor;// *saturate(lightColor*lightIntensity);
+																			//color += lightBaked.xyz;// *saturate(lightColor*lightIntensity);
+																			//color += float3(uv_depth.x, uv_depth.y, 0);
+																			//color += float3(0, isShadow,0);// .xyz;
+
+	}
+	else {
+	}
 	return float3(0, 0, 0);
 
 }
@@ -378,38 +408,6 @@ float3 getColor(VertexToPixel input) {
 		int lightIndex = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex) & 0xff);
 		LightParameter light = lightParameter[lightIndex];
 		color += processLight(attr, mat, light);
-		lightColor = light.color;
-
-		if (light.isSpotlight) {
-			lightIntensity = max(0,getSpotLightIntensity(light.position, light.axis, light.angle*0.5, light.angle, input.worldPos));
-			float3 uv_depth = float3(-1, -1, 1);
-			uv_depth = getUVDepthSpotLight(
-				input.worldPos.xyz,
-				light.matLight,
-				light.topLeftX, light.topLeftY,
-				light.viewPortWidth, light.viewPortHeight,
-				LIGHT_ATLAS_WIDTH, LIGHT_ATLAS_HEIGHT
-			);
-			if (uv_depth.x == -1 || uv_depth.y == -1) {
-				//color += float3(.3f, 0, 0);
-				continue;
-			}
-			float4 lightBaked = textureLightAtlas.Sample(samplerDefault, uv_depth.xy);
-			float isLit = (uv_depth.z) < lightBaked.x;
-			
-			float3 posToLight = light.position - input.worldPos.xyz;
-			float reflectedLightAmount = max(0, dot(normalize(posToLight), input.normal));
-			//color += (1- isShadow);
-			//color = float3(uv_depth.z, lightBaked.x, isLit);
-			color += isLit*lightIntensity*3*lightColor*reflectedLightAmount;// *saturate(lightColor*lightIntensity);
-			//color += (1 - isShadow)*lightIntensity*lightColor;// *saturate(lightColor*lightIntensity);
-			//color += lightBaked.xyz;// *saturate(lightColor*lightIntensity);
-			//color += float3(uv_depth.x, uv_depth.y, 0);
-			//color += float3(0, isShadow,0);// .xyz;
-			
-		}
-		else {
-		}
 
 
 	}
