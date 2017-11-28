@@ -1,5 +1,7 @@
 #include <Engine\Asset.h>
 #include <iostream>
+#include <WICTextureLoader.h>
+#include <DDSTextureLoader.h>
 using namespace KEngine;
 #define print(content) std::cout<<"Asset : "<<content<<"\n"
 
@@ -124,6 +126,15 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	else
 		print("init meshes succeess");
 
+	for (auto it = dataTexture.begin(); it != dataTexture.end(); it++) {
+		ID3D11ShaderResourceView *texture;
+		//DirectX::CreateWICTextureFromFileEx(device,)
+
+		DirectX::CreateWICTextureFromFile(device, context, it->path, 0, &texture);
+		m_textures[it->id] = texture;
+	}
+
+
 	D3D11_RASTERIZER_DESC rsDescBack = {};
 	rsDescBack.FillMode = D3D11_FILL_SOLID;
 	rsDescBack.CullMode = D3D11_CULL_BACK;
@@ -190,6 +201,10 @@ bool Asset::initMeshes(ID3D11Device* device, std::list<LoadInfoMesh> dataMesh) {
 		//(it->id,Mesh{device, it->path});
 	}
 	return true;
+}
+ID3D11ShaderResourceView * KEngine::Asset::getTexture(KEnum id)
+{
+	return m_textures.find(id)->second;
 }
 SimpleFragmentShader& Asset::getFragShader(KEnum name) {
 	return m_shadersFrag.find(name)->second;

@@ -2,19 +2,23 @@
 #include "..\light.hlsl"
 Texture2D AlbedoMap			: register(t0);
 SamplerState AlbedoSampler	: register(s0);
-Texture2D SpecularMap		: register(t1);
-SamplerState SpecularSampler: register(s1);
-Texture2D GlossMap			: register(t2);
-SamplerState GlossSampler	: register(s2);
-Texture2D NormalMap			: register(t3);
-SamplerState NormalSampler	: register(s3);
+Texture2D NormalMap			: register(t1);
+SamplerState NormalSampler	: register(s1);
+Texture2D RoughMap			: register(t2);
+SamplerState RoughSampler	: register(s2);
+Texture2D MetalMap			: register(t3);
+SamplerState MetalSampler	: register(s3);
+Texture2D HeightMap			: register(t4);
+SamplerState HeightSampler	: register(s4);
+Texture2D AOMap			: register(t5);
+SamplerState AOSampler	: register(s5);
 
 
-Texture2D textureLightAtlas			: register(t4);
-SamplerState samplerDefault			: register(s4);
+Texture2D textureLightAtlas			: register(t6);
+SamplerState samplerDefault			: register(s6);
 
-Texture2D textureProbe				: register(t5);
-TextureCubeArray textureProbeArray	: register(t6);
+Texture2D textureProbe				: register(t7);
+TextureCubeArray textureProbeArray	: register(t8);
 
 cbuffer ClusterList : register(b0)
 {

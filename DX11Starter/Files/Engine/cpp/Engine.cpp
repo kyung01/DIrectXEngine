@@ -303,7 +303,20 @@ void Engine::render(
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetFloat("frustumNear", m_frustum.m_near);
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetFloat("frustumFar", m_frustum.m_far);
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).CopyAllBufferData();
-		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("samplerDefault",m_asset.m_sampler);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("samplerDefault", m_asset.m_sampler);
+
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("AlbedoMap", m_asset.getTexture(TXTURE_ROCK_ALBD));
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("NormalMap", m_asset.getTexture(TXTURE_ROCK_ALBD));
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("RoughMap", m_asset.getTexture(TXTURE_ROCK_ALBD));
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("MetalMap", m_asset.getTexture(TXTURE_ROCK_ALBD));
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("HeightMap", m_asset.getTexture(TXTURE_ROCK_ALBD));
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("AOMap", m_asset.getTexture(TXTURE_ROCK_ALBD));
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("AlbedoSampler", m_asset.m_sampler);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("NormalSampler", m_asset.m_sampler);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("RoughSampler", m_asset.m_sampler);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("MetalSampler", m_asset.m_sampler);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("HeightSampler", m_asset.m_sampler);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("AOSampler", m_asset.m_sampler);
 	}
 
 	m_renderSystem.render(
