@@ -445,7 +445,7 @@ float3 getColor(VertexToPixel input) {
 	attr.normal = normalize(input.normal);
 	attr.binormal = normalize(input.biTangent);
 	attr.tangent = normalize(input.tangent);
-	attr.dirToEye = normalize(EYE_POS - input.position);
+	attr.dirToEye = normalize(EYE_POS - attr.position);
 	attr.uv = input.uv;
 
 	mat.albedo = AlbedoMap.Sample(AlbedoSampler, attr.uv);
