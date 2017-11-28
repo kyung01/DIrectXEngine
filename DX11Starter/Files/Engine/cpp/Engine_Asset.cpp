@@ -85,9 +85,9 @@ std::list<LoadInfoTexture> Asset::getLoadListTexture()
 		{ TEXTURE_NORMAL_DEFAULT,		L"Resource/Texture/normal_default.jpg" },
 		{ TEXTURE_PROBE0,		L"Resource/Texture/Probe0.png" },
 		{ TXTURE_ROCK_ALBD,		L"Resource/Texture/Rock/albedo.png" },
-		{ TXTURE_ROCK_AO,		L"Resource/Texture/Rock/ao.png" },
+		{ TXTURE_ROCK_AO,			L"Resource/Texture/Rock/ao.png" },
 		{ TXTURE_ROCK_HEIGHT,		L"Resource/Texture/Rock/height.png" },
-		{ TXTURE_ROCK_METALNESS,		L"Resource/Texture/Rock/metalness.png" },
+		{ TXTURE_ROCK_METALNESS,	L"Resource/Texture/Rock/metalness.png" },
 		{ TXTURE_ROCK_NORMAL,		L"Resource/Texture/Rock/normal.png" },
 		{ TXTURE_ROCK_ROUGH,		L"Resource/Texture/Rock/rough.png" }
 	});

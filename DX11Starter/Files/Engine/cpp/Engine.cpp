@@ -38,6 +38,7 @@ void Engine::initExample()
 		else {
 
 			m_transform3DSystem.getLastComponent().setPosition(-4 + x++, -4+y, z);
+			m_transform3DSystem.getLastComponent().setRotation(Quaternion::CreateFromAxisAngle(Vector3(rand(), rand(), rand()), rand()));
 		}
 		if (x > 8) {
 			x = 0;
@@ -62,6 +63,7 @@ void Engine::initExample()
 			continue;
 		//std::cout << "SELECTED LIGHT INDEX " << selectedEntityIndex << std::endl;
 		m_lightSystem.addEntity(m_entityFactory.m_entities, m_entityFactory.getEntity(selectedEntityIndex), selectedEntityIndex);
+		//m_lightSystem.getLastComponent().color = Vector3(1, 1, 1);
 		if(m_lightSystem.getLastComponent().lightType == LIGHT_TYPE::POINT_LIGHT)
 			m_renderSystem.getComponent(selectedEntityIndex).meshId = MESH_SPHERE;
 		else
@@ -70,8 +72,10 @@ void Engine::initExample()
 		m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->
 			setPosition(
 				m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->position.x,
-				m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->position.y, 
-				m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->position.z -3);
+				m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->position.y,
+				m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->position.z - 3);
+		m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->
+			setRotation(Quaternion::Identity);
 		//std::cout << "ATLAS " << m_atlasSystem.getLastComponent().x << " , " << m_atlasSystem.getLastComponent().y << " (" << m_atlasSystem.getLastComponent().width << "," << m_atlasSystem.getLastComponent().height << ")" << std::endl;
 
 	} 
@@ -307,11 +311,11 @@ void Engine::render(
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("samplerDefault", m_asset.m_sampler);
 
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("AlbedoMap", m_asset.getTexture(TXTURE_ROCK_ALBD));
-		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("NormalMap", m_asset.getTexture(TXTURE_ROCK_ALBD));
-		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("RoughMap", m_asset.getTexture(TXTURE_ROCK_ALBD));
-		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("MetalMap", m_asset.getTexture(TXTURE_ROCK_ALBD));
-		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("HeightMap", m_asset.getTexture(TXTURE_ROCK_ALBD));
-		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("AOMap", m_asset.getTexture(TXTURE_ROCK_ALBD));
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("NormalMap", m_asset.getTexture(TXTURE_ROCK_NORMAL));
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("RoughMap", m_asset.getTexture(TXTURE_ROCK_ROUGH));
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("MetalMap", m_asset.getTexture(TXTURE_ROCK_METALNESS));
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("HeightMap", m_asset.getTexture(TXTURE_ROCK_HEIGHT));
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("AOMap", m_asset.getTexture(TXTURE_ROCK_AO));
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("AlbedoSampler", m_asset.m_sampler);
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("NormalSampler", m_asset.m_sampler);
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("RoughSampler", m_asset.m_sampler);
