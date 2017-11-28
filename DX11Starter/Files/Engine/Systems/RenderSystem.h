@@ -33,6 +33,9 @@ namespace KEngine {
 		public:
 			void init(int renderTargetWidth, int renderTargetHeight);
 			DirectX::SimpleMath::Matrix getCameraViewMatrix();
+			
+			Vector3 getCameraPosition();
+
 			void setCameraProjectionFOV(float ratio);
 			void setCameraPosition(Vector3 position);
 			void setCameraRotation(Quaternion rotation);

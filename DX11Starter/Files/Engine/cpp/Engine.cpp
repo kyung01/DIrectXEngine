@@ -317,6 +317,7 @@ void Engine::render(
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("MetalSampler", m_asset.m_sampler);
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("HeightSampler", m_asset.m_sampler);
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("AOSampler", m_asset.m_sampler);
+		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetFloat3("EYE_POS", m_renderSystem.getCameraPosition());
 	}
 
 	m_renderSystem.render(

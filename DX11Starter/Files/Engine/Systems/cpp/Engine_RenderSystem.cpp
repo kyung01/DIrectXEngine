@@ -23,6 +23,11 @@ DirectX::SimpleMath::Matrix KEngine::KSystem::RenderSystem::getCameraViewMatrix(
 	return m_camera.getViewMatrix();
 }
 
+Vector3 KEngine::KSystem::RenderSystem::getCameraPosition()
+{
+	return m_camera.getPosition();
+}
+
 void KEngine::KSystem::RenderSystem::setCameraProjectionFOV(float ratio)
 {
 }
