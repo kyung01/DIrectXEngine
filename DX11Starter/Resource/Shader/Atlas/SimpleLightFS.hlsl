@@ -78,6 +78,7 @@ struct Material
 {
 	float4 albedo;
 	float3 normal;
+	float height;
 	float metalness;
 	float roughness;
 	float ao;
@@ -322,10 +323,6 @@ float3 processLight(Attributes attr, Material mat, LightParameter light) {
 
 }
 float3 getColor(VertexToPixel input) {
-
-	//return float4(length(posFromCamera.xyz), 0, 0, 1);
-
-
 	float x = cos(3.14f / 4.0f) * (1 / sin(3.14f / 4.0f));
 	float z = sin(3.14f / 4.0f) * (1 / cos(3.14f / 4.0f));;
 	float3 inputNormal = normalize(input.normal);
@@ -345,17 +342,32 @@ float3 getColor(VertexToPixel input) {
 	}
 	if (clusterID == -4) {
 		return float4(1, 0.5f, 1, 0.3f);
-
 	}
 	ClusterIndex clusterIndex = clusterIndexs[clusterID];
-
-
 	uint clusterItemOffset = clusterIndex.offset;
 	uint clusterItemLightCount = (clusterIndex.lightDecalProbeCount >> (8 * 0)) & 0xff;
 	uint clusterItemDecalCount = (clusterIndex.lightDecalProbeCount >> (8 * 1)) & 0xff;
 	uint clusterItemProbeCount = (clusterIndex.lightDecalProbeCount >> (8 * 2)) & 0xff;
 
-	float3 color = float3(0, 0, 0) + diffuseColor;
+	Attributes attr;
+	Material mat;
+	float3 color = float3(0, 0, 0);
+
+	attr.position = input.worldPos;
+	attr.normal = normalize(input.normal);
+	attr.uv = input.uv;
+	attr.binormal = input.biTangent;
+	attr.tangent = input.tangent;
+
+	mat.albedo = AlbedoMap.Sample(AlbedoSampler, attr.uv);
+	mat.normal = NormalMap.Sample(NormalSampler, attr.uv);
+	mat.metalness = MetalMap.Sample(MetalSampler, attr.uv).x;
+	mat.roughness = RoughMap.Sample(RoughSampler, attr.uv).x;
+	mat.ao = AOMap.Sample(AOSampler, attr.uv).x;
+	mat.height = HeightMap.Sample(HeightSampler, attr.uv).x;
+
+
+
 	[loop]
 	for (int i = 0; i < (int)clusterItemLightCount; i++)
 	{
@@ -365,7 +377,7 @@ float3 getColor(VertexToPixel input) {
 	
 		int lightIndex = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex) & 0xff);
 		LightParameter light = lightParameter[lightIndex];
-
+		color += processLight(attr, mat, light);
 		lightColor = light.color;
 
 		if (light.isSpotlight) {

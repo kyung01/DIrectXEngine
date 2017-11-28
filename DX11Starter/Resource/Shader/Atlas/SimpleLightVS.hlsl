@@ -44,6 +44,7 @@ VertexToPixel main(VertexShaderInput input)
 														// Get world position of vertex
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);
 	output.worldPos = float4(worldPos.xyz, output.position.w);
+	output.uv = input.uv;
 	output.normal = mul(input.normal, (float3x3)world); // ASSUMING UNIFORM SCALE HERE!!!  If not, use inverse transpose of world matrix
 	output.tangent = mul(input.tangent, (float3x3)world); // ASSUMING UNIFORM SCALE HERE!!!  If not, use inverse transpose of world matrix
 	output.biTangent = mul(input.biTangent, (float3x3)world); // ASSUMING UNIFORM SCALE HERE!!!  If not, use inverse transpose of world matrix
