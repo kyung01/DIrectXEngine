@@ -80,6 +80,7 @@ std::list<LoadInfoTexture> Asset::getLoadListTexture()
 {
 	std::list<LoadInfoTexture> lst({
 		{ TEXTURE_DEFAULT,		L"Resource/Texture/textureTest00.jpg" },
+		{ TEXTURE_NORMAL_DEFAULT,		L"Resource/Texture/normal_default.png" },
 		{ TEXTURE_WHITE,		L"Resource/Texture/white.png" },
 		{ TEXTURE_RED,		L"Resource/Texture/red.png" },
 		{ TEXTURE_NORMAL_DEFAULT,		L"Resource/Texture/normal_default.jpg" },

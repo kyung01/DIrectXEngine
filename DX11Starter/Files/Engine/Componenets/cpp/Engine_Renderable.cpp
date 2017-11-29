@@ -1,8 +1,14 @@
 #include <Engine\Componenets\Renderable.h>
 using namespace  KEngine::KComponent;
 #include <iostream>
-Renderable::Renderable() {
-	meshId = KEnum::UNDEFINED;
+Renderable::Renderable():
+	meshId(KEnum::UNDEFINED),
+	albedoMap(KEnum::TEXTURE_DEFAULT),
+	normalMap(KEnum::TEXTURE_NORMAL_DEFAULT),
+	roughMap(KEnum::TEXTURE_DEFAULT),
+	metalMap(KEnum::TEXTURE_DEFAULT),
+	aoMap(KEnum::TEXTURE_WHITE)
+{	
 	m_scale = Vector3(1, 1, 1);
 }
 Matrix KEngine::KComponent::Renderable::getWorldMatrix()

@@ -8,6 +8,7 @@
 #include <Engine\Systems\System.h>
 #include <Engine\Componenets\Renderable.h>
 #include <Engine\SimpleShader.h>
+#include <Engine\Asset.h>
 #include <Engine\Mesh.h>
 #include <Engine\EntityFactory.h>
 //#include "glm\glm.hpp"
@@ -46,6 +47,7 @@ namespace KEngine {
 				//Render information needed to render
 				ID3D11Device * device, ID3D11DeviceContext * context,
 				ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
+				Asset &asset,
 				ID3D11RasterizerState *cullBackFace,
 				SimpleVertexShader & vertexShader, SimpleFragmentShader & fragmentShader,
 				std::map<KEnum, Mesh> &meshes,

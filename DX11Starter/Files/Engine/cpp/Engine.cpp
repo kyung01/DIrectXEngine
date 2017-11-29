@@ -30,6 +30,11 @@ void Engine::initExample()
 		m_transform3DSystem.addEntity(m_entityFactory.m_entities, entity, entityIndex);
 		m_renderSystem.addEntity(m_entityFactory.m_entities, entity, entityIndex);
 		m_renderSystem.getLastComponent().meshId = MESH_SPHERE;
+		m_renderSystem.getLastComponent().albedoMap = TXTURE_ROCK_ALBD;
+		m_renderSystem.getLastComponent().normalMap = TXTURE_ROCK_NORMAL;
+		m_renderSystem.getLastComponent().roughMap = TXTURE_ROCK_ROUGH;
+		m_renderSystem.getLastComponent().metalMap = TXTURE_ROCK_METALNESS;
+		m_renderSystem.getLastComponent().aoMap = TXTURE_ROCK_AO;
 
 		if (isFirstObject) {
 			m_transform3DSystem.getLastComponent().setPosition(0, 0, 0);
@@ -310,12 +315,6 @@ void Engine::render(
 
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("samplerDefault", m_asset.m_sampler);
 
-		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("AlbedoMap", m_asset.getTexture(TXTURE_ROCK_ALBD));
-		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("NormalMap", m_asset.getTexture(TXTURE_ROCK_NORMAL));
-		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("RoughMap", m_asset.getTexture(TXTURE_ROCK_ROUGH));
-		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("MetalMap", m_asset.getTexture(TXTURE_ROCK_METALNESS));
-		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("HeightMap", m_asset.getTexture(TXTURE_ROCK_HEIGHT));
-		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("AOMap", m_asset.getTexture(TXTURE_ROCK_AO));
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("AlbedoSampler", m_asset.m_sampler);
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("NormalSampler", m_asset.m_sampler);
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetSamplerState("RoughSampler", m_asset.m_sampler);
@@ -327,6 +326,7 @@ void Engine::render(
 
 	m_renderSystem.render(
 		device, context, target, targetDepth, viewport,
+		m_asset,
 		m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE),
 		m_asset.getVertShader(KEnum::RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM), m_asset.getFragShader(KEnum::RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM),
 		m_asset.m_meshes,m_entityFactory);

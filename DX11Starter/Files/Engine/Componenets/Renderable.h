@@ -15,6 +15,11 @@ namespace KEngine {
 
 		public:
 			KEnum meshId;
+			KEnum albedoMap;
+			KEnum normalMap;
+			KEnum roughMap;
+			KEnum metalMap;
+			KEnum aoMap;
 
 			Renderable();
 			Vector3		getPosition();

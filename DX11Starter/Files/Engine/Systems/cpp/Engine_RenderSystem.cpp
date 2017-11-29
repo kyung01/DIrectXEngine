@@ -67,6 +67,7 @@ void RenderSystem::renderMesh(ID3D11DeviceContext * context, Mesh & mesh, UINT o
 void RenderSystem::render(
 	ID3D11Device * device, ID3D11DeviceContext * context,
 	ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
+	KEngine::Asset &asset,
 	ID3D11RasterizerState *cullBackFace,
 	SimpleVertexShader & vertexShader, SimpleFragmentShader & fragmentShader,
 	std::map<KEnum, Mesh> &meshes,
@@ -98,6 +99,13 @@ void RenderSystem::render(
 			fragmentShader.SetFloat3("diffuseColor", lightComponent->color );
 
 		}
+
+		fragmentShader.SetShaderResourceView("AlbedoMap", asset.getTexture(it->albedoMap));
+		fragmentShader.SetShaderResourceView("NormalMap", asset.getTexture(it->normalMap));
+		fragmentShader.SetShaderResourceView("RoughMap", asset.getTexture(it->roughMap));
+		fragmentShader.SetShaderResourceView("MetalMap", asset.getTexture(it->metalMap));
+		fragmentShader.SetShaderResourceView("HeightMap", asset.getTexture(TEXTURE_WHITE));
+		fragmentShader.SetShaderResourceView("AOMap", asset.getTexture(it->aoMap));
 
 		fragmentShader.CopyAllBufferData();
 		UINT stride = sizeof(Vertex);
