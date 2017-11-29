@@ -5,8 +5,8 @@ Renderable::Renderable():
 	meshId(KEnum::UNDEFINED),
 	albedoMap(KEnum::TEXTURE_DEFAULT),
 	normalMap(KEnum::TEXTURE_NORMAL_DEFAULT),
-	roughMap(KEnum::TEXTURE_DEFAULT),
-	metalMap(KEnum::TEXTURE_DEFAULT),
+	roughMap(KEnum::TXTURE_BLACK),
+	metalMap(KEnum::TXTURE_BLACK),
 	aoMap(KEnum::TXTURE_WHITE)
 {	
 	m_scale = Vector3(1, 1, 1);

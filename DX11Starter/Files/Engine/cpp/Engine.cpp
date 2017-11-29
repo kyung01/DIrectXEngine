@@ -98,6 +98,7 @@ void Engine::initExample()
 			m_transform3DSystem.getLastComponent().setPosition(positions[i]);
 			m_transform3DSystem.getLastComponent().setRotation(Quaternion::CreateFromAxisAngle(Vector3(0, 1, 0), rotations[i]));
 			m_transform3DSystem.getLastComponent().setScale(Vector3(10, 10, 10));
+			
 		}
 	}
 	{

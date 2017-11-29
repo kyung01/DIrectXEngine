@@ -313,8 +313,8 @@ float3 getUVDepthSpotLight(
 		else
 			return float3(-1, -1, 0);
 	}
-	u = (uBegin + u * uSize) / uScale;
-	v = (vBegin + (1 - v) * vSize) / vScale;
+	u = (uBegin + u * uSize);// / uScale;
+	v = (vBegin + (1 - v) * vSize);// / vScale;
 
 	return float3(u, v, depthLight);
 }
@@ -377,7 +377,7 @@ float3 processLight(Attributes attr, Material mat, LightParameter light) {
 		if (uv_depth.x == -1 || uv_depth.y == -1) {
 			return float3(0, 0, 0);
 		}
-		float4 lightBaked = textureLightAtlas.Sample(samplerDefault, uv_depth.xy);
+		float4 lightBaked = textureLightAtlas.Load(int3( uv_depth.x,uv_depth.y,0) );//do not use sampler because it is a depth map
 		isLit = (uv_depth.z) < lightBaked.x;
 	}
 	else {
@@ -461,15 +461,13 @@ float3 getColor(VertexToPixel input) {
 	//attr.normal = mat.normal.x * attr.tangent + mat.normal.y * attr.binormal + mat.normal.z * attr.normal;
 	//attr.normal = normalize(attr.normal);
 	//attr.normal = mat.normal.x * attr.tangent + mat.normal.y * attr.binormal + mat.normal.z * attr.normal;
-
+	LightParameter light;
+	int lightIndex = 0;
 	[loop]
 	for (int i = 0; i < (int)clusterItemLightCount; i++)
 	{
-		float3	lightColor = float3(0, 0, 0);
-		float	lightIntensity = 1.0f;
-		bool	isShadowed = false;
 	
-		int lightIndex = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex) & 0xff);
+		lightIndex = ((clusterItems[clusterItemOffset + i].lightDecalProbeIndex) & 0xff);
 		LightParameter light = lightParameter[lightIndex];
 		color += processLight(attr, mat, light);
 

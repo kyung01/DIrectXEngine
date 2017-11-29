@@ -84,7 +84,6 @@ std::list<LoadInfoTexture> Asset::getLoadListTexture()
 		{ TXTURE_WHITE,		L"Resource/Texture/white.png" },
 		{ TXTURE_BLACK,		L"Resource/Texture/black.png" },
 		{ TEXTURE_RED,		L"Resource/Texture/red.png" },
-		{ TEXTURE_NORMAL_DEFAULT,		L"Resource/Texture/normal_default.jpg" },
 		{ TEXTURE_PROBE0,		L"Resource/Texture/Probe0.png" },
 
 		{ TXTURE_METAL_ALBD,		L"Resource/Texture/metal/albedo.png" },
