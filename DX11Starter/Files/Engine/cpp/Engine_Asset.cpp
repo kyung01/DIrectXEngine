@@ -81,16 +81,68 @@ std::list<LoadInfoTexture> Asset::getLoadListTexture()
 	std::list<LoadInfoTexture> lst({
 		{ TEXTURE_DEFAULT,		L"Resource/Texture/textureTest00.jpg" },
 		{ TEXTURE_NORMAL_DEFAULT,		L"Resource/Texture/normal_default.png" },
-		{ TEXTURE_WHITE,		L"Resource/Texture/white.png" },
+		{ TXTURE_WHITE,		L"Resource/Texture/white.png" },
+		{ TXTURE_BLACK,		L"Resource/Texture/black.png" },
 		{ TEXTURE_RED,		L"Resource/Texture/red.png" },
 		{ TEXTURE_NORMAL_DEFAULT,		L"Resource/Texture/normal_default.jpg" },
 		{ TEXTURE_PROBE0,		L"Resource/Texture/Probe0.png" },
-		{ TXTURE_ROCK_ALBD,		L"Resource/Texture/Rock/albedo.png" },
-		{ TXTURE_ROCK_AO,			L"Resource/Texture/Rock/ao.png" },
-		{ TXTURE_ROCK_HEIGHT,		L"Resource/Texture/Rock/height.png" },
-		{ TXTURE_ROCK_METALNESS,	L"Resource/Texture/Rock/metalness.png" },
-		{ TXTURE_ROCK_NORMAL,		L"Resource/Texture/Rock/normal.png" },
-		{ TXTURE_ROCK_ROUGH,		L"Resource/Texture/Rock/rough.png" }
+
+		{ TXTURE_METAL_ALBD,		L"Resource/Texture/metal/albedo.png" },
+		{ TXTURE_METAL_METALNESS,	L"Resource/Texture/metal/metal.png" },
+		{ TXTURE_METAL_ROUGH,		L"Resource/Texture/metal/rough.png" },
+
+
+		{ TXTURE_GOLD_SCUFFED_ALBD,			L"Resource/Texture/metal_rusted/albedo.png" },
+		{ TXTURE_GOLD_SCUFFED_METALNESS,	L"Resource/Texture/metal_rusted/metal.png" },
+		{ TXTURE_GOLD_SCUFFED_NORMAL,		L"Resource/Texture/metal_rusted/normal.png" },
+		{ TXTURE_GOLD_SCUFFED_ROUGH,		L"Resource/Texture/metal_rusted/rough.png" },
+
+		{ TXTURE_METAL_RUSTED_ALBD,			L"Resource/Texture/metal_rusted/albedo.png" },
+		{ TXTURE_METAL_RUSTED_AO,			L"Resource/Texture/metal_rusted/ao.png" },
+		{ TXTURE_METAL_RUSTED_HEIGHT,		L"Resource/Texture/metal_rusted/height.png" },
+		{ TXTURE_METAL_RUSTED_METALNESS,	L"Resource/Texture/metal_rusted/metal.png" },
+		{ TXTURE_METAL_RUSTED_NORMAL,		L"Resource/Texture/metal_rusted/normal.png" },
+		{ TXTURE_METAL_RUSTED_ROUGH,		L"Resource/Texture/metal_rusted/rough.png" },
+
+		{ TXTURE_METAL_GREASY_ALBD,			L"Resource/Texture/metal_rusted/albedo.png" },
+		{ TXTURE_METAL_GREASY_METALNESS,	L"Resource/Texture/metal_rusted/metal.png" },
+		{ TXTURE_METAL_GREASY_NORMAL,		L"Resource/Texture/metal_rusted/normal.png" },
+		{ TXTURE_METAL_GREASY_ROUGH,		L"Resource/Texture/metal_rusted/rough.png" },
+
+
+		{ TXTURE_MARBEL_ALBD,				L"Resource/Texture/marble/albedo.png" },
+		{ TXTURE_MARBEL_METALNESS,			L"Resource/Texture/marble/metal.png" },
+		{ TXTURE_MARBEL_NORMAL,				L"Resource/Texture/marble/normal.png" },
+		{ TXTURE_MARBEL_ROUGH,				L"Resource/Texture/marble/rough.png" },
+
+
+		{ TXTURE_COPPER_ROCK_ALBD,			L"Resource/Texture/copper_rock/albedo.png" },
+		{ TXTURE_COPPER_ROCK_AO,			L"Resource/Texture/copper_rock/ao.png" },
+		{ TXTURE_COPPER_ROCK_HEIGHT,		L"Resource/Texture/copper_rock/height.png" },
+		{ TXTURE_COPPER_ROCK_METALNESS,		L"Resource/Texture/copper_rock/metal.png" },
+		{ TXTURE_COPPER_ROCK_NORMAL,		L"Resource/Texture/copper_rock/normal.png" },
+		{ TXTURE_COPPER_ROCK_ROUGH,			L"Resource/Texture/copper_rock/rough.png" },
+
+		{ TXTURE_ROCK_ALBD,					L"Resource/Texture/rock/albedo.png" },
+		{ TXTURE_ROCK_AO,					L"Resource/Texture/rock/ao.png" },
+		{ TXTURE_ROCK_HEIGHT,				L"Resource/Texture/rock/height.png" },
+		{ TXTURE_ROCK_METALNESS,			L"Resource/Texture/rock/metal.png" },
+		{ TXTURE_ROCK_NORMAL,				L"Resource/Texture/rock/normal.png" },
+		{ TXTURE_ROCK_ROUGH,				L"Resource/Texture/rock/rough.png" },
+
+
+		{ TXTURE_MAHOGFLOOR_ALBD,			L"Resource/Texture/mahogfloor/albedo.png" },
+		{ TXTURE_MAHOGFLOOR_AO,				L"Resource/Texture/mahogfloor/ao.png" },
+		{ TXTURE_MAHOGFLOOR_HEIGHT,			L"Resource/Texture/mahogfloor/height.png" },
+		{ TXTURE_MAHOGFLOOR_NORMAL,			L"Resource/Texture/mahogfloor/normal.png" },
+		{ TXTURE_MAHOGFLOOR_ROUGH,			L"Resource/Texture/mahogfloor/rough.png" },
+
+		{ TXTURE_HARSHBRICKS_ALBD,			L"Resource/Texture/harshbricks/albedo.png" },
+		{ TXTURE_HARSHBRICKS_AO,			L"Resource/Texture/harshbricks/ao.png" },
+		{ TXTURE_HARSHBRICKS_HEIGHT,		L"Resource/Texture/harshbricks/height.png" },
+		{ TXTURE_HARSHBRICKS_METALNESS,		L"Resource/Texture/harshbricks/metal.png" },
+		{ TXTURE_HARSHBRICKS_NORMAL,		L"Resource/Texture/harshbricks/normal.png" },
+		{ TXTURE_HARSHBRICKS_ROUGH,			L"Resource/Texture/harshbricks/rough.png" }
 	});
 	return lst;
 }

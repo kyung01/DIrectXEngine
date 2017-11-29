@@ -104,7 +104,7 @@ void RenderSystem::render(
 		fragmentShader.SetShaderResourceView("NormalMap", asset.getTexture(it->normalMap));
 		fragmentShader.SetShaderResourceView("RoughMap", asset.getTexture(it->roughMap));
 		fragmentShader.SetShaderResourceView("MetalMap", asset.getTexture(it->metalMap));
-		fragmentShader.SetShaderResourceView("HeightMap", asset.getTexture(TEXTURE_WHITE));
+		fragmentShader.SetShaderResourceView("HeightMap", asset.getTexture(TXTURE_WHITE));
 		fragmentShader.SetShaderResourceView("AOMap", asset.getTexture(it->aoMap));
 
 		fragmentShader.CopyAllBufferData();

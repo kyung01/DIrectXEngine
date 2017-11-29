@@ -7,7 +7,7 @@ Renderable::Renderable():
 	normalMap(KEnum::TEXTURE_NORMAL_DEFAULT),
 	roughMap(KEnum::TEXTURE_DEFAULT),
 	metalMap(KEnum::TEXTURE_DEFAULT),
-	aoMap(KEnum::TEXTURE_WHITE)
+	aoMap(KEnum::TXTURE_WHITE)
 {	
 	m_scale = Vector3(1, 1, 1);
 }
