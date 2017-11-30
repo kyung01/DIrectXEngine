@@ -382,11 +382,15 @@ float3 processLight(Attributes attr, Material mat, LightParameter light) {
 	}
 	else {
 	}
-	float3 F0 = float3(
-		lerp(0.04, mat.albedo.x, mat.metalness), 
-		lerp(0.04, mat.albedo.y, mat.metalness), 
-		lerp(0.04, mat.albedo.z, mat.metalness)
-		);
+
+
+	float3 F0 = float3(0.04f, 0.04f, 0.04f);
+	//float3 F0 = float3(
+	//	lerp(0.04, mat.albedo.x, mat.metalness), 
+	//	lerp(0.04, mat.albedo.y, mat.metalness), 
+	//	lerp(0.04, mat.albedo.z, mat.metalness)
+	//	);
+	F0 = lerp(F0, mat.albedo, mat.metalness);
 	// calculate per-light radiance
 	float3 L = normalize(light.position - attr.position);
 	float3 H = normalize(attr.dirToEye + L);
@@ -398,13 +402,15 @@ float3 processLight(Attributes attr, Material mat, LightParameter light) {
 	float G = GeometrySmith(attr.normal, attr.dirToEye, L, mat.roughness);
 	float3 F = fresnelSchlick(max(dot(H, attr.dirToEye), 0.0), F0);
 
+	float3 nominator = NDF * G * F;
+	float denominator = 4.0 * max(dot(attr.normal, attr.dirToEye), 0.0) * max(dot(attr.normal, L), 0.0);
+	float3 specular = nominator / max(denominator, 0.001);
+
+	//kS is equal to Fresnel
 	float3 kS = F;
 	float3 kD = float3(1,1,1) - kS;
 	kD *= 1.0 - mat.metalness;
 
-	float3 nominator = NDF * G * F;
-	float denominator = 4.0 * max(dot(attr.normal, attr.dirToEye), 0.0) * max(dot(attr.normal, L), 0.0);
-	float3 specular = nominator / max(denominator, 0.001);
 
 	// add to outgoing radiance Lo
 	float NdotL = max(dot(attr.normal, L), 0.0);
@@ -475,11 +481,11 @@ float3 getColor(VertexToPixel input) {
 	}
 
 
-	float3 ambient = float3(0.001, 0.001, 0.001) * mat.albedo * mat.ao;
+	float3 ambient = float3(1,1,1)*0.001f * mat.albedo.xyz * mat.ao;
 	color += ambient;
 
 	color = color / (color + float3(1,1,1));
-	color = pow(color, float3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));
+	color = pow(color, 1/2.2f);
 
 	
 	return color;

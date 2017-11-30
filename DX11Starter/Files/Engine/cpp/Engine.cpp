@@ -18,11 +18,11 @@ const int ATLAS_SHADOW_MAP_SLICE_HEIGHT = 512*1;
 
 void Engine::initExample()
 {
-	bool isFirstObject = true;
 	int ENTITY_NUMBER = 64;
 	int RANDOM_MODEL_NUMBER = 5;
-	int RANDOM_LIGHT_NUMBER = 10;
+	int RANDOM_LIGHT_NUMBER = 5;
 	int x(0), y(0), z(3);
+	
 	for (int i = 0; i < ENTITY_NUMBER; i++)
 	{
 		Entity& entity = m_entityFactory.addEntity();
@@ -30,21 +30,70 @@ void Engine::initExample()
 		m_transform3DSystem.addEntity(m_entityFactory.m_entities, entity, entityIndex);
 		m_renderSystem.addEntity(m_entityFactory.m_entities, entity, entityIndex);
 		m_renderSystem.getLastComponent().meshId = MESH_SPHERE;
-		m_renderSystem.getLastComponent().albedoMap = TXTURE_ROCK_ALBD;
-		m_renderSystem.getLastComponent().normalMap = TXTURE_ROCK_NORMAL;
-		m_renderSystem.getLastComponent().roughMap = TXTURE_ROCK_ROUGH;
-		m_renderSystem.getLastComponent().metalMap = TXTURE_ROCK_METALNESS;
-		m_renderSystem.getLastComponent().aoMap = TXTURE_ROCK_AO;
-
-		if (isFirstObject) {
-			m_transform3DSystem.getLastComponent().setPosition(0, 0, 0);
-			isFirstObject = false;
+		switch (i%9) {
+		default:
+		case 0:
+			m_renderSystem.getLastComponent().albedoMap = TXTURE_GOLD_SCUFFED_ALBD;
+			m_renderSystem.getLastComponent().normalMap = TXTURE_GOLD_SCUFFED_NORMAL;
+			m_renderSystem.getLastComponent().roughMap = TXTURE_GOLD_SCUFFED_ROUGH;
+			m_renderSystem.getLastComponent().metalMap = TXTURE_GOLD_SCUFFED_METALNESS;
+			break;
+		case 1:
+			m_renderSystem.getLastComponent().albedoMap = TXTURE_METAL_ALBD;
+			m_renderSystem.getLastComponent().roughMap = TXTURE_METAL_ROUGH;
+			m_renderSystem.getLastComponent().metalMap = TXTURE_METAL_METALNESS;
+			break;
+		case 2:
+			m_renderSystem.getLastComponent().albedoMap = TXTURE_METAL_RUSTED_ALBD;
+			m_renderSystem.getLastComponent().normalMap = TXTURE_METAL_RUSTED_NORMAL;
+			m_renderSystem.getLastComponent().roughMap = TXTURE_METAL_RUSTED_ROUGH;
+			m_renderSystem.getLastComponent().metalMap = TXTURE_METAL_RUSTED_METALNESS;
+			m_renderSystem.getLastComponent().aoMap = TXTURE_METAL_RUSTED_AO;
+			break;
+		case 3:
+			m_renderSystem.getLastComponent().albedoMap = TXTURE_METAL_GREASY_ALBD;
+			m_renderSystem.getLastComponent().normalMap = TXTURE_METAL_GREASY_NORMAL;
+			m_renderSystem.getLastComponent().roughMap = TXTURE_METAL_GREASY_ROUGH;
+			m_renderSystem.getLastComponent().metalMap = TXTURE_METAL_GREASY_METALNESS;
+			break;
+		case 4:
+			m_renderSystem.getLastComponent().albedoMap = TXTURE_COPPER_ROCK_ALBD;
+			m_renderSystem.getLastComponent().normalMap = TXTURE_COPPER_ROCK_NORMAL;
+			m_renderSystem.getLastComponent().roughMap = TXTURE_COPPER_ROCK_ROUGH;
+			m_renderSystem.getLastComponent().metalMap = TXTURE_COPPER_ROCK_METALNESS;
+			m_renderSystem.getLastComponent().aoMap = TXTURE_COPPER_ROCK_AO;
+			break;
+		case 5:
+			m_renderSystem.getLastComponent().albedoMap = TXTURE_ROCK_ALBD;
+			m_renderSystem.getLastComponent().normalMap = TXTURE_ROCK_NORMAL;
+			m_renderSystem.getLastComponent().roughMap = TXTURE_ROCK_ROUGH;
+			m_renderSystem.getLastComponent().metalMap = TXTURE_ROCK_METALNESS;
+			m_renderSystem.getLastComponent().aoMap = TXTURE_ROCK_AO;
+			break;
+		case 6:
+			m_renderSystem.getLastComponent().albedoMap = TXTURE_MARBEL_ALBD;
+			m_renderSystem.getLastComponent().normalMap = TXTURE_MARBEL_NORMAL;
+			m_renderSystem.getLastComponent().roughMap = TXTURE_MARBEL_ROUGH;
+			m_renderSystem.getLastComponent().metalMap = TXTURE_MARBEL_METALNESS;
+			break;
+		case 7:
+			m_renderSystem.getLastComponent().albedoMap = TXTURE_MAHOGFLOOR_ALBD;
+			m_renderSystem.getLastComponent().normalMap = TXTURE_MAHOGFLOOR_NORMAL;
+			m_renderSystem.getLastComponent().roughMap = TXTURE_MAHOGFLOOR_ROUGH;
+			m_renderSystem.getLastComponent().aoMap = TXTURE_MAHOGFLOOR_AO;
+			break;
+		case 8:
+			m_renderSystem.getLastComponent().albedoMap = TXTURE_HARSHBRICKS_ALBD;
+			m_renderSystem.getLastComponent().normalMap = TXTURE_HARSHBRICKS_NORMAL;
+			m_renderSystem.getLastComponent().roughMap = TXTURE_HARSHBRICKS_ROUGH;
+			m_renderSystem.getLastComponent().metalMap = TXTURE_HARSHBRICKS_METALNESS;
+			m_renderSystem.getLastComponent().aoMap = TXTURE_HARSHBRICKS_AO;
+			break;
 		}
-		else {
 
-			m_transform3DSystem.getLastComponent().setPosition(-4 + x++, -4+y, z);
-			m_transform3DSystem.getLastComponent().setRotation(Quaternion::CreateFromAxisAngle(Vector3(rand(), rand(), rand()), rand()));
-		}
+
+		m_transform3DSystem.getLastComponent().setPosition(-4 + x++, -4 + y, z);
+		m_transform3DSystem.getLastComponent().setRotation(Quaternion::CreateFromAxisAngle(Vector3(rand(), rand(), rand()), rand()));
 		if (x > 8) {
 			x = 0;
 			y++;
@@ -68,7 +117,7 @@ void Engine::initExample()
 			continue;
 		//std::cout << "SELECTED LIGHT INDEX " << selectedEntityIndex << std::endl;
 		m_lightSystem.addEntity(m_entityFactory.m_entities, m_entityFactory.getEntity(selectedEntityIndex), selectedEntityIndex);
-		//m_lightSystem.getLastComponent().color = Vector3(1, 1, 1);
+		m_lightSystem.getLastComponent().color = Vector3(1, 1, 1);
 		if(m_lightSystem.getLastComponent().lightType == LIGHT_TYPE::POINT_LIGHT)
 			m_renderSystem.getComponent(selectedEntityIndex).meshId = MESH_SPHERE;
 		else
@@ -78,7 +127,7 @@ void Engine::initExample()
 			setPosition(
 				m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->position.x,
 				m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->position.y,
-				m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->position.z - 3);
+				-4);
 		m_entityFactory.getEntity(selectedEntityIndex).m_transform3D->
 			setRotation(Quaternion::Identity);
 		//std::cout << "ATLAS " << m_atlasSystem.getLastComponent().x << " , " << m_atlasSystem.getLastComponent().y << " (" << m_atlasSystem.getLastComponent().width << "," << m_atlasSystem.getLastComponent().height << ")" << std::endl;

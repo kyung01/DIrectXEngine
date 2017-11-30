@@ -91,10 +91,10 @@ std::list<LoadInfoTexture> Asset::getLoadListTexture()
 		{ TXTURE_METAL_ROUGH,		L"Resource/Texture/metal/rough.png" },
 
 
-		{ TXTURE_GOLD_SCUFFED_ALBD,			L"Resource/Texture/metal_rusted/albedo.png" },
-		{ TXTURE_GOLD_SCUFFED_METALNESS,	L"Resource/Texture/metal_rusted/metal.png" },
-		{ TXTURE_GOLD_SCUFFED_NORMAL,		L"Resource/Texture/metal_rusted/normal.png" },
-		{ TXTURE_GOLD_SCUFFED_ROUGH,		L"Resource/Texture/metal_rusted/rough.png" },
+		{ TXTURE_GOLD_SCUFFED_ALBD,			L"Resource/Texture/gold_scuffed/albedo.png" },
+		{ TXTURE_GOLD_SCUFFED_METALNESS,	L"Resource/Texture/gold_scuffed/metal.png" },
+		{ TXTURE_GOLD_SCUFFED_NORMAL,		L"Resource/Texture/gold_scuffed/normal.png" },
+		{ TXTURE_GOLD_SCUFFED_ROUGH,		L"Resource/Texture/gold_scuffed/rough.png" },
 
 		{ TXTURE_METAL_RUSTED_ALBD,			L"Resource/Texture/metal_rusted/albedo.png" },
 		{ TXTURE_METAL_RUSTED_AO,			L"Resource/Texture/metal_rusted/ao.png" },
@@ -103,10 +103,10 @@ std::list<LoadInfoTexture> Asset::getLoadListTexture()
 		{ TXTURE_METAL_RUSTED_NORMAL,		L"Resource/Texture/metal_rusted/normal.png" },
 		{ TXTURE_METAL_RUSTED_ROUGH,		L"Resource/Texture/metal_rusted/rough.png" },
 
-		{ TXTURE_METAL_GREASY_ALBD,			L"Resource/Texture/metal_rusted/albedo.png" },
-		{ TXTURE_METAL_GREASY_METALNESS,	L"Resource/Texture/metal_rusted/metal.png" },
-		{ TXTURE_METAL_GREASY_NORMAL,		L"Resource/Texture/metal_rusted/normal.png" },
-		{ TXTURE_METAL_GREASY_ROUGH,		L"Resource/Texture/metal_rusted/rough.png" },
+		{ TXTURE_METAL_GREASY_ALBD,			L"Resource/Texture/metal_greasy/albedo.png" },
+		{ TXTURE_METAL_GREASY_METALNESS,	L"Resource/Texture/metal_greasy/metal.png" },
+		{ TXTURE_METAL_GREASY_NORMAL,		L"Resource/Texture/metal_greasy/normal.png" },
+		{ TXTURE_METAL_GREASY_ROUGH,		L"Resource/Texture/metal_greasy/rough.png" },
 
 
 		{ TXTURE_MARBEL_ALBD,				L"Resource/Texture/marble/albedo.png" },
