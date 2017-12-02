@@ -288,6 +288,7 @@ void Engine::renderUpdate(
 }
 
 int renderAtalsOnce = 100;
+Renderable renderable_cubemap;
 void Engine::render(
 	ID3D11Device * device, ID3D11DeviceContext * context, 
 	ID3D11RenderTargetView * target, ID3D11DepthStencilView * targetDepth, D3D11_VIEWPORT viewport)
@@ -385,6 +386,7 @@ void Engine::render(
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("textureLightAtlas", 0);
 		//m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("textureProbe", textureProbe);
 	}
+	m_renderSystem.renderCubemap(device, context, target, targetDepth, viewport, m_asset, renderable_cubemap);
 
 
 

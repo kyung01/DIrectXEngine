@@ -43,6 +43,13 @@ namespace KEngine {
 
 			//void addEntity(Entity& entity) override;
 			void update(std::vector<Entity> &entities, float time) override;
+			void renderCubemap(
+				//Render information needed to render
+				ID3D11Device * device, ID3D11DeviceContext * context,
+				ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
+				Asset &asset,
+				Renderable &renderable
+			);
 			void render(
 				//Render information needed to render
 				ID3D11Device * device, ID3D11DeviceContext * context,

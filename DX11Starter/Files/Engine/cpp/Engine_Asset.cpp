@@ -151,7 +151,7 @@ std::list<LoadInfoTexture> Asset::getLoadListTexture()
 std::list<LoadInfoTexture> Asset::getLoadListTextureCubeMap()
 {
 	std::list<LoadInfoTexture> lst({
-		{ TEXTURE_SKYBOX_SUNNY,		L"Resource/Texture/CubeMap/Sunny.dds" }
+		{ CUBEMAP_SKYBOX_SUNNY,		L"Resource/Texture/CubeMap/Sunny.dds" }
 	});
 	return lst;
 }
@@ -188,6 +188,11 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 		m_textures[it->id] = texture;
 	}
 
+	for (auto it = dataTextureCubeMap.begin(); it != dataTextureCubeMap.end(); it++) {
+		ID3D11ShaderResourceView *texture;
+		DirectX::CreateDDSTextureFromFile(device, context, it->path, 0, &texture);
+		m_texturesCubeMap[it->id] = texture;
+	}
 
 	D3D11_RASTERIZER_DESC rsDescBack = {};
 	rsDescBack.FillMode = D3D11_FILL_SOLID;
@@ -260,6 +265,10 @@ ID3D11ShaderResourceView * KEngine::Asset::getTexture(KEnum id)
 {
 	return m_textures.find(id)->second;
 }
+ID3D11ShaderResourceView * KEngine::Asset::getCubeMap(KEnum id)
+{
+	return m_texturesCubeMap.find(id)->second;
+}
 SimpleFragmentShader& Asset::getFragShader(KEnum name) {
 	return m_shadersFrag.find(name)->second;
 }
@@ -271,4 +280,9 @@ SimpleVertexShader& Asset::getVertShader(KEnum name) {
 ID3D11RasterizerState * Asset::getRasterizer(KEnum name)
 {
 	return m_rasterizers.find(name)->second;
+}
+
+Mesh & KEngine::Asset::getMesh(KEnum id)
+{
+	return m_meshes.find(id)->second;
 }

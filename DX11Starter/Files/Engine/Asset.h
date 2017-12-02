@@ -58,6 +58,7 @@ namespace KEngine {
 		ID3D11SamplerState* m_sampler;
 		std::map<KEnum, Mesh> m_meshes;
 		ID3D11ShaderResourceView * getTexture(KEnum id);
+		ID3D11ShaderResourceView * getCubeMap(KEnum id);
 		//ID3D11BlendState * BLEND_STATE_ADDITIVE, *BLEND_STATE_TRANSPARENT;
 		//ID3D11RasterizerState
 		//	* RASTR_STATE_CULL_FRONT,
@@ -70,6 +71,7 @@ namespace KEngine {
 		SimpleFragmentShader&		getFragShader(KEnum name);
 		SimpleVertexShader&			getVertShader(KEnum name);
 		ID3D11RasterizerState*			getRasterizer(KEnum name);
+		Mesh&			getMesh(KEnum id);
 		//Vector3 getRandomColor(int seed);
 
 		/*

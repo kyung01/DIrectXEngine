@@ -63,6 +63,37 @@ void RenderSystem::renderMesh(ID3D11DeviceContext * context, Mesh & mesh, UINT o
 	context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
 	context->DrawIndexed(mesh.getBufferIndexCount(), 0, 0);
 }
+void KEngine::KSystem::RenderSystem::renderCubemap(
+	ID3D11Device * device, ID3D11DeviceContext * context, ID3D11RenderTargetView * renderTargetView, ID3D11DepthStencilView * depthStencilView, D3D11_VIEWPORT & viewport, 
+	Asset & asset, Renderable& renderable)
+{
+	float colorClean[4] = { 0.1f,0.1f,0.1f,1 };
+	auto &vertexShader = asset.getVertShader(RNDR_CUBEMAP);
+	auto &fragmentShader = asset.getFragShader(RNDR_CUBEMAP);
+	context->RSSetState(asset.getRasterizer(RASTR_CULLBACKFACE));
+	setRenderTarget(context, renderTargetView, depthStencilView, viewport);
+	vertexShader.SetShader();
+	fragmentShader.SetShader();
+
+	setMatrix(&vertexShader, "view", m_camera.getViewMatrix());
+	setMatrix(&vertexShader, "proj", m_camera.getProjMatrix());
+
+
+	Mesh& mesh = asset.getMesh(MESH_SPHERE);
+	setMatrix(&vertexShader, "world", renderable.getWorldMatrix());
+	vertexShader.CopyAllBufferData();
+
+
+	fragmentShader.SetShaderResourceView("Cubemap", asset.getCubeMap(CUBEMAP_SKYBOX_SUNNY));
+	fragmentShader.SetSamplerState("Sampler", asset.m_sampler);
+
+	fragmentShader.CopyAllBufferData();
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);
+	context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+	context->DrawIndexed(mesh.getBufferIndexCount(), 0, 0);
+}
 
 void RenderSystem::render(
 	ID3D11Device * device, ID3D11DeviceContext * context,
@@ -344,6 +375,7 @@ void RenderSystem::update(std::vector<Entity> &entities, float time)
 		}
 	}
 }
+
 
 void KEngine::KSystem::RenderSystem::OnResize(int targetFrameWidth, int targetFrameHeight)
 {

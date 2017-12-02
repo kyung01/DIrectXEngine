@@ -1,4 +1,5 @@
 // External texture-related data
+TextureCube Cubemap			: register(t0);
 SamplerState Sampler	: register(s0);
 
 
@@ -12,4 +13,5 @@ struct VertexToPixel
 // Entry point for this pixel shader
 float4 main(VertexToPixel input) : SV_TARGET
 {
+	return Cubemap.Sample(Sampler, input.cubemapUVW);
 }
