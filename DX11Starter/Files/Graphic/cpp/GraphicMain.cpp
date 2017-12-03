@@ -567,8 +567,6 @@ void GraphicMain::updateProbes(
 		renderProbe(device, context, asset, scene, **it, m_probeCubemapTarget, m_probeCubemapDepth );
 		auto probeShaderResource = m_probeCubemapTarget.getShaderResource();
 		{ 
-
-
 			Vector3* coefficientsChannels = new Vector3[9];
 			int8_t* pixels = new int8_t[SIZE_LIGHT_TEXTURE*SIZE_LIGHT_TEXTURE*6 *4];
 			float* coefficientsVertex = new float[9];

@@ -582,6 +582,12 @@
     <ClCompile Include="Files\DirectX\cpp\DepthTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Files\DirectX\cpp\StagingTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\IrradianceMapConvertor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\imgui\imconfig.h">
@@ -1560,6 +1566,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\DirectX\DepthTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\DirectX\StagingTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\IrradianceMapConvertor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

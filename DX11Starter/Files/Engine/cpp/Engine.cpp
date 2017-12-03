@@ -1,6 +1,7 @@
 #include <Engine\Engine.h>
 #include <iostream>		
 #include <DirectX\DirectXUtility.h>
+#include <ScreenGrab.h>
 
 #define print(content) std::cout<<"Engine : "<< content << "\n";
 using namespace KEngine;
@@ -98,11 +99,6 @@ void Engine::initExample()
 			x = 0;
 			y++;
 		}
-		//std::cout << i << " POISTION " << m_transform3DSystem.getComponent(i).position.x << " " << m_transform3DSystem.getComponent(i).position.y << std::endl;
-		//std::cout << i << " MESH ID " << m_renderSystem.getComponent(i).meshId << std::endl;
-		//std::cout << i << " POISTION " << m_renderSystem.getLastComponent().getPosition().x << " " << m_renderSystem.getLastComponent().getPosition().y << std::endl;
-		//std::cout << i << " MESH ID " << m_renderSystem.getLastComponent().meshId << std::endl;
-		//m_renderSystem.getLastComponent().setPosition(Vector3(i, j, 1));
 	}
 	for (int i = 0; i < RANDOM_LIGHT_NUMBER; i++) {
 		int selectedEntityIndex;
@@ -188,6 +184,81 @@ void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context,
 	initExample();
 	m_textureAtlasShadowMap.init(device, ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT);
 	m_textureAtlasShadowMapDepth.init(device, ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT);
+	initTest(device, context, windowWidth, windowHeight);
+
+
+}
+void Engine::initTest(ID3D11Device * device, ID3D11DeviceContext * context, int windowWidth, int windowHeight) {
+
+	HRESULT result;
+	ID3D11Resource *cubemapResource;
+	ID3D11Texture2D *pTextureInterface = 0;
+	D3D11_TEXTURE2D_DESC descCubemap, desc;
+	ID3D11Texture2D * textureStagingResource;
+
+	// Initialize the render target texture description.
+	ZeroMemory(&descCubemap, sizeof(descCubemap));
+	ZeroMemory(&desc, sizeof(desc));
+
+	m_asset.getCubeMap(CUBEMAP_SKYBOX_SUNNY)->GetResource(&cubemapResource);
+	cubemapResource->QueryInterface<ID3D11Texture2D>(&pTextureInterface);
+	pTextureInterface->GetDesc(&descCubemap);
+
+	desc = descCubemap;
+	//turn the cubemap descrip into stating format
+	//desc.Width = descCubemap.Width;
+	//desc.Height = descCubemap.Height;
+	//desc.MipLevels = 1;
+	//desc.ArraySize = 6;
+	//desc.Format = id
+	//desc.SampleDesc.Count = 1;
+	desc.Usage = D3D11_USAGE_STAGING;
+	desc.BindFlags = 0; //staing texture cannot be bound
+	desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+	//desc.SampleDesc.Count = 1;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+
+	DirectX::DirectXUtility::HRESULT_CHECK(device->CreateTexture2D(&desc, NULL, &textureStagingResource));
+	
+	HRESULT h;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+	//don't copy resources for now
+	context->CopyResource(textureStagingResource, cubemapResource);
+	DirectX::DirectXUtility::HRESULT_CHECK(context->Map(textureStagingResource, 0, D3D11_MAP_READ_WRITE, 0, &mappedResource));
+
+
+	//DirectX::D3DX11SaveTextureToFile
+	//memcpy((int8_t *)mappedResource.pData, pixels, sizeof(int8_t) *desc.Width*desc.Height * 4 * 6);
+	int8_t* pointer = (int8_t*)mappedResource.pData;
+	int8_t* pixels = new int8_t[(desc.Width*desc.Height*4)  ];
+	
+	int index = 0;
+	for (int i = index; i <index+(desc.Width*desc.Height *4) ; i+=4 ) {
+		pixels[i] = 255;
+		pixels[i + 1] = 255;
+		pixels[i + 2] = 255;
+		pixels[i + 3] = 255;
+		//pixels[i] =255;
+		//pixels[i+1] = 0;
+		//pixels[i+2] = 0;
+		//pixels[i+3] = 255;
+	}
+	
+	
+	memcpy((int8_t *)mappedResource.pData, pixels, sizeof(int8_t) *desc.Width*desc.Height  * 4 );
+	context->Unmap(textureStagingResource, 0);
+	context->CopyResource(cubemapResource,textureStagingResource);
+	//delete pixels;
+	DirectX::SaveDDSTextureToFile(context, textureStagingResource,L"test.dds");
+	for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
+		for (float j = 0; j < desc.Width; j++)
+			for (float i = 0; i < desc.Height; i++)
+			{
+				
+
+			}
+	}
 }
 void Engine::update(float timeElapsed){
 	for (auto it = m_eventHandlers.begin(); it != m_eventHandlers.end(); it++) {

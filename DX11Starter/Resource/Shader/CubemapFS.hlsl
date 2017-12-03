@@ -13,5 +13,5 @@ struct VertexToPixel
 // Entry point for this pixel shader
 float4 main(VertexToPixel input) : SV_TARGET
 {
-	return Cubemap.Sample(Sampler, input.cubemapUVW);
+	return Cubemap.Sample(Sampler, normalize(input.cubemapUVW));
 }
