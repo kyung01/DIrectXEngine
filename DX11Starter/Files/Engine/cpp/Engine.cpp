@@ -3,6 +3,7 @@
 #include <DirectX\DirectXUtility.h>
 #include <ScreenGrab.h>
 
+
 #define print(content) std::cout<<"Engine : "<< content << "\n";
 using namespace KEngine;
 const int CLUSTER_ITEM_SIZE = 3200;
@@ -148,9 +149,9 @@ void Engine::initExample()
 	}
 	{
 
-		Vector3 positions[2] = { Vector3(0, 5, 0) ,Vector3(0, -5, 0) };
-		float rotations[2] = { 3.14f/2,-3.14f/2};
-		for (int i = 0; i < 4; i++)
+		Vector3 positions[2] = { Vector3(0, -5, 0) , Vector3(0, 5, 0)};
+		float rotations[2] = {-3.14f/2, 3.14f / 2};
+		for (int i = 0; i < 1; i++)
 		{
 			Entity& entity = m_entityFactory.addEntity();
 			int entityIndex = m_entityFactory.m_entities.size() - 1;
@@ -184,7 +185,7 @@ void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context,
 	initExample();
 	m_textureAtlasShadowMap.init(device, ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT);
 	m_textureAtlasShadowMapDepth.init(device, ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT);
-	initTest(device, context, windowWidth, windowHeight);
+	//initTest(device, context, windowWidth, windowHeight);
 
 
 }
@@ -203,18 +204,17 @@ void Engine::initTest(ID3D11Device * device, ID3D11DeviceContext * context, int 
 	m_asset.getCubeMap(CUBEMAP_SKYBOX_SUNNY)->GetResource(&cubemapResource);
 	cubemapResource->QueryInterface<ID3D11Texture2D>(&pTextureInterface);
 	pTextureInterface->GetDesc(&descCubemap);
-
+	std::cout << "MIP MAP " << descCubemap.MipLevels << std::endl;
 	desc = descCubemap;
 	//turn the cubemap descrip into stating format
 	//desc.Width = descCubemap.Width;
 	//desc.Height = descCubemap.Height;
 	//desc.MipLevels = 1;
-	//desc.ArraySize = 6;
-	//desc.Format = id
+	desc.ArraySize = 6;
 	//desc.SampleDesc.Count = 1;
 	desc.Usage = D3D11_USAGE_STAGING;
 	desc.BindFlags = 0; //staing texture cannot be bound
-	desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+	desc.MiscFlags =  D3D11_RESOURCE_MISC_TEXTURECUBE;
 	//desc.SampleDesc.Count = 1;
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
 
@@ -222,35 +222,85 @@ void Engine::initTest(ID3D11Device * device, ID3D11DeviceContext * context, int 
 	
 	HRESULT h;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 	//don't copy resources for now
+	
 	context->CopyResource(textureStagingResource, cubemapResource);
-	DirectX::DirectXUtility::HRESULT_CHECK(context->Map(textureStagingResource, 0, D3D11_MAP_READ_WRITE, 0, &mappedResource));
+	for (int faceindex = 3; faceindex < 4; faceindex++) {
+		ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 
+		DirectX::DirectXUtility::HRESULT_CHECK(context->Map(textureStagingResource, faceindex, D3D11_MAP_READ_WRITE, 0, &mappedResource));
+		std::cout <<"FACE "<< faceindex <<" : "<<mappedResource.RowPitch << " , " << mappedResource.DepthPitch << std::endl;
 
-	//DirectX::D3DX11SaveTextureToFile
-	//memcpy((int8_t *)mappedResource.pData, pixels, sizeof(int8_t) *desc.Width*desc.Height * 4 * 6);
-	int8_t* pointer = (int8_t*)mappedResource.pData;
-	int8_t* pixels = new int8_t[(desc.Width*desc.Height*4)  ];
+		//DirectX::D3DX11SaveTextureToFile
+		//memcpy((int8_t *)mappedResource.pData, pixels, sizeof(int8_t) *desc.Width*desc.Height * 4 * 6);
+		int8_t* pointer = (int8_t*)mappedResource.pData;
+		int8_t* pixels = new int8_t[1024 * 1024*4];
+
+		for (int i = 0; i < 1024 * 1024; i++) {
+			pixels[i * 4 + 0] = pointer[4 * (1024 * 1024) + 0];
+			pixels[i * 4 + 1] = pointer[4 * (1024 * 1024) + 1];
+			pixels[i * 4 + 2] = pointer[4 * (1024 * 1024) + 2];
+			pixels[i * 4 + 3] = pointer[4 * (1024 * 1024) + 3];
+		}
+		for (int i = 0; i < 1024 * 1024; i++) {
+			//pointer[i * 4 + 0] = pixels[i * 4 + 0];
+			//pointer[i * 4 + 1] = pixels[i * 4 + 1];
+			//pointer[i * 4 + 2] = pixels[i * 4 + 2];
+			//pointer[i * 4 + 3] = pixels[i * 4 + 3];
+			pointer[i * 4 + 0] = 255*(i%1024 / 1024.0f);
+			pointer[i * 4 + 1] = pointer[i * 4 + 1]+255;
+			pointer[i * 4 + 2] = pointer[i * 4 + 2]+255;
+			pointer[i * 4 + 3] = pointer[i * 4 + 3];
+		}
+		for (int i = 0; i <mappedResource.DepthPitch*mappedResource.RowPitch; i++) {
+			//pixels[i + 0] = pointer[i + 0];//= 0;// pixels[i + 0];
+										   //pixels[i + 1] = pointer[i + 1];//= 0;// pixels[i + 1];
+										   //pixels[i + 2] = pointer[i + 2];//= 0;// pixels[i + 2];
+										   //pixels[i + 3] = pointer[i + 3];//=0;// pixels[i + 3];
+										   //pixels[i] =255;
+										   //pixels[i+1] = 0;
+										   //pixels[i+2] = 0;
+										   //pixels[i+3] = 255;
+		}
+		bool run = true;
+		int index = 0;
 	
-	int index = 0;
-	for (int i = index; i <index+(desc.Width*desc.Height *4) ; i+=4 ) {
-		pixels[i] = 255;
-		pixels[i + 1] = 255;
-		pixels[i + 2] = 255;
-		pixels[i + 3] = 255;
-		//pixels[i] =255;
-		//pixels[i+1] = 0;
-		//pixels[i+2] = 0;
-		//pixels[i+3] = 255;
+		for (int i = 0; i <mappedResource.DepthPitch*mappedResource.RowPitch; i++) {
+			//pointer[i + 0] = 0;
+			//pointer[i + 0] = pixels[i + 0];//= 0;// pixels[i + 0];
+										   //pointer[i + 1] = pixels[i + 1];//= 0;// pixels[i + 1];
+										   //pointer[i + 2] = pixels[i + 2];//= 0;// pixels[i + 2];
+										   //pointer[i + 3] = pixels[i + 3];//=0;// pixels[i + 3];
+										   //pixels[i] =255;
+										   //pixels[i+1] = 0;
+										   //pixels[i+2] = 0;
+										   //pixels[i+3] = 255;
+		}
+
+
+		//memcpy((int8_t *)mappedResource.pData, pixels, sizeof(int8_t) *desc.Width*desc.Height *desc.ArraySize * 4 );
+		context->Unmap(textureStagingResource, faceindex);
+		DirectX::SaveDDSTextureToFile(context, textureStagingResource, L"test.dds");
+		context->CopyResource(cubemapResource, textureStagingResource);
+		
+		switch (faceindex)
+		{
+		default:
+			DirectX::SaveDDSTextureToFile(context, textureStagingResource, L"1.dds");
+			break;
+		case 1:
+			DirectX::SaveDDSTextureToFile(context, textureStagingResource, L"2.dds");
+			break;
+		case 2:
+			DirectX::SaveDDSTextureToFile(context, textureStagingResource, L"3.dds");
+			break;
+		case 3:
+			DirectX::SaveDDSTextureToFile(context, textureStagingResource, L"4.dds");
+			break;
+		}
+		delete pixels;
 	}
-	
-	
-	memcpy((int8_t *)mappedResource.pData, pixels, sizeof(int8_t) *desc.Width*desc.Height  * 4 );
-	context->Unmap(textureStagingResource, 0);
-	context->CopyResource(cubemapResource,textureStagingResource);
 	//delete pixels;
-	DirectX::SaveDDSTextureToFile(context, textureStagingResource,L"test.dds");
 	for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
 		for (float j = 0; j < desc.Width; j++)
 			for (float i = 0; i < desc.Height; i++)
@@ -392,7 +442,7 @@ void Engine::render(
 					device, context,
 					transform.position,
 					m_textureAtlasShadowMap.getRenderTargetView(), m_textureAtlasShadowMapDepth.getDepthStencilView(), atlasViewport,
-					m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE), vertShader, fragShader, m_asset.m_meshes, m_entityFactory);
+					m_asset.getRasterizer(KEnum::RASTR_CULL_BACK), vertShader, fragShader, m_asset.m_meshes, m_entityFactory);
 
 			}
 			else {
@@ -400,7 +450,7 @@ void Engine::render(
 					device, context,
 					transform.position, transform.rotation, lightComponent.fov,
 					m_textureAtlasShadowMap.getRenderTargetView(), m_textureAtlasShadowMapDepth.getDepthStencilView(), atlasViewport,
-					m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE), vertShader, fragShader, m_asset.m_meshes, m_entityFactory);
+					m_asset.getRasterizer(KEnum::RASTR_CULL_BACK), vertShader, fragShader, m_asset.m_meshes, m_entityFactory);
 
 			}
 		}
@@ -449,7 +499,7 @@ void Engine::render(
 	m_renderSystem.render(
 		device, context, target, targetDepth, viewport,
 		m_asset,
-		m_asset.getRasterizer(KEnum::RASTR_CULLBACKFACE),
+		m_asset.getRasterizer(KEnum::RASTR_CULL_BACK),
 		m_asset.getVertShader(KEnum::RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM), m_asset.getFragShader(KEnum::RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM),
 		m_asset.m_meshes,m_entityFactory);
 	{
@@ -457,7 +507,7 @@ void Engine::render(
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("textureLightAtlas", 0);
 		//m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("textureProbe", textureProbe);
 	}
-	m_renderSystem.renderCubemap(device, context, target, targetDepth, viewport, m_asset, renderable_cubemap);
+	//m_renderSystem.renderCubemap(device, context, target, targetDepth, viewport, m_asset, renderable_cubemap);
 
 
 

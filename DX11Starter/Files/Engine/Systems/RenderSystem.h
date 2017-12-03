@@ -31,6 +31,13 @@ namespace KEngine {
 			//helper methods
 			void addEntityHandle(Entity& entity, Renderable &componenet) override;
 			void addEntityLinkRecreate(std::vector<Entity> & entityVectors, Renderable &componenet) override;
+
+
+			UINT stride;// = sizeof(Vertex);
+			UINT offset;// = 0;
+			void hprRenderMesh(ID3D11DeviceContext * context,Asset &asset,KEnum meshID);
+
+
 		public:
 			void init(int renderTargetWidth, int renderTargetHeight);
 			DirectX::SimpleMath::Matrix getCameraViewMatrix();
@@ -49,6 +56,13 @@ namespace KEngine {
 				ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
 				Asset &asset,
 				Renderable &renderable
+			);
+			void renderSkybox(
+				//Render information needed to render
+				ID3D11Device * device, ID3D11DeviceContext * context,
+				ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
+				Asset &asset,
+				EntityFactory& entityFactory
 			);
 			void render(
 				//Render information needed to render

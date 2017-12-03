@@ -28,7 +28,8 @@ std::list<LoadInfoShader> Asset::getLoadListShaderVert()
 		LoadInfoShader(RENDER_SPHERICAL_HARMONIC_DIFFUSE_MAP,							L"Resource/Shader/Atlas/DiffuseCubeMapVS.hlsl"),
 		LoadInfoShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM,			L"Resource/Shader/Atlas/SimpleLightVS.hlsl"),
 		LoadInfoShader(RENDER_WORLD_POSITION,			L"Resource/Shader/SimpleVS.hlsl"),
-		LoadInfoShader(RNDR_CUBEMAP,			L"Resource/Shader/CubemapVS.hlsl")
+		LoadInfoShader(RNDR_CUBEMAP,			L"Resource/Shader/CubemapVS.hlsl"),
+		LoadInfoShader(RNDR_SKY,			L"Resource/Shader/SkyVS.hlsl")
 	});
 	/*
 		unused shader files
@@ -60,7 +61,8 @@ std::list<LoadInfoShader> Asset::getLoadListShaderFrag()
 			(int)false, D3D11_USAGE_DEFAULT,0
 		}),
 		LoadInfoShader(RENDER_WORLD_POSITION,	L"Resource/Shader/SimpleFS.hlsl"),
-		LoadInfoShader(RNDR_CUBEMAP,			L"Resource/Shader/CubemapFS.hlsl")
+		LoadInfoShader(RNDR_CUBEMAP,			L"Resource/Shader/CubemapFS.hlsl"),
+		LoadInfoShader(RNDR_SKY,			L"Resource/Shader/SkyFS.hlsl")
 	});
 	/*
 		unused shader files
@@ -190,7 +192,9 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 
 	for (auto it = dataTextureCubeMap.begin(); it != dataTextureCubeMap.end(); it++) {
 		ID3D11ShaderResourceView *texture;
-		DirectX::CreateDDSTextureFromFile(device, context, it->path, 0, &texture);
+		//DirectX::CreateDDSTextureFromFile(device, context, it->path, 0, &texture);
+
+		DirectX::CreateDDSTextureFromFileEx(device, context,it->path,0Ui64, D3D11_USAGE_DEFAULT,D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,0, D3D11_RESOURCE_MISC_TEXTURECUBE,false,0, &texture);
 		m_texturesCubeMap[it->id] = texture;
 	}
 
@@ -199,7 +203,9 @@ bool Asset::init(ID3D11Device * device, ID3D11DeviceContext * context)
 	rsDescBack.CullMode = D3D11_CULL_BACK;
 	//rsDescBack.FrontCounterClockwise = true;
 	rsDescBack.DepthClipEnable = true;
-	device->CreateRasterizerState(&rsDescBack, &m_rasterizers[KEnum::RASTR_CULLBACKFACE]);
+	device->CreateRasterizerState(&rsDescBack, &m_rasterizers[KEnum::RASTR_CULL_BACK]);
+	rsDescBack.CullMode = D3D11_CULL_FRONT;
+	device->CreateRasterizerState(&rsDescBack, &m_rasterizers[KEnum::RASTR_CULL_FRONT]);
 
 	D3D11_SAMPLER_DESC samplerDesc = {};
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT; // Could be anisotropic

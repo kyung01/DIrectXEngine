@@ -41,8 +41,8 @@ VertexToPixel main(VertexShaderInput input)
 	matrix worldViewProj = mul(mul(world, view), proj);
 
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);
-	output.cubemapUVW = input.normal; // ASSUMING UNIFORM SCALE HERE!!!  If not, use inverse transpose of world matrix
-	//output.cubemapUVW = mul(input.position, (float3x3)world); // ASSUMING UNIFORM SCALE HERE!!!  If not, use inverse transpose of world matrix
+	//output.cubemapUVW = input.normal; // ASSUMING UNIFORM SCALE HERE!!!  If not, use inverse transpose of world matrix
+	output.cubemapUVW = mul(input.position, (float3x3)world); // ASSUMING UNIFORM SCALE HERE!!!  If not, use inverse transpose of world matrix
 
 	return output;
 }

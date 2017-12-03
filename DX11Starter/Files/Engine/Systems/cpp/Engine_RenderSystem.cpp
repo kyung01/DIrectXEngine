@@ -13,6 +13,16 @@ void KEngine::KSystem::RenderSystem::addEntityLinkRecreate(std::vector<Entity> &
 	entityVectors[componenet.entityIndex].m_renderable = &componenet;
 }
 
+void RenderSystem::hprRenderMesh(ID3D11DeviceContext * context, Asset & asset, KEnum meshID)
+{
+	Mesh& mesh = asset.getMesh(meshID);
+	stride = sizeof(Vertex);
+	offset = 0;
+	context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);
+	context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
+	context->DrawIndexed(mesh.getBufferIndexCount(), 0, 0);
+}
+
 void KEngine::KSystem::RenderSystem::init(int renderTargetWidth, int renderTargetHeight)
 {
 	m_camera.setProjParameters((3.14f / 2.0f), renderTargetWidth, renderTargetHeight, 0.1f, 1000.0f);
@@ -70,7 +80,7 @@ void KEngine::KSystem::RenderSystem::renderCubemap(
 	float colorClean[4] = { 0.1f,0.1f,0.1f,1 };
 	auto &vertexShader = asset.getVertShader(RNDR_CUBEMAP);
 	auto &fragmentShader = asset.getFragShader(RNDR_CUBEMAP);
-	context->RSSetState(asset.getRasterizer(RASTR_CULLBACKFACE));
+	context->RSSetState(asset.getRasterizer(RASTR_CULL_BACK));
 	setRenderTarget(context, renderTargetView, depthStencilView, viewport);
 	vertexShader.SetShader();
 	fragmentShader.SetShader();
@@ -94,7 +104,24 @@ void KEngine::KSystem::RenderSystem::renderCubemap(
 	context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
 	context->DrawIndexed(mesh.getBufferIndexCount(), 0, 0);
 }
+void RenderSystem::renderSkybox(ID3D11Device * device, ID3D11DeviceContext * context, ID3D11RenderTargetView * renderTargetView, ID3D11DepthStencilView * depthStencilView, D3D11_VIEWPORT & viewport, Asset & asset, EntityFactory & entityFactory)
+{
+	context->RSSetState(asset.getRasterizer(RASTR_CULL_FRONT));
 
+	auto& vertexShader		= asset.getVertShader(RNDR_SKY);
+	auto& fragmentShader	= asset.getFragShader(RNDR_SKY);
+	vertexShader.SetShader();
+	fragmentShader.SetShader();
+
+	setMatrix(&vertexShader, "view", m_camera.getViewMatrix());
+	setMatrix(&vertexShader, "proj", m_camera.getProjMatrix());
+	setMatrix(&vertexShader, "world", Matrix::Identity);
+	fragmentShader.SetShaderResourceView("Cubemap", asset.getCubeMap(CUBEMAP_SKYBOX_SUNNY));
+	fragmentShader.SetSamplerState("Sampler", asset.m_sampler);
+	vertexShader.CopyAllBufferData();
+	fragmentShader.CopyAllBufferData();
+	hprRenderMesh(context, asset, MESH_SPHERE);
+}
 void RenderSystem::render(
 	ID3D11Device * device, ID3D11DeviceContext * context,
 	ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
@@ -106,10 +133,14 @@ void RenderSystem::render(
 )
 {
 	float colorClean[4] = { 0.1f,0.1f,0.1f,1 };
+	setRenderTarget(context, renderTargetView, depthStencilView, viewport);
 	context->ClearRenderTargetView(renderTargetView, colorClean);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	//Render skybox
+	renderSkybox(device, context, renderTargetView, depthStencilView, viewport, asset, entityFactory);
+	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
 	context->RSSetState(cullBackFace);
-	setRenderTarget(context, renderTargetView, depthStencilView, viewport);
 	vertexShader.SetShader();
 	fragmentShader.SetShader();
 	
@@ -118,7 +149,6 @@ void RenderSystem::render(
 	for (auto it = m_components.begin(); it != m_components.end(); it++) {
 		if (it->meshId == KEnum::UNDEFINED) 
 			continue;
-		Mesh& mesh = meshes.find(it->meshId)->second;
 		setMatrix(&vertexShader, "world", it->getWorldMatrix());
 		vertexShader.CopyAllBufferData();
 		auto lightComponent = entityFactory.getEntity(it->entityIndex).m_lightComponent;
@@ -139,14 +169,7 @@ void RenderSystem::render(
 		fragmentShader.SetShaderResourceView("AOMap", asset.getTexture(it->aoMap));
 
 		fragmentShader.CopyAllBufferData();
-		UINT stride = sizeof(Vertex);
-		UINT offset = 0;
-		context->IASetVertexBuffers(0, 1, &mesh.getBufferVertexRef(), &stride, &offset);
-		context->IASetIndexBuffer(mesh.getBufferIndex(), DXGI_FORMAT_R32_UINT, 0);
-		context->DrawIndexed(mesh.getBufferIndexCount(), 0, 0);
-		//std::cout << "RENDERING AT " << it->getPosition().x << " , " << it->getPosition().y << " , " << it->getPosition().z << "\n";
-		//send the new world matrix information
-		//renderMesh(context, mesh, 0, sizeof(Vertex));
+		hprRenderMesh(context, asset, it->meshId);
 	}
 }
 
