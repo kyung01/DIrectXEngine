@@ -108,8 +108,8 @@ void RenderSystem::renderSkybox(ID3D11Device * device, ID3D11DeviceContext * con
 {
 	context->RSSetState(asset.getRasterizer(RASTR_CULL_FRONT));
 
-	auto& vertexShader		= asset.getVertShader(RNDR_SKY);
-	auto& fragmentShader	= asset.getFragShader(RNDR_SKY);
+	auto& vertexShader = asset.getVertShader(RNDR_SKY);
+	auto& fragmentShader = asset.getFragShader(RNDR_SKY);
 	vertexShader.SetShader();
 	fragmentShader.SetShader();
 
@@ -121,6 +121,40 @@ void RenderSystem::renderSkybox(ID3D11Device * device, ID3D11DeviceContext * con
 	vertexShader.CopyAllBufferData();
 	fragmentShader.CopyAllBufferData();
 	hprRenderMesh(context, asset, MESH_SPHERE);
+}
+void RenderSystem::renderScene(ID3D11Device * device, ID3D11DeviceContext * context, ID3D11RenderTargetView * renderTargetView, ID3D11DepthStencilView * depthStencilView, D3D11_VIEWPORT & viewport, Asset & asset, EntityFactory & entityFactory)
+{
+	context->RSSetState(asset.getRasterizer(RASTR_CULL_BACK));
+
+	auto& vertexShader = asset.getVertShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM);
+	auto& fragmentShader = asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM);
+	vertexShader.SetShader();
+	fragmentShader.SetShader();
+
+	setMatrix(&vertexShader, "view", m_camera.getViewMatrix());
+	setMatrix(&vertexShader, "proj", m_camera.getProjMatrix());
+	for (auto it = m_components.begin(); it != m_components.end(); it++) {
+		if (it->meshId == KEnum::UNDEFINED)
+			continue;
+
+		setMatrix(&vertexShader, "world", it->getWorldMatrix());
+		auto lightComponent = entityFactory.getEntity(it->entityIndex).m_lightComponent;
+		if (lightComponent == 0) {
+			fragmentShader.SetFloat3("diffuseColor", Vector3());
+		}
+		else {
+			fragmentShader.SetFloat3("diffuseColor", lightComponent->color);
+		}
+		fragmentShader.SetShaderResourceView("AlbedoMap", asset.getTexture(it->albedoMap));
+		fragmentShader.SetShaderResourceView("NormalMap", asset.getTexture(it->normalMap));
+		fragmentShader.SetShaderResourceView("RoughMap", asset.getTexture(it->roughMap));
+		fragmentShader.SetShaderResourceView("MetalMap", asset.getTexture(it->metalMap));
+		fragmentShader.SetShaderResourceView("HeightMap", asset.getTexture(TXTURE_WHITE));
+		fragmentShader.SetShaderResourceView("AOMap", asset.getTexture(it->aoMap));
+		vertexShader.CopyAllBufferData();
+		fragmentShader.CopyAllBufferData();
+		hprRenderMesh(context, asset, it->meshId);
+	}
 }
 void RenderSystem::render(
 	ID3D11Device * device, ID3D11DeviceContext * context,
@@ -139,38 +173,7 @@ void RenderSystem::render(
 	//Render skybox
 	renderSkybox(device, context, renderTargetView, depthStencilView, viewport, asset, entityFactory);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-	context->RSSetState(cullBackFace);
-	vertexShader.SetShader();
-	fragmentShader.SetShader();
-	
-	setMatrix(&vertexShader, "view", m_camera.getViewMatrix());
-	setMatrix(&vertexShader, "proj", m_camera.getProjMatrix());
-	for (auto it = m_components.begin(); it != m_components.end(); it++) {
-		if (it->meshId == KEnum::UNDEFINED) 
-			continue;
-		setMatrix(&vertexShader, "world", it->getWorldMatrix());
-		vertexShader.CopyAllBufferData();
-		auto lightComponent = entityFactory.getEntity(it->entityIndex).m_lightComponent;
-		if (lightComponent == 0) {
-			fragmentShader.SetFloat3("diffuseColor", Vector3());
-
-		}
-		else {
-			fragmentShader.SetFloat3("diffuseColor", lightComponent->color );
-
-		}
-
-		fragmentShader.SetShaderResourceView("AlbedoMap", asset.getTexture(it->albedoMap));
-		fragmentShader.SetShaderResourceView("NormalMap", asset.getTexture(it->normalMap));
-		fragmentShader.SetShaderResourceView("RoughMap", asset.getTexture(it->roughMap));
-		fragmentShader.SetShaderResourceView("MetalMap", asset.getTexture(it->metalMap));
-		fragmentShader.SetShaderResourceView("HeightMap", asset.getTexture(TXTURE_WHITE));
-		fragmentShader.SetShaderResourceView("AOMap", asset.getTexture(it->aoMap));
-
-		fragmentShader.CopyAllBufferData();
-		hprRenderMesh(context, asset, it->meshId);
-	}
+	renderScene(device, context, renderTargetView, depthStencilView, viewport, asset, entityFactory);
 }
 
 void KEngine::KSystem::RenderSystem::renderPointLightShadowMap(

@@ -21,6 +21,7 @@ namespace KEngine {
 		struct Renderable;
 		struct AtlasComponent;
 		struct LightComponent;
+		struct ProbeComponent;
 	}
 	struct Entity {
 		bool m_isAlive;
@@ -35,6 +36,7 @@ namespace KEngine {
 		KComponent::SphericalHarmonicProbe*	m_sphereicalHarmonicProbe;
 		KComponent::Renderable*				m_renderable;
 		KComponent::AtlasComponent*			m_atlasComponent;
+		KComponent::ProbeComponent*			m_probeComponent;
 		//Must recreate new entity in order to add new componenet 
 		//Entity(std::vector<byte> m_components, std::vector<ComponentIndex> m_componentIndexs);
 		

@@ -36,7 +36,20 @@ namespace KEngine {
 			UINT stride;// = sizeof(Vertex);
 			UINT offset;// = 0;
 			void hprRenderMesh(ID3D11DeviceContext * context,Asset &asset,KEnum meshID);
-
+			void renderSkybox(
+				//Render information needed to render
+				ID3D11Device * device, ID3D11DeviceContext * context,
+				ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
+				Asset &asset,
+				EntityFactory& entityFactory
+			);
+			void renderScene(
+				//Render information needed to render
+				ID3D11Device * device, ID3D11DeviceContext * context,
+				ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
+				Asset &asset,
+				EntityFactory& entityFactory
+			);
 
 		public:
 			void init(int renderTargetWidth, int renderTargetHeight);
@@ -57,13 +70,7 @@ namespace KEngine {
 				Asset &asset,
 				Renderable &renderable
 			);
-			void renderSkybox(
-				//Render information needed to render
-				ID3D11Device * device, ID3D11DeviceContext * context,
-				ID3D11RenderTargetView *renderTargetView, ID3D11DepthStencilView* depthStencilView, D3D11_VIEWPORT & viewport,
-				Asset &asset,
-				EntityFactory& entityFactory
-			);
+		
 			void render(
 				//Render information needed to render
 				ID3D11Device * device, ID3D11DeviceContext * context,

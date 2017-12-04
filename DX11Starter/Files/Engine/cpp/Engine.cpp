@@ -175,6 +175,7 @@ KEngine::Engine::Engine() :
 void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context, int windowWidth, int windowHeight)
 {
 	print("init");
+	m_probeSystem.init();
 	m_asset.init(device, context);
 	m_lightSystem.init(windowWidth/windowHeight, 0.01f, 100.0f, 10, 10, 10);
 	m_atlasSystem.init(
@@ -318,6 +319,7 @@ void Engine::update(float timeElapsed){
 	m_renderSystem.setCameraRotation(m_handlerKeyboardInput.getRotation());
 	m_renderSystem		.update(m_entityFactory.m_entities, timeElapsed);
 	m_lightSystem		.update(m_entityFactory.m_entities, timeElapsed);
+	m_probeSystem		.update(m_entityFactory.m_entities, timeElapsed);
 	m_transform3DSystem	.update(m_entityFactory.m_entities, timeElapsed);
 
 	auto camViewMatrix = m_renderSystem.getCameraViewMatrix();
@@ -507,6 +509,7 @@ void Engine::render(
 		m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("textureLightAtlas", 0);
 		//m_asset.getFragShader(RENDER_FORWARD_ATLAS_CLUSTERED_FRUSTUM).SetShaderResourceView("textureProbe", textureProbe);
 	}
+
 	//m_renderSystem.renderCubemap(device, context, target, targetDepth, viewport, m_asset, renderable_cubemap);
 
 

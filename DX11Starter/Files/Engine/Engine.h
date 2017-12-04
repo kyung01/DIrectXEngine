@@ -10,6 +10,7 @@
 #include <Engine\Systems\RenderSystem.h>
 #include <Engine\Systems\LightSystem.h>
 #include <Engine\Systems\Transform3DSystem.h>
+#include <Engine\Systems\ProbeSystem.h>
 #include <Engine\EventHandlers\PlayerInput.h>
 
 #include <ClusteredFrustum\Frustum.h>
@@ -34,6 +35,7 @@ namespace KEngine {
 		KSystem::AtlasSystem	m_atlasSystem;
 		KSystem::LightSystem	m_lightSystem;
 		KSystem::Transform3DSystem m_transform3DSystem;
+		KSystem::ProbeSystem	m_probeSystem;
 		//Handlers
 		KHandler::PlayerInput m_handlerKeyboardInput;
 		//Test all kinds of light into this frustum

@@ -588,6 +588,12 @@
     <ClCompile Include="Files\IrradianceMapConvertor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Files\Engine\Componenets\cpp\ProbeComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Files\Engine\Systems\cpp\Engine_ProbeSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\imgui\imconfig.h">
@@ -1572,6 +1578,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\IrradianceMapConvertor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Systems\ProbeSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\Componenets\ProbeComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\Engine\EngineStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
