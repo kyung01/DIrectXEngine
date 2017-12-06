@@ -29,6 +29,8 @@ namespace KEngine {
 		//Temporary functions for easy modifying and testing
 		Entity& addRenderableObjecet();
 		Entity& addRenderableLightObjecet();
+		Entity& addProbeReflection();
+		Entity& addProbeIraadiance();
 		void assignRandomTexture(Entity &entity);
 	private:
 		Physics::PhysicsMain m_physicsMain;
