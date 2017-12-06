@@ -136,6 +136,7 @@
     <ClCompile Include="Files\DirectX\cpp\KContext.cpp" />
     <ClCompile Include="Files\DirectX\cpp\StagingTexture.cpp" />
     <ClCompile Include="Files\Engine\Componenets\cpp\ProbeComponent.cpp" />
+    <ClCompile Include="Files\Engine\cpp\Engine_temp.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_AtlasSystem.cpp" />
     <ClCompile Include="Files\Engine\Componenets\cpp\Engine_Renderable.cpp" />
     <ClCompile Include="Files\Engine\Componenets\cpp\Transform3D.cpp" />

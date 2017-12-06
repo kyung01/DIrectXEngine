@@ -26,6 +26,11 @@ using namespace DirectX::SimpleMath;
 namespace KEngine {
 	class Engine  : EventHandler {
 	private:
+		//Temporary functions for easy modifying and testing
+		Entity& addRenderableObjecet();
+		Entity& addRenderableLightObjecet();
+		void assignRandomTexture(Entity &entity);
+	private:
 		Physics::PhysicsMain m_physicsMain;
 		Asset		m_asset;
 		EntityFactory m_entityFactory;
