@@ -597,6 +597,9 @@
     <ClCompile Include="Files\Engine\Componenets\cpp\ReflectionComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Files\DirectX\cpp\CubemapTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Files\imgui\imconfig.h">
@@ -1590,6 +1593,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Files\Engine\Componenets\ReflectionComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files\DirectX\CubemapTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
