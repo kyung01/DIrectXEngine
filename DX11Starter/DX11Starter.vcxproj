@@ -135,7 +135,7 @@
     <ClCompile Include="Files\DirectX\cpp\DXCore.cpp" />
     <ClCompile Include="Files\DirectX\cpp\KContext.cpp" />
     <ClCompile Include="Files\DirectX\cpp\StagingTexture.cpp" />
-    <ClCompile Include="Files\Engine\Componenets\cpp\ProbeComponent.cpp" />
+    <ClCompile Include="Files\Engine\Componenets\cpp\ReflectionComponent.cpp" />
     <ClCompile Include="Files\Engine\cpp\Engine_temp.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_AtlasSystem.cpp" />
     <ClCompile Include="Files\Engine\Componenets\cpp\Engine_Renderable.cpp" />
@@ -151,7 +151,7 @@
     <ClCompile Include="Files\Engine\cpp\Enum.cpp" />
     <ClCompile Include="Files\Engine\EventHandlers\cpp\Engine_PlayerInput.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_LightSystem.cpp" />
-    <ClCompile Include="Files\Engine\Systems\cpp\Engine_ProbeSystem.cpp" />
+    <ClCompile Include="Files\Engine\Systems\cpp\Engine_ReflectionSystem.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_RenderSystem.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Engine_System.cpp" />
     <ClCompile Include="Files\Engine\Systems\cpp\Systems_Transform3DSystem.cpp" />
@@ -340,7 +340,7 @@
     <ClInclude Include="Files\Engine\Componenets\AtlasComponent.h" />
     <ClInclude Include="Files\Engine\Componenets\ClusterLight.h" />
     <ClInclude Include="Files\Engine\Componenets\LightEntity.h" />
-    <ClInclude Include="Files\Engine\Componenets\ProbeComponent.h" />
+    <ClInclude Include="Files\Engine\Componenets\ReflectionComponent.h" />
     <ClInclude Include="Files\Engine\Componenets\Renderable.h" />
     <ClInclude Include="Files\Engine\Componenets\SphericalHarmonicProbe.h" />
     <ClInclude Include="Files\Engine\Componenets\ForwardLight.h" />
@@ -360,7 +360,7 @@
     <ClInclude Include="Files\Engine\Systems\AtlasSystem.h" />
     <ClInclude Include="Files\Engine\Systems\ClusteredFrustumLightCoolingSystem.h" />
     <ClInclude Include="Files\Engine\Systems\LightSystem.h" />
-    <ClInclude Include="Files\Engine\Systems\ProbeSystem.h" />
+    <ClInclude Include="Files\Engine\Systems\ReflectionSystem.h" />
     <ClInclude Include="Files\Engine\Systems\RenderSystem.h" />
     <ClInclude Include="Files\Engine\Systems\System.h" />
     <ClInclude Include="Files\Engine\Systems\Transform3DSystem.h" />

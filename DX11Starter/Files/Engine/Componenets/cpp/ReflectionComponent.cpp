@@ -1,13 +1,13 @@
-#include <Engine\Componenets\ProbeComponent.h>
+#include <Engine\Componenets\ReflectionComponent.h>
 using namespace KEngine::KComponent;
 
-ProbeComponent::ProbeComponent() :
+ReflectionComponent::ReflectionComponent() :
 	isNeedUpdate(true)
 {
 	initCoefficients();
 }
 
-void KEngine::KComponent::ProbeComponent::initRenderTexture(ID3D11Device *device, int size)
+void KEngine::KComponent::ReflectionComponent::initRenderTexture(ID3D11Device *device, int size)
 {
 	type = PROBE_TYPE::REFLECTION;
 	xPlus = std::make_unique<NDirectX::RenderTexture>();
@@ -24,9 +24,8 @@ void KEngine::KComponent::ProbeComponent::initRenderTexture(ID3D11Device *device
 	zMinus->init(device, size, size);
 }
 
-void KEngine::KComponent::ProbeComponent::initCoefficients()
+void KEngine::KComponent::ReflectionComponent::initCoefficients()
 {
 	type = PROBE_TYPE::IRRADIANCE;
-	coefficients = std::make_unique<float*>(new float[9]);
 }
 

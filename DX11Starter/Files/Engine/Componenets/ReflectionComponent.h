@@ -10,7 +10,7 @@ namespace KEngine {
 		/*
 		this struct should be paired with LightRender system
 		*/
-		struct ProbeComponent : public Component {
+		struct ReflectionComponent : public Component {
 		private:
 		public:
 			bool isNeedUpdate;
@@ -20,9 +20,8 @@ namespace KEngine {
 				xPlus, xMinus, 
 				yPlus, yMinus, 
 				zPlus, zMinus;
-			std::unique_ptr<float*> coefficients;
 
-			ProbeComponent();
+			ReflectionComponent();
 			void initRenderTexture(ID3D11Device *device, int size);
 			void initCoefficients();
 		};
