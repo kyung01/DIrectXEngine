@@ -42,8 +42,15 @@ void KEngine::Engine::init(ID3D11Device * device, ID3D11DeviceContext * context,
 	m_textureAtlasShadowMap.init(device, ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT);
 	m_textureAtlasShadowMapDepth.init(device, ATLAS_SHADOW_MAP_WIDTH, ATLAS_SHADOW_MAP_HEIGHT);
 	//initTest(device, context, windowWidth, windowHeight);
-
-
+	//Debug testing purppose init
+	debugCubemap.initCube(device, 512, 512);
+	debugCubemapDepth.init(device, 512, 512);
+	debugViewport.Width = 512;
+	debugViewport.Height = 512;
+	debugViewport.TopLeftX = 0;
+	debugViewport.TopLeftY = 0;	
+	debugViewport.MinDepth = 0;
+	debugViewport.MaxDepth = 1;
 }
 void Engine::initTest(ID3D11Device * device, ID3D11DeviceContext * context, int windowWidth, int windowHeight) {
 

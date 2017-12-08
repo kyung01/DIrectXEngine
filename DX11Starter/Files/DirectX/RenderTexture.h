@@ -27,8 +27,8 @@ namespace NDirectX {
 
 		bool init(ID3D11Device*, IDXGISwapChain* chain, int, int);
 		bool init(ID3D11Device*, int, int);
-		bool initCube(ID3D11Device*, int, int, void* data);
-		bool initCubeArray(ID3D11Device*, int, int, int, void* data);
+		bool initCube(ID3D11Device*, int, int, void* data = 0);
+		bool initCubeArray(ID3D11Device*, int, int, int, void* data = 0);
 		void release();
 
 		void setRenderTarget(ID3D11DeviceContext*, ID3D11DepthStencilView*);

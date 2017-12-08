@@ -56,6 +56,11 @@ namespace KEngine {
 	protected:
 		void initExample();
 	public:
+		//Put on public for temporary debugging purposes
+		D3D11_VIEWPORT debugViewport;
+		NDirectX::RenderTexture debugCubemap;
+		NDirectX::DepthTexture debugCubemapDepth;
+	public:
 		//Put on public temporarily for debug purpose
 		//Atals texture for rendering shadow maps for each light
 		NDirectX::RenderTexture m_textureAtlasShadowMap;

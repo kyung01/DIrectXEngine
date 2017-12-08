@@ -16,10 +16,9 @@ namespace KEngine {
 			bool isNeedUpdate;
 			PROBE_TYPE type;
 			Vector3 position;
-			std::unique_ptr<NDirectX::RenderTexture> 
-				xPlus, xMinus, 
-				yPlus, yMinus, 
-				zPlus, zMinus;
+			std::unique_ptr<NDirectX::RenderTexture>
+				cubemap;
+
 
 			ReflectionComponent();
 			void initRenderTexture(ID3D11Device *device, int size);

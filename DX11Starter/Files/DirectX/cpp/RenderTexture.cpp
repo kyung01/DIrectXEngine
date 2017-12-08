@@ -194,7 +194,14 @@ bool RenderTexture::initCube(ID3D11Device* device, int textureWidth, int texture
 
 
 	// Create the render target texture.
-	result = device->CreateTexture2D(&textureDesc, (const D3D11_SUBRESOURCE_DATA *)data, &m_renderTargetTexture);
+	if (data == 0) {
+
+		result = device->CreateTexture2D(&textureDesc, NULL, &m_renderTargetTexture);
+	}
+	else {
+
+		result = device->CreateTexture2D(&textureDesc, (const D3D11_SUBRESOURCE_DATA *)data, &m_renderTargetTexture);
+	}
 	DirectX::DirectXUtility::HRESULT_CHECK(result);
 	if (FAILED(result))
 	{
