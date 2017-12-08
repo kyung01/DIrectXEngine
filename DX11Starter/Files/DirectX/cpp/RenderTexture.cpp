@@ -157,7 +157,7 @@ bool RenderTexture::init(ID3D11Device* device, int textureWidth, int textureHeig
 
 	return true;
 }
-
+//https://stackoverflow.com/questions/38752215/directx-rendering-to-texture2darray-and-loading-from-it-in-compute-shader
 bool RenderTexture::initCube(ID3D11Device* device, int textureWidth, int textureHeight, void * data)
 {
 	release();
